@@ -20,8 +20,8 @@ img.src = "https://cdna.artstation.com/p/assets/images/images/009/031/190/large/
 
 const draw_action_bar = function() {
   var number_of_slots = 4
-  var slot_height = tile_size * 2;
-  var slot_width = tile_size * 2;
+  var slot_height = tile_size * 3;
+  var slot_width = tile_size * 3;
   var action_bar_width = number_of_slots * slot_width
   var action_bar_height = number_of_slots * slot_height
   var slots = ["mage_mm", "free", "free", "free"]
@@ -45,7 +45,7 @@ const draw_action_bar = function() {
     case "free":
       var x = (SCREEN_WIDTH / 2) - (action_bar_width / 2) + (slot_width * slot_index)
       var y = tile_size * 36
-      ctx.fillStyle = "#4d0a0c"
+      ctx.fillStyle = "rgba(46, 46, 46, 1)"
       ctx.fillRect(
         x, y,
         slot_width, slot_height)
@@ -94,8 +94,27 @@ const clear_screen = function () {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
 
-const spawn_creep = function () {
+var creep = {
+  x: canvas_rect.right,
+  y: 20,
+  moving: true,
+  color: "green",
+  target: {
+    x: 20,
+    y: tile_size * 32
+  }
 }
+const spawn_creep = function () {
+  draw_square(creep.x,
+    creep.y,
+    20, 20, creep.color
+  );
+}
+
+function Entity(object) {
+  this.object = object
+}
+let entities = [player]
 
 function game_loop() {
   clear_screen()
@@ -124,6 +143,28 @@ function game_loop() {
     }
   }
   // END - Character Movement
+  
+  // Creep movement
+  //if ((distance(creep.x, character.x) <= 1 + tile_size) && (distance(creep.y, character.y) <= 1 + tile_size)) {
+  //  creep.moving = false;
+  //}
+  // If the distance from the character position to the target is 1 or less
+  var target = { ...creep.target }
+  if (distance(creep.x, target.x) > 1 + tile_size) {
+    if (creep.x > target.x) {
+      creep.x = creep.x - 1;
+    } else {
+      creep.x = creep.x + 1;
+    }
+  }
+  if (distance(creep.y, target.y) > 1 + tile_size) {
+    if (creep.y > target.y) {
+      creep.y = creep.y - 1;
+    } else {
+      creep.y = creep.y + 1;
+    }
+  }
+  // END - Creep movement
 
   // First base
   draw_square(0, tile_size * 30, tile_size * 6, tile_size * 6)
@@ -138,6 +179,7 @@ function game_loop() {
   );
 
   draw_action_bar()
+  spawn_creep()
 
   requestAnimationFrame(game_loop)
 };
