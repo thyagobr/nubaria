@@ -1,29 +1,18 @@
 const canvas = document.getElementById('screen');
 const ctx = canvas.getContext('2d');
 
+// Constants
+const canvas_rect = canvas.getBoundingClientRect()
+const tile_size = 20;
+const SCREEN_WIDTH = canvas_rect.width;
+const SCREEN_HEIGHT = canvas_rect.height;
+
 const draw_square = function (x = 10, y = 10, w = 20, h = 20, color = "rgb(190, 20, 10)") {
   ctx.fillStyle = color;
   ctx.fillRect(x, y, w, h);
 }
 
-const canvas_rect = canvas.getBoundingClientRect()
-
-const tile_size = 20;
-
-// Grid
-// for (i = 1; i < (canvas_rect.height / tile_size); i++) {
-//   ctx.beginPath()
-//   ctx.moveTo(0, i * tile_size)
-//   ctx.lineTo(canvas_rect.right, i * tile_size)
-//   ctx.stroke();
-// }
-
-// for (i = 1; i < (canvas_rect.width / tile_size); i++) {
-//   ctx.beginPath()
-//   ctx.moveTo(i * tile_size, 0)
-//   ctx.lineTo(i * tile_size, canvas_rect.bottom)
-//   ctx.stroke();
-// }
+import draw_grid from "./grid.js";
 
 var character = {
   x: tile_size * (Math.floor(canvas_rect.width / tile_size) / 2),
@@ -53,10 +42,18 @@ const distance = function (a, b) {
   return Math.abs(Math.floor(a) - Math.floor(b));
 }
 
-// First base
-function game_loop() {
+const clear_screen = function () {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
 
+const spawn_creep = function () {
+}
+
+function game_loop() {
+  clear_screen()
+  //draw_grid(ctx, canvas_rect, tile_size);
+
+  // Character Movement
   if (character.moving) {
     if ((distance(character.x, target_movement.x) <= 1) && (distance(character.y, target_movement.y) <= 1)) {
       character.moving = false;
@@ -78,7 +75,9 @@ function game_loop() {
       }
     }
   }
+  // END - Character Movement
 
+  // First base
   draw_square(0, tile_size * 30, tile_size * 6, tile_size * 6)
 
   // Second base
