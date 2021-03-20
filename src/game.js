@@ -51,7 +51,6 @@ const spawn_creep = function () {
 
 function game_loop() {
   clear_screen()
-  //draw_grid(ctx, canvas_rect, tile_size);
 
   // Character Movement
   if (character.moving) {
