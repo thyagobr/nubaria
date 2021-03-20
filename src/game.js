@@ -14,6 +14,54 @@ const draw_square = function (x = 10, y = 10, w = 20, h = 20, color = "rgb(190, 
 
 import draw_grid from "./grid.js";
 
+// action bar
+const img = new Image();
+img.src = "https://cdna.artstation.com/p/assets/images/images/009/031/190/large/richard-thomas-paints-11-v2.jpg"
+
+const draw_action_bar = function() {
+  var number_of_slots = 4
+  var slot_height = tile_size * 2;
+  var slot_width = tile_size * 2;
+  var action_bar_width = number_of_slots * slot_width
+  var action_bar_height = number_of_slots * slot_height
+  var slots = ["mage_mm", "free", "free", "free"]
+
+  for (var slot_index = 0; slot_index <= slots.length; slot_index++) {
+    var slot = slots[slot_index];
+    switch(slot) {
+    case "mage_mm":
+      var x = (SCREEN_WIDTH / 2) - (action_bar_width / 2) + (slot_width * slot_index)
+      var y = tile_size * 36
+      ctx.drawImage(img, x, y, slot_width, slot_height)
+
+      ctx.strokeStyle = "blueviolet"
+      ctx.lineWidth = 2;
+      ctx.strokeRect(
+        x, y,
+        slot_width, slot_height
+      )
+      break;
+
+    case "free":
+      var x = (SCREEN_WIDTH / 2) - (action_bar_width / 2) + (slot_width * slot_index)
+      var y = tile_size * 36
+      ctx.fillStyle = "#4d0a0c"
+      ctx.fillRect(
+        x, y,
+        slot_width, slot_height)
+
+      ctx.strokeStyle = "blueviolet"
+      ctx.lineWidth = 2;
+      ctx.strokeRect(
+        x, y,
+        slot_width, slot_height
+      )
+
+    }
+  }
+}
+// END -- action bar
+
 var character = {
   x: tile_size * (Math.floor(canvas_rect.width / tile_size) / 2),
   y: tile_size * (Math.floor(canvas_rect.height / tile_size) / 2),
@@ -51,6 +99,7 @@ const spawn_creep = function () {
 
 function game_loop() {
   clear_screen()
+  // draw_grid(ctx, canvas_rect, tile_size);
 
   // Character Movement
   if (character.moving) {
@@ -87,6 +136,8 @@ function game_loop() {
     character.y,
     20, 20, "blueviolet"
   );
+
+  draw_action_bar()
 
   requestAnimationFrame(game_loop)
 };
