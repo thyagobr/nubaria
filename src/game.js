@@ -73,13 +73,13 @@ mage_img.src = "crisiscorepeeps.png"
 
 var character = {
   id: 1,
-  x: tile_size * (Math.floor(canvas_rect.width / tile_size) / 2),
-  y: tile_size * (Math.floor(canvas_rect.height / tile_size) / 2),
+  x: canvas_rect.width / 2,
+  y: canvas_rect.height / 2,
   width: tile_size * 2,
   height: tile_size * 2,
   moving: false,
   draw: function() {
-    ctx.drawImage(mage_img, 0, 0, 32, 32, this.x, this.y, this.width, this.height)
+    ctx.drawImage(mage_img, 0, 0, 32, 32, this.x - camera.x, this.y - camera.y, this.width, this.height)
   }
 }
 
@@ -121,16 +121,37 @@ var target_movement = {
 }
 
 const on_click = function (ev) {
-  target_movement.x = ev.clientX
-  target_movement.y = ev.clientY
+  target_movement.x = ev.clientX + camera.x - (character.width / 2)
+  target_movement.y = ev.clientY + camera.y - (character.height / 2)
   character.moving = true
+  console.log(target_movement)
 }
 
 canvas.addEventListener("click", on_click, false);
 // debugger function
-window.addEventListener("keyup", function (e) {
-  console.log(character)
-  console.log(base_red)
+window.addEventListener("keydown", function (e) {
+  switch (e.key) {
+  case "ArrowLeft":
+    camera.x = camera.x - 10
+    break;
+  case "ArrowRight":
+    camera.x = camera.x + 10
+    break;
+  case "ArrowDown":
+    camera.y = camera.y + 10
+    break;
+  case "ArrowUp":
+    camera.y = camera.y - 10
+    break;
+  case "r":
+    console.log("Character")
+    console.log(character)
+    console.log("Camera")
+    console.log(camera)
+    break
+  default:
+    console.log(e.key)
+  }
 }, false)
 
 const distance = function (a, b) {
@@ -158,6 +179,7 @@ const is_colliding = function(self, target) {
   }
 }
 
+const camera = { x: 0, y: 0 }
 const game_map = new Image()
 game_map.src = "map4096.jpeg"
 var map_width = 4096
@@ -165,8 +187,9 @@ var map_width = 4096
 function game_loop() {
   clear_screen()
   // draw_grid(ctx, canvas_rect, tile_size);
-  ctx.drawImage(game_map, 0, 0, map_width, map_width, 0, 0, map_width * 2, map_width * 2)
-
+  // Map
+  ctx.drawImage(game_map, camera.x, camera.y, map_width, map_width, 0, 0, map_width, map_width)
+  // END - Map
   draw()
   // Character Movement
   if (character.moving) {
@@ -179,7 +202,7 @@ function game_loop() {
     } else {
       // Draw movement target
       ctx.beginPath()
-      ctx.arc(target_movement.x, target_movement.y, 20, 0, 2 * Math.PI, false)
+      ctx.arc((target_movement.x - camera.x), (target_movement.y - camera.y), 20, 0, 2 * Math.PI, false)
       ctx.strokeStyle = "purple"
       ctx.lineWidth = 4;
       ctx.stroke()
