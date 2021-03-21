@@ -166,21 +166,23 @@ function game_loop() {
     var future_movement = { ...character }
     if ((distance(character.x, target_movement.x) <= 1) && (distance(character.y, target_movement.y) <= 1)) {
       character.moving = false;
+      target_movement = {}
       console.log("Stopped");
-    }
-    // If the distance from the character position to the target is 1 or less
-    if (distance(character.x, target_movement.x) > 1) {
-      if (character.x > target_movement.x) {
-        future_movement.x = character.x - 2;
-      } else {
-        future_movement.x = character.x + 2;
+    } else {
+      // If the distance from the character position to the target is 1 or less
+      if (distance(character.x, target_movement.x) > 1) {
+        if (character.x > target_movement.x) {
+          future_movement.x = character.x - 2;
+        } else {
+          future_movement.x = character.x + 2;
+        }
       }
-    }
-    if (distance(character.y, target_movement.y) > 1) {
-      if (character.y > target_movement.y) {
-        future_movement.y = character.y - 2;
-      } else {
-        future_movement.y = character.y + 2;
+      if (distance(character.y, target_movement.y) > 1) {
+        if (character.y > target_movement.y) {
+          future_movement.y = character.y - 2;
+        } else {
+          future_movement.y = character.y + 2;
+        }
       }
     }
 
@@ -193,7 +195,7 @@ function game_loop() {
     }
   }
   // END - Character Movement
-  
+
   // Creep movement
   //if ((distance(creep.x, character.x) <= 1 + tile_size) && (distance(creep.y, character.y) <= 1 + tile_size)) {
   //  creep.moving = false;
