@@ -66,14 +66,19 @@ const draw_action_bar = function() {
 // END -- action bar
 
 // Entities
+const mage_img = new Image();
+mage_img.src = "crisiscorepeeps.png"
+
 var character = {
   id: 1,
   x: tile_size * (Math.floor(canvas_rect.width / tile_size) / 2),
   y: tile_size * (Math.floor(canvas_rect.height / tile_size) / 2),
-  width: tile_size,
-  height: tile_size,
+  width: tile_size * 2,
+  height: tile_size * 2,
   moving: false,
-  draw: function() { draw_square(this.x, this.y, 20, 20, "blueviolet"); }
+  draw: function() {
+    ctx.drawImage(mage_img, 0, 0, 32, 32, this.x, this.y, this.width, this.height)
+  }
 }
 
 var base_red = {
