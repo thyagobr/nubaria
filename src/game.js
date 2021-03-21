@@ -29,7 +29,7 @@ const draw_action_bar = function() {
   // To determine what is the width to use, we have to pick the canvas width IF the canvas is less than the window width
   var biggest_width = window.innerWidth > canvas.width ? canvas.width : window.innerWidth
   var action_bar_x = (biggest_width / 2) - (action_bar_width / 2) 
-  var action_bar_y = window.innerHeight - tile_size * 6
+  var action_bar_y = canvas_rect.height - tile_size * 4
   var slots = ["mage_mm", "free", "free", "free"]
 
   for (var slot_index = 0; slot_index <= slots.length; slot_index++) {
@@ -120,13 +120,46 @@ var target_movement = {
   y: 0
 }
 
+var bitmap = []
+
 const on_click = function (ev) {
-  target_movement.x = ev.clientX + camera.x - (character.width / 2)
-  target_movement.y = ev.clientY + camera.y - (character.height / 2)
-  character.moving = true
-  console.log(target_movement)
+  if (paint_mode) {
+    console.log(ev.clientX)
+    console.log(ev.clientY)
+    bitmap.push({x:ev.clientX, y: ev.clientY, width: tile_size, height: tile_size})
+  } else {
+    target_movement.x = ev.clientX + camera.x - (character.width / 2)
+    target_movement.y = ev.clientY + camera.y - (character.height / 2)
+    character.moving = true
+    console.log(target_movement)
+  }
 }
 
+var tracking_mouse_map_move = false
+
+const scroll_speed = 2
+const MAP_WIDTH = 2800
+const MAP_HEIGHT = 3200
+canvas.addEventListener("mousemove", function(e) {
+  if (tracking_mouse_map_move) {
+    var horizontal = (e.clientX > canvas_rect.width / 2 ? "right" : "left")
+    var vertical = (e.clientY > canvas_rect.height / 2 ? "up" : "down")
+    if ((horizontal === "right") && (camera.x + scroll_speed < MAP_WIDTH)) {
+      camera.x = camera.x + scroll_speed
+    }
+    if ((horizontal === "left") && (camera.x - scroll_speed >= 0)) {
+      camera.x = camera.x - scroll_speed
+    }2048
+    if ((vertical === "up") && (camera.y + scroll_speed <= MAP_HEIGHT)) {
+      camera.y = camera.y + scroll_speed
+    }
+    if ((vertical === "down") && (camera.y - scroll_speed >= 0)) {
+      camera.y = camera.y - scroll_speed
+    }
+  }
+}, false)
+
+var paint_mode = false
 canvas.addEventListener("click", on_click, false);
 // debugger function
 window.addEventListener("keydown", function (e) {
@@ -143,14 +176,33 @@ window.addEventListener("keydown", function (e) {
   case "ArrowUp":
     camera.y = camera.y - 10
     break;
+  case "Shift":
+    tracking_mouse_map_move = true
+    break;
+  case "z":
+    camera.x = character.x - canvas_rect.width / 2
+    camera.y = character.y - canvas_rect.height / 2
+    break;
   case "r":
     console.log("Character")
     console.log(character)
     console.log("Camera")
     console.log(camera)
     break
+  case "p":
+    //map paint mode
+    paint_mode = !paint_mode
+    break;
   default:
     console.log(e.key)
+  }
+}, false)
+
+window.addEventListener("keyup", function(e) {
+  switch(e.key) {
+  case "Shift":
+    tracking_mouse_map_move= false
+    break
   }
 }, false)
 
@@ -186,9 +238,14 @@ var map_width = 4096
 
 function game_loop() {
   clear_screen()
-  // draw_grid(ctx, canvas_rect, tile_size);
   // Map
   ctx.drawImage(game_map, camera.x, camera.y, map_width, map_width, 0, 0, map_width, map_width)
+  if (paint_mode) {
+    draw_grid(ctx, canvas_rect, tile_size);
+    bitmap.forEach((bit) => {
+      draw_square(bit.x, bit.y, tile_size, tile_size, "purple")
+    })
+  }
   // END - Map
   draw()
   // Character Movement
@@ -223,7 +280,8 @@ function game_loop() {
       }
     }
 
-    if (entities.every(function(entity) { return entity.id === character.id || !is_colliding(future_movement, entity) })) {
+    if ((entities.every(function(entity) { return entity.id === character.id || !is_colliding(future_movement, entity) })) &&
+      (!bitmap.some(function(bit) { return is_colliding(future_movement, bit) }))) {
       character.x = future_movement.x
       character.y = future_movement.y
     } else {
