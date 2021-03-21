@@ -1,6 +1,6 @@
 const canvas = document.getElementById('screen');
-canvas.width = document.body.clientWidth
-canvas.height = document.body.clientHeight
+//canvas.width = document.body.clientWidth
+//canvas.height = document.body.clientHeight
 const ctx = canvas.getContext('2d');
 
 // Constants
@@ -26,8 +26,10 @@ const draw_action_bar = function() {
   var slot_width = tile_size * 3;
   var action_bar_width = number_of_slots * slot_width
   var action_bar_height = number_of_slots * slot_height
-  var action_bar_x = (SCREEN_WIDTH / 2) - (action_bar_width / 2) 
-  var action_bar_y = tile_size * 33
+  // To determine what is the width to use, we have to pick the canvas width IF the canvas is less than the window width
+  var biggest_width = window.innerWidth > canvas.width ? canvas.width : window.innerWidth
+  var action_bar_x = (biggest_width / 2) - (action_bar_width / 2) 
+  var action_bar_y = window.innerHeight - tile_size * 6
   var slots = ["mage_mm", "free", "free", "free"]
 
   for (var slot_index = 0; slot_index <= slots.length; slot_index++) {
@@ -87,7 +89,7 @@ var base_red = {
   y: tile_size * 30,
   width: tile_size * 6,
   height: tile_size * 6,
-  draw: function() { draw_square(this.x, this.y, this.width, this.height) }
+  draw: function() { draw_square(this.x, this.y, this.width, this.height, "rgba(0, 0, 0, 0.0)") }
 }
 
 var base_blue = {
@@ -110,7 +112,7 @@ var creep = {
   draw: function () { draw_square(this.x, this.y, this.width, this.height, this.color) }
 }
 
-var entities = [character, base_red, base_blue, creep]
+var entities = [character]
 // END - Entities
 
 var target_movement = {
@@ -156,19 +158,31 @@ const is_colliding = function(self, target) {
   }
 }
 
+const game_map = new Image()
+game_map.src = "map4096.jpeg"
+var map_width = 4096
+
 function game_loop() {
   clear_screen()
   // draw_grid(ctx, canvas_rect, tile_size);
+  ctx.drawImage(game_map, 0, 0, map_width, map_width, 0, 0, map_width * 2, map_width * 2)
 
   draw()
   // Character Movement
   if (character.moving) {
     var future_movement = { ...character }
+
     if ((distance(character.x, target_movement.x) <= 1) && (distance(character.y, target_movement.y) <= 1)) {
       character.moving = false;
       target_movement = {}
       console.log("Stopped");
     } else {
+      // Draw movement target
+      ctx.beginPath()
+      ctx.arc(target_movement.x, target_movement.y, 20, 0, 2 * Math.PI, false)
+      ctx.strokeStyle = "purple"
+      ctx.lineWidth = 4;
+      ctx.stroke()
       // If the distance from the character position to the target is 1 or less
       if (distance(character.x, target_movement.x) > 1) {
         if (character.x > target_movement.x) {
@@ -197,25 +211,22 @@ function game_loop() {
   // END - Character Movement
 
   // Creep movement
-  //if ((distance(creep.x, character.x) <= 1 + tile_size) && (distance(creep.y, character.y) <= 1 + tile_size)) {
-  //  creep.moving = false;
-  //}
   // If the distance from the character position to the target is 1 or less
-  var target = { ...base_red }
-  if (distance(creep.x, target.x) > 1 + tile_size) {
-    if (creep.x > target.x) {
-      creep.x = creep.x - 1;
-    } else {
-      creep.x = creep.x + 1;
-    }
-  }
-  if (distance(creep.y, target.y) > 1 + tile_size) {
-    if (creep.y > target.y) {
-      creep.y = creep.y - 1;
-    } else {
-      creep.y = creep.y + 1;
-    }
-  }
+  //var target = { ...base_red }
+  //if (distance(creep.x, target.x) > 1 + tile_size) {
+  //  if (creep.x > target.x) {
+  //    creep.x = creep.x - 1;
+  //  } else {
+  //    creep.x = creep.x + 1;
+  //  }
+  //}
+  //if (distance(creep.y, target.y) > 1 + tile_size) {
+  //  if (creep.y > target.y) {
+  //    creep.y = creep.y - 1;
+  //  } else {
+  //    creep.y = creep.y + 1;
+  //  }
+  //}
   // END - Creep movement
 
   draw_action_bar()
