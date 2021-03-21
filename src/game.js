@@ -144,16 +144,17 @@ canvas.addEventListener("mousemove", function(e) {
   if (tracking_mouse_map_move) {
     var horizontal = (e.clientX > canvas_rect.width / 2 ? "right" : "left")
     var vertical = (e.clientY > canvas_rect.height / 2 ? "up" : "down")
-    if ((horizontal === "right") && (camera.x + scroll_speed < MAP_WIDTH)) {
+    // 60 is this specific map's offset - not needed if map changes
+    if ((horizontal === "right") && (camera.x + 60 + scroll_speed < MAP_WIDTH)) {
       camera.x = camera.x + scroll_speed
     }
-    if ((horizontal === "left") && (camera.x - scroll_speed >= 0)) {
+    if ((horizontal === "left") && (camera.x - scroll_speed >= 60)) {
       camera.x = camera.x - scroll_speed
     }2048
-    if ((vertical === "up") && (camera.y + scroll_speed <= MAP_HEIGHT)) {
+    if ((vertical === "up") && (camera.y + 150 + scroll_speed <= MAP_HEIGHT)) {
       camera.y = camera.y + scroll_speed
     }
-    if ((vertical === "down") && (camera.y - scroll_speed >= 0)) {
+    if ((vertical === "down") && (camera.y - scroll_speed >= 150)) {
       camera.y = camera.y - scroll_speed
     }
   }
@@ -180,8 +181,14 @@ window.addEventListener("keydown", function (e) {
     tracking_mouse_map_move = true
     break;
   case "z":
-    camera.x = character.x - canvas_rect.width / 2
-    camera.y = character.y - canvas_rect.height / 2
+    var x = character.x - canvas_rect.width / 2
+    var y = character.y - canvas_rect.height / 2
+    // specific map cuts (it has a map offset of 60,160)
+    if (x < 60) { x = 60 }
+    if (y < 160) { y = 160 }
+    // offset changes end
+    camera.x = x
+    camera.y = y
     break;
   case "r":
     console.log("Character")
@@ -239,7 +246,8 @@ var map_width = 4096
 function game_loop() {
   clear_screen()
   // Map
-  ctx.drawImage(game_map, camera.x, camera.y, map_width, map_width, 0, 0, map_width, map_width)
+  // 60 and 160 are this map files offsets - delete if other map
+  ctx.drawImage(game_map, camera.x + 60, camera.y + 160, map_width, map_width, 0, 0, map_width, map_width)
   if (paint_mode) {
     draw_grid(ctx, canvas_rect, tile_size);
     bitmap.forEach((bit) => {
