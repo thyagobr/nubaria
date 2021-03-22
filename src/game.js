@@ -25,6 +25,24 @@ const action_bar = new ActionBar(game_object)
 
 import Character from "./character.js"
 const character = new Character(game_object, editor, 1)
+var character_wp = editor.waypoints.find((wp) => wp.name === "spawn_character")
+character.x = character_wp.x
+character.y = character_wp.y
+
+// Camera
+const camera_focus_on = function(point) {
+  var x = point.x - canvas_rect.width / 2
+  var y = point.y - canvas_rect.height / 2
+  // specific map cuts (it has a map offset of 60,160)
+  if (x < 60) { x = 60 }
+  if (y < 140) { y = 140 }
+  // offset changes end
+  camera.x = x
+  camera.y = y
+}
+// END - Camera
+
+camera_focus_on(character)
 
 var entities = [character]
 game_object.entities = entities
@@ -90,14 +108,7 @@ window.addEventListener("keydown", function (e) {
     tracking_mouse_map_move = true
     break;
   case "z":
-    var x = character.x - canvas_rect.width / 2
-    var y = character.y - canvas_rect.height / 2
-    // specific map cuts (it has a map offset of 60,160)
-    if (x < 60) { x = 60 }
-    if (y < 140) { y = 140 }
-    // offset changes end
-    camera.x = x
-    camera.y = y
+    camera_focus_on(character)
     break;
   case "r":
     console.log("Character")
