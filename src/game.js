@@ -1,3 +1,5 @@
+import { distance, is_colliding } from "./tapete.js"
+
 const canvas = document.getElementById('screen');
 //canvas.width = document.body.clientWidth
 //canvas.height = document.body.clientHeight
@@ -8,6 +10,7 @@ const canvas_rect = canvas.getBoundingClientRect()
 const tile_size = 20;
 const SCREEN_WIDTH = canvas_rect.width;
 const SCREEN_HEIGHT = canvas_rect.height;
+const camera = { x: 0, y: 0 }
 
 const draw_square = function (x = 10, y = 10, w = 20, h = 20, color = "rgb(190, 20, 10)") {
   ctx.fillStyle = color;
@@ -18,7 +21,8 @@ import Editor from "./editor.js"
 const game_object = {
   ctx,
   canvas_rect,
-  tile_size
+  tile_size,
+  camera
 }
 const editor = new Editor(game_object)
 
@@ -75,67 +79,8 @@ const draw_action_bar = function() {
 // END -- action bar
 
 // Entities
-const mage_img = new Image();
-mage_img.src = "crisiscorepeeps.png"
-var last_pos = 0
-
-var character = {
-  id: 1,
-  x: canvas_rect.width / 2,
-  y: canvas_rect.height / 2,
-  width: tile_size * 2,
-  height: tile_size * 2,
-  moving: false,
-  direction: null,
-  draw: function() {
-    ctx.drawImage(mage_img, last_pos, 0, 32, 32, this.x - camera.x, this.y - camera.y, this.width, this.height)
-  },
-}
-
-const move = function() {
-  if (character.moving) {
-    // character.move()
-    var future_movement = { ...character }
-
-    if ((distance(character.x, target_movement.x) <= 1) && (distance(character.y, target_movement.y) <= 1)) {
-      character.moving = false;
-      target_movement = {}
-      console.log("Stopped");
-    } else {
-      // Draw movement target
-      ctx.beginPath()
-      ctx.arc((target_movement.x - camera.x), (target_movement.y - camera.y), 20, 0, 2 * Math.PI, false)
-      ctx.strokeStyle = "purple"
-      ctx.lineWidth = 4;
-      ctx.stroke()
-      // If the distance from the character position to the target is 1 or less
-      if (distance(character.x, target_movement.x) > 1) {
-        if (character.x > target_movement.x) {
-          future_movement.x = character.x - 2;
-        } else {
-          future_movement.x = character.x + 2;
-        }
-      }
-      if (distance(character.y, target_movement.y) > 1) {
-        if (character.y > target_movement.y) {
-          future_movement.y = character.y - 2;
-        } else {
-          future_movement.y = character.y + 2;
-        }
-      }
-    }
-
-    if ((entities.every(function(entity) { return entity.id === character.id || !is_colliding(future_movement, entity) })) &&
-      (!editor.bitmap.some(function(bit) { return is_colliding(future_movement, bit) }))) {
-      character.x = future_movement.x
-      character.y = future_movement.y
-    } else {
-      console.log("Blocked");
-      character.moving = false
-    }
-  }
-  // END - Character Movement
-}
+import Character from "./character.js"
+const character = new Character(game_object, editor, 1)
 
 var base_red = {
   id: 2,
@@ -167,6 +112,7 @@ var creep = {
 }
 
 var entities = [character]
+game_object.entities = entities
 // END - Entities
 
 var target_movement = {
@@ -284,10 +230,6 @@ window.addEventListener("keyup", function(e) {
   }
 }, false)
 
-const distance = function (a, b) {
-  return Math.abs(Math.floor(a) - Math.floor(b));
-}
-
 const clear_screen = function () {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 }
@@ -296,20 +238,6 @@ const draw = function() {
   entities.forEach((entity) => entity.draw())
 }
 
-const is_colliding = function(self, target) {
-  if (
-    (self.x < target.x + target.width) &&
-    (self.x + self.width > target.x) &&
-    (self.y < target.y + target.height) &&
-    (self.y + self.height > target.y)
-  ) {
-    return true
-  } else {
-    return false
-  }
-}
-
-const camera = { x: 0, y: 0 }
 const game_map = new Image()
 game_map.src = "map4096.jpeg"
 var map_width = 4096
@@ -345,7 +273,7 @@ function game_loop() {
       editor.draw()
     }
 
-    move()
+    character.move(target_movement)
     // Creep movement
     // If the distance from the character position to the target is 1 or less
     //var target = { ...base_red }
