@@ -131,7 +131,19 @@ const on_click = function (ev) {
   if (paint_mode) {
     console.log(ev.clientX)
     console.log(ev.clientY)
-    editor.bitmap.push({x:ev.clientX, y: ev.clientY, width: tile_size, height: tile_size})
+    if (ev.clientX > canvas_rect.width) {
+      var base_width = game_object.canvas_rect.width
+      var base_height = game_object.canvas_rect.height
+      editor.buttons.find((button) => {
+        var local_button = { ...button }
+        local_button.x = local_button.x + base_width;
+        if (is_colliding(local_button, { x: ev.clientX, y: ev.clientY, width: 1, height: 1})) {
+          button.perform()
+        }
+      })
+    } else {
+      editor.bitmap.push({x:ev.clientX, y: ev.clientY, width: tile_size, height: tile_size})
+    }
   } else {
     target_movement.x = ev.clientX + camera.x - (character.width / 2)
     target_movement.y = ev.clientY + camera.y - (character.height / 2)
@@ -205,10 +217,11 @@ window.addEventListener("keydown", function (e) {
     //map paint mode
     paint_mode = !paint_mode
     // Expand the screen for editor buttons
-    if (paint_mode)
+    if (paint_mode) {
       canvas.width = canvas.width + 200
-    else
+    } else {
       canvas.width = canvas.width - 200
+    }
 
     break;
   default:
