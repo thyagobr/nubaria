@@ -34,30 +34,30 @@ var target_movement = {
   y: 0
 }
 
+const click_callbacks = []
+
+const set_mouse_click_movement = function(ev) {
+  target_movement.x = ev.clientX + camera.x - (character.width / 2)
+  target_movement.y = ev.clientY + camera.y - (character.height / 2)
+  character.moving = true
+}
+
+// Click callbacks
+const edit_mode_callbacks = [editor.paint_on_click_callback]
+const game_mode_callbacks = [set_mouse_click_movement]
 const on_click = function (ev) {
   if (editor.paint_mode) {
-    console.log(ev.clientX)
-    console.log(ev.clientY)
-    if (ev.clientX > canvas_rect.width) {
-      var base_width = game_object.canvas_rect.width
-      var base_height = game_object.canvas_rect.height
-      editor.buttons.find((button) => {
-        var local_button = { ...button }
-        local_button.x = local_button.x + base_width;
-        if (is_colliding(local_button, { x: ev.clientX, y: ev.clientY, width: 1, height: 1})) {
-          button.perform()
-        }
-      })
-    } else {
-      editor.bitmap.push({x:ev.clientX, y: ev.clientY, width: tile_size, height: tile_size})
-    }
+    edit_mode_callbacks.forEach((callback) => {
+      callback(ev)
+    })
   } else {
-    target_movement.x = ev.clientX + camera.x - (character.width / 2)
-    target_movement.y = ev.clientY + camera.y - (character.height / 2)
-    character.moving = true
-    console.log(target_movement)
+    game_mode_callbacks.forEach((callback) => {
+      callback(ev)
+    })
   }
 }
+canvas.addEventListener("click", on_click, false);
+// END - Click callbacks
 
 var tracking_mouse_map_move = false
 
@@ -84,7 +84,6 @@ canvas.addEventListener("mousemove", function(e) {
   }
 }, false)
 
-canvas.addEventListener("click", on_click, false);
 window.addEventListener("keydown", function (e) {
   switch (e.key) {
   case "Shift":

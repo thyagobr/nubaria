@@ -1,4 +1,5 @@
-import draw_grid from "./grid.js";
+import draw_grid from "./grid.js"
+import { is_colliding } from "./tapete.js"
 
 function Editor(game_object) {
   this.game_object = game_object
@@ -7,6 +8,24 @@ function Editor(game_object) {
   this.bitmap = []
 
   this.paint_mode = false
+  this.paint_on_click_callback = (ev) => {
+    if (!this.paint_mode) return
+    console.log(ev.clientX)
+    console.log(ev.clientY)
+    if (ev.clientX > this.game_object.canvas_rect.width) {
+      var base_width = this.game_object.canvas_rect.width
+      var base_height = this.game_object.canvas_rect.height
+      this.buttons.find((button) => {
+        var local_button = { ...button }
+        local_button.x = local_button.x + base_width;
+        if (is_colliding(local_button, { x: ev.clientX, y: ev.clientY, width: 1, height: 1})) {
+          button.perform()
+        }
+      })
+    } else {
+      this.bitmap.push({x:ev.clientX, y: ev.clientY, width: this.game_object.tile_size, height: this.game_object.tile_size})
+    }
+  }
 
   this.draw = function() {
     draw_grid(this.game_object.ctx, this.game_object.canvas_rect, this.game_object.tile_size);
