@@ -14,7 +14,13 @@ const draw_square = function (x = 10, y = 10, w = 20, h = 20, color = "rgb(190, 
   ctx.fillRect(x, y, w, h);
 }
 
-import draw_grid from "./grid.js";
+import editor from "./editor.js"
+const game_object = {
+  ctx,
+  canvas_rect,
+  tile_size
+}
+editor.game_object = game_object
 
 // action bar
 const img = new Image();
@@ -27,8 +33,9 @@ const draw_action_bar = function() {
   var action_bar_width = number_of_slots * slot_width
   var action_bar_height = number_of_slots * slot_height
   // To determine what is the width to use, we have to pick the canvas width IF the canvas is less than the window width
-  var biggest_width = window.innerWidth > canvas.width ? canvas.width : window.innerWidth
-  var action_bar_x = (biggest_width / 2) - (action_bar_width / 2) 
+  // var biggest_width = window.innerWidth > canvas.width ? canvas.width : window.innerWidth
+  // I disabled it, because it was expanding along with the editor canvas width increase
+  var action_bar_x = (canvas_rect.width / 2) - (action_bar_width / 2) 
   var action_bar_y = canvas_rect.height - tile_size * 4
   var slots = ["mage_mm", "free", "free", "free"]
 
@@ -120,13 +127,11 @@ var target_movement = {
   y: 0
 }
 
-var bitmap = []
-
 const on_click = function (ev) {
   if (paint_mode) {
     console.log(ev.clientX)
     console.log(ev.clientY)
-    bitmap.push({x:ev.clientX, y: ev.clientY, width: tile_size, height: tile_size})
+    editor.bitmap.push({x:ev.clientX, y: ev.clientY, width: tile_size, height: tile_size})
   } else {
     target_movement.x = ev.clientX + camera.x - (character.width / 2)
     target_movement.y = ev.clientY + camera.y - (character.height / 2)
@@ -185,7 +190,7 @@ window.addEventListener("keydown", function (e) {
     var y = character.y - canvas_rect.height / 2
     // specific map cuts (it has a map offset of 60,160)
     if (x < 60) { x = 60 }
-    if (y < 160) { y = 160 }
+    if (y < 140) { y = 140 }
     // offset changes end
     camera.x = x
     camera.y = y
@@ -199,6 +204,12 @@ window.addEventListener("keydown", function (e) {
   case "p":
     //map paint mode
     paint_mode = !paint_mode
+    // Expand the screen for editor buttons
+    if (paint_mode)
+      canvas.width = canvas.width + 200
+    else
+      canvas.width = canvas.width - 200
+
     break;
   default:
     console.log(e.key)
@@ -247,12 +258,15 @@ function game_loop() {
   clear_screen()
   // Map
   // 60 and 160 are this map files offsets - delete if other map
-  ctx.drawImage(game_map, camera.x + 60, camera.y + 160, map_width, map_width, 0, 0, map_width, map_width)
+  ctx.drawImage(game_map,
+    camera.x + 60,
+    camera.y + 160,
+    canvas_rect.width,
+    canvas_rect.height,
+    0, 0,
+    canvas_rect.width, canvas_rect.height)
   if (paint_mode) {
-    draw_grid(ctx, canvas_rect, tile_size);
-    bitmap.forEach((bit) => {
-      draw_square(bit.x, bit.y, tile_size, tile_size, "purple")
-    })
+    editor.draw()
   }
   // END - Map
   draw()
@@ -289,7 +303,7 @@ function game_loop() {
     }
 
     if ((entities.every(function(entity) { return entity.id === character.id || !is_colliding(future_movement, entity) })) &&
-      (!bitmap.some(function(bit) { return is_colliding(future_movement, bit) }))) {
+      (!editor.bitmap.some(function(bit) { return is_colliding(future_movement, bit) }))) {
       character.x = future_movement.x
       character.y = future_movement.y
     } else {
