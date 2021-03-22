@@ -1,8 +1,6 @@
 import { distance, is_colliding } from "./tapete.js"
 
 const canvas = document.getElementById('screen');
-//canvas.width = document.body.clientWidth
-//canvas.height = document.body.clientHeight
 const ctx = canvas.getContext('2d');
 
 // Constants
@@ -12,108 +10,24 @@ const SCREEN_WIDTH = canvas_rect.width;
 const SCREEN_HEIGHT = canvas_rect.height;
 const camera = { x: 0, y: 0 }
 
-const draw_square = function (x = 10, y = 10, w = 20, h = 20, color = "rgb(190, 20, 10)") {
-  ctx.fillStyle = color;
-  ctx.fillRect(x, y, w, h);
-}
-
-import Editor from "./editor.js"
 const game_object = {
   ctx,
   canvas_rect,
   tile_size,
   camera
 }
+
+import Editor from "./editor.js"
 const editor = new Editor(game_object)
 
-// action bar
-const img = new Image();
-img.src = "https://cdna.artstation.com/p/assets/images/images/009/031/190/large/richard-thomas-paints-11-v2.jpg"
+import ActionBar from "./action_bar.js"
+const action_bar = new ActionBar(game_object)
 
-const draw_action_bar = function() {
-  var number_of_slots = 4
-  var slot_height = tile_size * 3;
-  var slot_width = tile_size * 3;
-  var action_bar_width = number_of_slots * slot_width
-  var action_bar_height = number_of_slots * slot_height
-  // To determine what is the width to use, we have to pick the canvas width IF the canvas is less than the window width
-  // var biggest_width = window.innerWidth > canvas.width ? canvas.width : window.innerWidth
-  // I disabled it, because it was expanding along with the editor canvas width increase
-  var action_bar_x = (canvas_rect.width / 2) - (action_bar_width / 2) 
-  var action_bar_y = canvas_rect.height - tile_size * 4
-  var slots = ["mage_mm", "free", "free", "free"]
-
-  for (var slot_index = 0; slot_index <= slots.length; slot_index++) {
-    var slot = slots[slot_index];
-    var x = action_bar_x + (slot_width * slot_index)
-    var y = action_bar_y
-
-    switch(slot) {
-    case "mage_mm":
-      ctx.drawImage(img, x, y, slot_width, slot_height)
-
-      ctx.strokeStyle = "blueviolet"
-      ctx.lineWidth = 2;
-      ctx.strokeRect(
-        x, y,
-        slot_width, slot_height
-      )
-      break;
-
-    case "free":
-      ctx.fillStyle = "rgba(46, 46, 46, 1)"
-      ctx.fillRect(
-        x, y,
-        slot_width, slot_height)
-
-      ctx.strokeStyle = "blueviolet"
-      ctx.lineWidth = 2;
-      ctx.strokeRect(
-        x, y,
-        slot_width, slot_height
-      )
-
-    }
-  }
-}
-// END -- action bar
-
-// Entities
 import Character from "./character.js"
 const character = new Character(game_object, editor, 1)
 
-var base_red = {
-  id: 2,
-  x: 0,
-  y: tile_size * 30,
-  width: tile_size * 6,
-  height: tile_size * 6,
-  draw: function() { draw_square(this.x, this.y, this.width, this.height, "rgba(0, 0, 0, 0.0)") }
-}
-
-var base_blue = {
-  id: 3,
-  x: tile_size * (Math.floor(canvas_rect.right / tile_size) - 6),
-  y: 0,
-  width: tile_size * 6,
-  height: tile_size * 6,
-  draw: function() { draw_square(this.x, this.y, this.width, this.height) }
-}
-
-var creep = {
-  id: 4,
-  x: canvas_rect.right,
-  y: 20,
-  width: tile_size,
-  height: tile_size,
-  moving: true,
-  color: "green",
-  draw: function () { draw_square(this.x, this.y, this.width, this.height, this.color) }
-}
-
 var entities = [character]
 game_object.entities = entities
-// END - Entities
 
 var target_movement = {
   x: 0,
@@ -121,7 +35,7 @@ var target_movement = {
 }
 
 const on_click = function (ev) {
-  if (paint_mode) {
+  if (editor.paint_mode) {
     console.log(ev.clientX)
     console.log(ev.clientY)
     if (ev.clientX > canvas_rect.width) {
@@ -170,23 +84,9 @@ canvas.addEventListener("mousemove", function(e) {
   }
 }, false)
 
-var paint_mode = false
 canvas.addEventListener("click", on_click, false);
-// debugger function
 window.addEventListener("keydown", function (e) {
   switch (e.key) {
-  case "ArrowLeft":
-    camera.x = camera.x - 10
-    break;
-  case "ArrowRight":
-    camera.x = camera.x + 10
-    break;
-  case "ArrowDown":
-    camera.y = camera.y + 10
-    break;
-  case "ArrowUp":
-    camera.y = camera.y - 10
-    break;
   case "Shift":
     tracking_mouse_map_move = true
     break;
@@ -208,9 +108,9 @@ window.addEventListener("keydown", function (e) {
     break
   case "p":
     //map paint mode
-    paint_mode = !paint_mode
+    editor.paint_mode = !editor.paint_mode
     // Expand the screen for editor buttons
-    if (paint_mode) {
+    if (editor.paint_mode) {
       canvas.width = canvas.width + 200
     } else {
       canvas.width = canvas.width - 200
@@ -268,32 +168,11 @@ function game_loop() {
     clear_screen()
     draw_map()
     draw()
-
-    if (paint_mode) {
+    if (editor.paint_mode) {
       editor.draw()
     }
-
     character.move(target_movement)
-    // Creep movement
-    // If the distance from the character position to the target is 1 or less
-    //var target = { ...base_red }
-    //if (distance(creep.x, target.x) > 1 + tile_size) {
-    //  if (creep.x > target.x) {
-    //    creep.x = creep.x - 1;
-    //  } else {
-    //    creep.x = creep.x + 1;
-    //  }
-    //}
-    //if (distance(creep.y, target.y) > 1 + tile_size) {
-    //  if (creep.y > target.y) {
-    //    creep.y = creep.y - 1;
-    //  } else {
-    //    creep.y = creep.y + 1;
-    //  }
-    //}
-    // END - Creep movement
-
-    draw_action_bar()
+    action_bar.draw()
 
     requestAnimationFrame(game_loop)
   }

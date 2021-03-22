@@ -15,4 +15,9 @@ const is_colliding = function(self, target) {
   }
 }
 
-export { distance, is_colliding }
+const draw_square = function (x = 10, y = 10, w = 20, h = 20, color = "rgb(190, 20, 10)") {
+  ctx.fillStyle = color;
+  ctx.fillRect(x, y, w, h);
+}
+
+export { distance, is_colliding, draw_square }
