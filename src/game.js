@@ -77,6 +77,7 @@ const draw_action_bar = function() {
 // Entities
 const mage_img = new Image();
 mage_img.src = "crisiscorepeeps.png"
+var last_pos = 0
 
 var character = {
   id: 1,
@@ -85,8 +86,9 @@ var character = {
   width: tile_size * 2,
   height: tile_size * 2,
   moving: false,
+  direction: null,
   draw: function() {
-    ctx.drawImage(mage_img, 0, 0, 32, 32, this.x - camera.x, this.y - camera.y, this.width, this.height)
+    ctx.drawImage(mage_img, last_pos, 0, 32, 32, this.x - camera.x, this.y - camera.y, this.width, this.height)
   }
 }
 
@@ -267,87 +269,99 @@ const game_map = new Image()
 game_map.src = "map4096.jpeg"
 var map_width = 4096
 
+var t0 = performance.now()
+var t1 = performance.now()
+const FPS = 30
+
 function game_loop() {
-  clear_screen()
-  // Map
-  // 60 and 160 are this map files offsets - delete if other map
-  ctx.drawImage(game_map,
-    camera.x + 60,
-    camera.y + 160,
-    canvas_rect.width,
-    canvas_rect.height,
-    0, 0,
-    canvas_rect.width, canvas_rect.height)
-  if (paint_mode) {
-    editor.draw()
-  }
-  // END - Map
-  draw()
-  // Character Movement
-  if (character.moving) {
-    var future_movement = { ...character }
+  // FPS sync
+  if (t1 - t0 < FPS) {
+    t1 = performance.now()
+    requestAnimationFrame(game_loop)
+  } else {
+    t0 = t1
+  // END - FPS sync
+    clear_screen()
+    // Map
+    // 60 and 160 are this map files offsets - delete if other map
+    ctx.drawImage(game_map,
+      camera.x + 60,
+      camera.y + 160,
+      canvas_rect.width,
+      canvas_rect.height,
+      0, 0,
+      canvas_rect.width, canvas_rect.height)
+    if (paint_mode) {
+      editor.draw()
+    }
+    // END - Map
+    draw()
+    // Character Movement
+    if (character.moving) {
+      var future_movement = { ...character }
 
-    if ((distance(character.x, target_movement.x) <= 1) && (distance(character.y, target_movement.y) <= 1)) {
-      character.moving = false;
-      target_movement = {}
-      console.log("Stopped");
-    } else {
-      // Draw movement target
-      ctx.beginPath()
-      ctx.arc((target_movement.x - camera.x), (target_movement.y - camera.y), 20, 0, 2 * Math.PI, false)
-      ctx.strokeStyle = "purple"
-      ctx.lineWidth = 4;
-      ctx.stroke()
-      // If the distance from the character position to the target is 1 or less
-      if (distance(character.x, target_movement.x) > 1) {
-        if (character.x > target_movement.x) {
-          future_movement.x = character.x - 2;
-        } else {
-          future_movement.x = character.x + 2;
+      if ((distance(character.x, target_movement.x) <= 1) && (distance(character.y, target_movement.y) <= 1)) {
+        character.moving = false;
+        target_movement = {}
+        console.log("Stopped");
+      } else {
+        // Draw movement target
+        ctx.beginPath()
+        ctx.arc((target_movement.x - camera.x), (target_movement.y - camera.y), 20, 0, 2 * Math.PI, false)
+        ctx.strokeStyle = "purple"
+        ctx.lineWidth = 4;
+        ctx.stroke()
+        // If the distance from the character position to the target is 1 or less
+        if (distance(character.x, target_movement.x) > 1) {
+          if (character.x > target_movement.x) {
+            future_movement.x = character.x - 2;
+          } else {
+            future_movement.x = character.x + 2;
+          }
+        }
+        if (distance(character.y, target_movement.y) > 1) {
+          if (character.y > target_movement.y) {
+            future_movement.y = character.y - 2;
+          } else {
+            future_movement.y = character.y + 2;
+          }
         }
       }
-      if (distance(character.y, target_movement.y) > 1) {
-        if (character.y > target_movement.y) {
-          future_movement.y = character.y - 2;
-        } else {
-          future_movement.y = character.y + 2;
-        }
+
+      if ((entities.every(function(entity) { return entity.id === character.id || !is_colliding(future_movement, entity) })) &&
+        (!editor.bitmap.some(function(bit) { return is_colliding(future_movement, bit) }))) {
+        character.x = future_movement.x
+        character.y = future_movement.y
+      } else {
+        console.log("Blocked");
+        character.moving = false
       }
     }
+    // END - Character Movement
 
-    if ((entities.every(function(entity) { return entity.id === character.id || !is_colliding(future_movement, entity) })) &&
-      (!editor.bitmap.some(function(bit) { return is_colliding(future_movement, bit) }))) {
-      character.x = future_movement.x
-      character.y = future_movement.y
-    } else {
-      console.log("Blocked");
-      character.moving = false
-    }
+    // Creep movement
+    // If the distance from the character position to the target is 1 or less
+    //var target = { ...base_red }
+    //if (distance(creep.x, target.x) > 1 + tile_size) {
+    //  if (creep.x > target.x) {
+    //    creep.x = creep.x - 1;
+    //  } else {
+    //    creep.x = creep.x + 1;
+    //  }
+    //}
+    //if (distance(creep.y, target.y) > 1 + tile_size) {
+    //  if (creep.y > target.y) {
+    //    creep.y = creep.y - 1;
+    //  } else {
+    //    creep.y = creep.y + 1;
+    //  }
+    //}
+    // END - Creep movement
+
+    draw_action_bar()
+
+    requestAnimationFrame(game_loop)
   }
-  // END - Character Movement
-
-  // Creep movement
-  // If the distance from the character position to the target is 1 or less
-  //var target = { ...base_red }
-  //if (distance(creep.x, target.x) > 1 + tile_size) {
-  //  if (creep.x > target.x) {
-  //    creep.x = creep.x - 1;
-  //  } else {
-  //    creep.x = creep.x + 1;
-  //  }
-  //}
-  //if (distance(creep.y, target.y) > 1 + tile_size) {
-  //  if (creep.y > target.y) {
-  //    creep.y = creep.y - 1;
-  //  } else {
-  //    creep.y = creep.y + 1;
-  //  }
-  //}
-  // END - Creep movement
-
-  draw_action_bar()
-
-  requestAnimationFrame(game_loop)
 };
 
 requestAnimationFrame(game_loop)
