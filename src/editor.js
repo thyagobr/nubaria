@@ -5,7 +5,7 @@ function Editor(game_object) {
   this.game_object = game_object
 
   // Bitmap stores pixels sellected for invisible collision
-  this.bitmap = []
+  this.bitmap = JSON.parse(window.localStorage.getItem("map")) || []
 
   this.paint_mode_brush = null
   this.paint_mode = false
@@ -26,6 +26,7 @@ function Editor(game_object) {
     } else {
       if (this.paint_mode_brush == "colliders") {
         this.bitmap.push({x: this.game_object.camera.x + ev.clientX, y: this.game_object.camera.y + ev.clientY, width: this.game_object.tile_size, height: this.game_object.tile_size})
+        window.localStorage.setItem("map", JSON.stringify(this.bitmap))
       }
     }
   }
