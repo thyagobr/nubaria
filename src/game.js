@@ -14,7 +14,8 @@ const draw_square = function (x = 10, y = 10, w = 20, h = 20, color = "rgb(190, 
   ctx.fillRect(x, y, w, h);
 }
 
-import editor from "./editor.js"
+import Editor from "./editor.js"
+const editor = new Editor()
 const game_object = {
   ctx,
   canvas_rect,
