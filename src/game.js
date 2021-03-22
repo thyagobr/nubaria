@@ -15,13 +15,12 @@ const draw_square = function (x = 10, y = 10, w = 20, h = 20, color = "rgb(190, 
 }
 
 import Editor from "./editor.js"
-const editor = new Editor()
 const game_object = {
   ctx,
   canvas_rect,
   tile_size
 }
-editor.game_object = game_object
+const editor = new Editor(game_object)
 
 // action bar
 const img = new Image();

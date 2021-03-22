@@ -1,7 +1,7 @@
 import draw_grid from "./grid.js";
 
-function Editor() {
-  this.game_object = null
+function Editor(game_object) {
+  this.game_object = game_object
 
   // Bitmap stores pixels sellected for invisible collision
   this.bitmap = []
