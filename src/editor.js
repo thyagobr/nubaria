@@ -26,7 +26,7 @@ function Editor(game_object) {
       })
     } else {
       switch (this.paint_mode_brush) {
-      case "colliders":
+      case "collider":
         this.bitmap.push({x: this.game_object.camera.x + ev.clientX, y: this.game_object.camera.y + ev.clientY, width: this.game_object.tile_size, height: this.game_object.tile_size})
         window.localStorage.setItem("map", JSON.stringify(this.bitmap))
         break
@@ -35,7 +35,6 @@ function Editor(game_object) {
         var wp = {x: this.game_object.camera.x + ev.clientX, y: this.game_object.camera.y + ev.clientY, width: this.game_object.tile_size, height: this.game_object.tile_size, colour: "cyan"}
         wp.name = window.prompt("Waypoint name")
         this.waypoints.push(wp)
-        
         window.localStorage.setItem("wps", JSON.stringify(this.waypoints))
         break
       }
@@ -54,16 +53,17 @@ function Editor(game_object) {
       // The idea seems to be that I added on the brush so that we can remember the exactl pixel where it is in the screen
       // But, obviously, if I right after painting move the camera a bit to the right, increasing X, it will already offset the
       // drawing to the right. So Im removing the camera here
-      this.game_object.ctx.fillRect(bit.x - this.game_object.camera.x, bit.y - this.game_object.camera.y, this.game_object.tile_size, this.game_object.tile_size)
+      if (bit.x - this.game_object.camera.x <= this.game_object.canvas_rect.width) { // Don't draw off-screen when canvas is expanded to show editor 
+        this.game_object.ctx.fillRect(bit.x - this.game_object.camera.x, bit.y - this.game_object.camera.y, this.game_object.tile_size, this.game_object.tile_size)
+      }
     })
     // draw UI buttons
     this.buttons.forEach((button) => {
-      this.game_object.ctx.fillStyle = "purple"
+      this.game_object.ctx.fillStyle = this.paint_mode_brush === button.brush ? "cyan" : "purple"
       this.game_object.ctx.fillRect(this.game_object.canvas_rect.width + button.x, button.y, 150, 50)
       this.game_object.ctx.fillStyle = "white";
       this.game_object.ctx.font = "21px sans-serif"
       var text_measurement = this.game_object.ctx.measureText(button.text)
-      //text_measurement.height = text_measurement.fontBoundingBoxAscent + text_measurement.fontBoundingBoxDescent
       this.game_object.ctx.fillText(button.text, this.game_object.canvas_rect.width + button.x + (button.width / 2) - (text_measurement.width / 2), button.y + 10 + (button.height / 2) - 5)
     })
   }
@@ -71,6 +71,8 @@ function Editor(game_object) {
   this.buttons = [
     {
       that: this,
+      id: "collider_button",
+      brush: "collider",
       text: "Colliders",
       x: 10,
       y: 10,
@@ -78,11 +80,17 @@ function Editor(game_object) {
       height: 50,
       perform: function() {
         console.log("Colliders button clicked")
-        this.that.paint_mode_brush = "colliders"
+        if (this.that.paint_mode_brush === this.brush) {
+          this.that.paint_mode_brush = null
+        } else {
+          this.that.paint_mode_brush = this.brush
+        }
       }
     },
     {
       that: this,
+      id: "waypoint_button",
+      brush: "waypoint",
       text: "WayPoint",
       x: 10,
       y: 70,
@@ -90,7 +98,11 @@ function Editor(game_object) {
       height: 50,
       perform: function() {
         console.log("WayPoint button clicked")
-        this.that.paint_mode_brush = "waypoint"
+        if (this.that.paint_mode_brush === this.brush) {
+          this.that.paint_mode_brush = null
+        } else {
+          this.that.paint_mode_brush = this.brush
+        }
       }
     }
   ]

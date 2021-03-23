@@ -26,8 +26,20 @@ const action_bar = new ActionBar(game_object)
 import Character from "./character.js"
 const character = new Character(game_object, editor, 1)
 var character_wp = editor.waypoints.find((wp) => wp.name === "spawn_character")
-character.x = character_wp.x
-character.y = character_wp.y
+character.coords(character_wp)
+
+const zergling = new Character(game_object, editor, 2)
+var enemy_base_hero_spawn_wp = editor.waypoints.find((wp) => wp.name === "enemy_base_hero_spawn")
+var ally_base_middle_tower_1 = editor.waypoints.find((wp) => wp.name === "ally_base_middle_tower_1") // target
+zergling.coords(enemy_base_hero_spawn_wp)
+// This should be refactored out
+// Better idea is to put all the attributes in a object that is given to the class
+zergling.image.src = "zergling.png"
+zergling.image_width = 150
+zergling.image_height = 150
+zergling.width = game_object.tile_size * 4
+zergling.height = game_object.tile_size * 4
+zergling.moving = true
 
 // Camera
 const camera_focus_on = function(point) {
@@ -44,7 +56,7 @@ const camera_focus_on = function(point) {
 
 camera_focus_on(character)
 
-var entities = [character]
+var entities = [character, zergling]
 game_object.entities = entities
 
 var target_movement = {
@@ -166,6 +178,7 @@ const draw_map = function() {
     canvas_rect.width, canvas_rect.height)
 }
 
+
 function game_loop() {
   // FPS sync
   if (t1 - t0 < FPS) {
@@ -182,6 +195,8 @@ function game_loop() {
       editor.draw()
     }
     character.move(target_movement)
+    // This is making the purple-movement circle be activated for zerglings
+    zergling.move(ally_base_middle_tower_1)
     action_bar.draw()
 
     requestAnimationFrame(game_loop)

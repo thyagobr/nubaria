@@ -5,6 +5,8 @@ function Character(game_object, editor, id) {
   this.game_object = game_object
   this.image = new Image();
   this.image.src = "crisiscorepeeps.png"
+  this.image_width = 32
+  this.image_height = 32
   this.id = id
   this.x = this.game_object.canvas_rect.width / 2
   this.y = this.game_object.canvas_rect.height / 2
@@ -13,8 +15,13 @@ function Character(game_object, editor, id) {
   this.moving = false
   this.direction = null
 
+  this.coords = function(coords) {
+    this.x = coords.x
+    this.y = coords.y
+  }
+
   this.draw = function() {
-    this.game_object.ctx.drawImage(this.image, 0, 0, 32, 32, this.x - this.game_object.camera.x, this.y - this.game_object.camera.y, this.width, this.height)
+    this.game_object.ctx.drawImage(this.image, 0, 0, this.image_width, this.image_height, this.x - this.game_object.camera.x, this.y - this.game_object.camera.y, this.width, this.height)
   }
 
   this.move = function(target_movement) {
