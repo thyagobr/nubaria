@@ -24,6 +24,14 @@ function Character(game_object, editor, id) {
     this.game_object.ctx.drawImage(this.image, 0, 0, this.image_width, this.image_height, this.x - this.game_object.camera.x, this.y - this.game_object.camera.y, this.width, this.height)
   }
 
+  this.draw_movement_target = function(target_movement) {
+    this.game_object.ctx.beginPath()
+    this.game_object.ctx.arc((target_movement.x - this.game_object.camera.x), (target_movement.y - this.game_object.camera.y), 20, 0, 2 * Math.PI, false)
+    this.game_object.ctx.strokeStyle = "purple"
+    this.game_object.ctx.lineWidth = 4;
+    this.game_object.ctx.stroke()
+  }
+
   this.move = function(target_movement) {
     if (this.moving) {
       var future_movement = { x: this.x, y: this.y }
@@ -34,11 +42,7 @@ function Character(game_object, editor, id) {
         console.log("Stopped");
       } else {
         // Draw movement target
-        this.game_object.ctx.beginPath()
-        this.game_object.ctx.arc((target_movement.x - this.game_object.camera.x), (target_movement.y - this.game_object.camera.y), 20, 0, 2 * Math.PI, false)
-        this.game_object.ctx.strokeStyle = "purple"
-        this.game_object.ctx.lineWidth = 4;
-        this.game_object.ctx.stroke()
+        this.draw_movement_target(target_movement)
         // If the distance from the character position to the target is 1 or less
         if (distance(this.x, target_movement.x) > 1) {
           if (this.x > target_movement.x) {
