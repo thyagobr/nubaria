@@ -57,7 +57,7 @@ function Character(game_object, editor, id) {
 
     do {
       last_step = this.current_path[this.current_path.length - 1]
-      future_movement = {}
+      future_movement = { width: this.width, height: this.height }
 
       if (distance(last_step.x, target_movement.x) > 1) {
         if (last_step.x > target_movement.x) {
@@ -78,6 +78,13 @@ function Character(game_object, editor, id) {
         future_movement.x = last_step.x
       if (future_movement.y === undefined)
         future_movement.y = last_step.y
+
+      // This is pretty heavy... It's calculating against all the bits in the map =[
+      var going_to_collide = this.editor.bitmap.some((bit) => is_colliding(future_movement, bit))
+      if (going_to_collide) {
+        console.log('Collision ahead!')
+        break
+      }
 
       this.current_path.push({ ...future_movement })
     } while ((distance(last_step.x, target_movement.x) > 1) || (distance(last_step.y, target_movement.y) > 1))
