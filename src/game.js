@@ -69,7 +69,8 @@ const click_callbacks = []
 const set_mouse_click_movement = function(ev) {
   target_movement.x = ev.clientX + camera.x - (character.width / 2)
   target_movement.y = ev.clientY + camera.y - (character.height / 2)
-  character.moving = true
+  character.find_path(target_movement)
+  //character.moving = true
 }
 
 // Click callbacks
@@ -94,6 +95,7 @@ var tracking_mouse_map_move = false
 const scroll_speed = 2
 const MAP_WIDTH = 2800
 const MAP_HEIGHT = 3200
+const mouse = { x: 0, y: 0 }
 canvas.addEventListener("mousemove", function(e) {
   if (tracking_mouse_map_move) {
     var horizontal = (e.clientX > canvas_rect.width / 2 ? "right" : "left")
@@ -112,10 +114,27 @@ canvas.addEventListener("mousemove", function(e) {
       camera.y = camera.y - scroll_speed
     }
   }
+
+  mouse.x = e.clientX
+  mouse.y = e.clientY
 }, false)
 
+const draw_ray_trace = function() {
+  game_object.ctx.beginPath();
+  game_object.ctx.strokeStyle = "blue"
+  game_object.ctx.lineWidth = 5
+  game_object.ctx.moveTo(character.x - camera.x + (character.width / 2), character.y - camera.y + (character.height / 2))
+  game_object.ctx.lineTo(mouse.x, mouse.y)
+  game_object.ctx.stroke();
+}
+
+var ray_trace_path = false
 window.addEventListener("keydown", function (e) {
   switch (e.key) {
+  case "m":
+    ray_trace_path = !ray_trace_path
+    console.log(`Ray trace path ${ray_trace_path}`)
+    break;
   case "Shift":
     tracking_mouse_map_move = true
     break;
@@ -191,10 +210,13 @@ function game_loop() {
     clear_screen()
     draw_map()
     draw()
+    if (ray_trace_path) {
+      draw_ray_trace()
+    }
     if (editor.paint_mode) {
       editor.draw()
     }
-    character.move(target_movement)
+    character.move_on_path()
     // This is making the purple-movement circle be activated for zerglings
     zergling.move(ally_base_middle_tower_1)
     action_bar.draw()
