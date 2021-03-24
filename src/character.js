@@ -59,6 +59,7 @@ function Character(game_object, editor, id) {
       last_step = this.current_path[this.current_path.length - 1]
       future_movement = { width: this.width, height: this.height }
 
+      // This code will keep trying to go back to the same previous from which we just branched out
       if (distance(last_step.x, target_movement.x) > 1) {
         if (last_step.x > target_movement.x) {
           future_movement.x = last_step.x - this.speed
@@ -83,7 +84,19 @@ function Character(game_object, editor, id) {
       var going_to_collide = this.editor.bitmap.some((bit) => is_colliding(future_movement, bit))
       if (going_to_collide) {
         console.log('Collision ahead!')
-        break
+        var next_movement = { ...future_movement }
+        next_movement.x = next_movement.x - this.speed
+        if (this.editor.bitmap.some((bit) => is_colliding(next_movement, bit))) {
+          future_movement.y = last_step.y
+          console.log("Cant move on Y")
+        }
+        next_movement = { ...future_movement }
+        next_movement.y = next_movement.y - this.speed
+        if (this.editor.bitmap.some((bit) => is_colliding(next_movement, bit))) {
+          future_movement.x = last_step.x
+          console.log("Cant move X")
+        }
+        return 
       }
 
       this.current_path.push({ ...future_movement })
