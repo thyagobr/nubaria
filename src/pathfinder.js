@@ -59,9 +59,9 @@ const handle_click = function(event) {
   grid.forEach((each_node, each_index) => {
     var click_target = { x: event.clientX, y: event.clientY, width: 1, height: 1 }
     if (is_colliding(each_node, click_target)) {
-      if (current_origin_index !== null) {
-        grid[current_origin_index].colour = "white"
-      }
+      //if (current_origin_index !== null) {
+      //  grid[current_origin_index].colour = "white"
+      //}
       node = each_node
       index = each_index
       return
@@ -77,7 +77,7 @@ const handle_click = function(event) {
     break
 
   case "wall":
-    node.block = true
+    node.blocked = true
     node.colour = "gray"
     break
   }
@@ -120,11 +120,10 @@ const walk_the_path = function(closest_node) {
   let closest_visited_node = null
   visited.forEach((node) => {
     node.distance = distance(node, grid[current_target_index])
-    if ((closest_visited_node == null) || (closest_visited_node.distance > node.distance)) {
+    if ((closest_visited_node == null) || (closest_visited_node.distance > node.distance) && (node.blocked !== true)) {
       closest_visited_node = node
     }
   })
-
   return closest_visited_node
 }
 
