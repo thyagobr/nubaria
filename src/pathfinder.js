@@ -16,10 +16,12 @@ function game_loop() {
 requestAnimationFrame(game_loop)
 
 const grid = []
+const already_visited = [] // for movement
 var current_origin_index = null
 var initial_position_index = null
 
 function Node(data) {
+  this.id = data.id
   this.x = data.x
   this.y = data.y
   this.width = tile_size
@@ -30,7 +32,7 @@ function Node(data) {
 
 for (var j = 0; j <= (canvas_rect.height / tile_size); j++) {
   for (var i = 0; i <= (canvas_rect.width / tile_size); i++) {
-    grid.push(new Node({ x: i * tile_size, y: j * tile_size }))
+    grid.push(new Node({ id: grid.length, x: i * tile_size, y: j * tile_size }))
   }
 }
 
@@ -120,10 +122,14 @@ const walk_the_path = function(closest_node) {
   let closest_visited_node = null
   visited.forEach((node) => {
     node.distance = distance(node, grid[current_target_index])
-    if ((closest_visited_node == null) || (closest_visited_node.distance > node.distance) && (node.blocked !== true)) {
+    if ((closest_visited_node == null) ||
+      (closest_visited_node.distance > node.distance) &&
+      (node.blocked !== true) &&
+      (!already_visited.some((visited_node) => visited_node.id == node.id))) {
       closest_visited_node = node
     }
   })
+  already_visited.push(closest_visited_node)
   return closest_visited_node
 }
 
