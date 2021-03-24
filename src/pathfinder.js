@@ -88,49 +88,41 @@ canvas.addEventListener("click", handle_click, false)
 
 
 const walk_the_path = function(closest_node) {
+  // Step: Select all neighbours
   let visited = []
-  let current_node = null
   var nodes_per_row = Math.trunc(canvas_rect.width / tile_size)
+  var origin_index = (closest_node == null ? current_origin_index : closest_node.id)
 
-  var origin_index = (closest_node == null ? current_origin_index : find_node_index(closest_node.x, closest_node.y))
-
+  // This method doesn't check if we're out of bounds
   // North node
   visited.push(grid[origin_index - (nodes_per_row + 1)])
-
   // Northwest node
   visited.push(grid[origin_index - nodes_per_row - 2])
-
   // West node
   visited.push(grid[origin_index - 1])
-
   // Southwest node
   visited.push(grid[origin_index + nodes_per_row])
-
   // South node
   visited.push(grid[origin_index + (nodes_per_row + 1)])
-
   // Southeast node
   visited.push(grid[origin_index + (nodes_per_row + 2)])
-
   // East node
   visited.push(grid[origin_index + 1])
-
   // Northeast node
   visited.push(grid[origin_index - nodes_per_row])
+  // END -- Select all neighbours
 
-  //visited.forEach((node) => node.colour = "cyan")
   let closest_visited_node = null
-  visited.forEach((node) => {
-    node.distance = distance(node, grid[current_target_index])
-    if ((closest_visited_node == null) ||
-      (closest_visited_node.distance > node.distance) &&
-      (node.blocked !== true) &&
-      (!already_visited.some((visited_node) => visited_node.id == node.id))) {
-      closest_visited_node = node
-    }
-  })
-  already_visited.push(closest_visited_node)
-  return closest_visited_node
+  let previous_node_sorted = null
+
+  let sorted_visits = visited.sort((a, b) => {
+    a.distance = distance(a, grid[current_target_index])
+    b.distance = distance(b, grid[current_target_index])
+    return a.distance - b.distance
+  }).filter((node) => node.blocked !== true && !already_visited.some((visited_node) => visited_node.id == node.id))
+
+  already_visited.push(sorted_visits[0])
+  return sorted_visits[0];
 }
 
 const handle_keydown = function(event) {
@@ -142,11 +134,15 @@ const handle_keydown = function(event) {
     brush_type = "starting_point"
     break
   case "n":
-    if ((last_closest_node.x == grid[current_target_index].x) && (last_closest_node.y == grid[current_target_index].y)) {
+    if ((last_closest_node === null) || (last_closest_node.x == grid[current_target_index].x) && (last_closest_node.y == grid[current_target_index].y)) {
       console.log("here")
     } else {
       last_closest_node = walk_the_path(last_closest_node);
-      last_closest_node.colour = "cyan"
+      if (last_closest_node) {
+        last_closest_node.colour = "cyan"
+      } else {
+        console.log("no path")
+      }
     }
     break
   }
