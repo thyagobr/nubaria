@@ -51,20 +51,36 @@ const find_node_index = function(x, y) {
 }
 
 let last_closest_node = {}
+let brush_type = ""
 
 const handle_click = function(event) {
-  grid.forEach((node, index) => {
+  let node = null
+  let index = null
+  grid.forEach((each_node, each_index) => {
     var click_target = { x: event.clientX, y: event.clientY, width: 1, height: 1 }
-    if (is_colliding(node, click_target)) {
+    if (is_colliding(each_node, click_target)) {
       if (current_origin_index !== null) {
         grid[current_origin_index].colour = "white"
       }
-      node.colour = "blueviolet"
-      last_closest_node = node
-      current_origin_index = index
-      initial_position_index = index
+      node = each_node
+      index = each_index
+      return
     }
   })
+
+  switch (brush_type) {
+  case "starting_point":
+    node.colour = "blueviolet"
+    last_closest_node = node
+    current_origin_index = index
+    initial_position_index = index
+    break
+
+  case "wall":
+    node.block = true
+    node.colour = "gray"
+    break
+  }
 }
 canvas.addEventListener("click", handle_click, false)
 
@@ -114,6 +130,12 @@ const walk_the_path = function(closest_node) {
 
 const handle_keydown = function(event) {
   switch (event.key) {
+  case "w":
+    brush_type = "wall"
+    break
+  case "s":
+    brush_type = "starting_point"
+    break
   case "n":
     if ((last_closest_node.x == grid[current_target_index].x) && (last_closest_node.y == grid[current_target_index].y)) {
       console.log("here")
