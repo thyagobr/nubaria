@@ -23,6 +23,7 @@ game_object.board = board
 
 import Editor from "./editor.js"
 const editor = new Editor(game_object)
+game_object.editor = editor
 
 import ActionBar from "./action_bar.js"
 const action_bar = new ActionBar(game_object)
@@ -31,6 +32,7 @@ import Character from "./character.js"
 const character = new Character(game_object, editor, 1)
 var character_wp = editor.waypoints.find((wp) => wp.name === "spawn_character")
 character.coords(character_wp)
+game_object.character = character
 
 const zergling = new Character(game_object, editor, 2)
 var enemy_base_hero_spawn_wp = editor.waypoints.find((wp) => wp.name === "enemy_base_hero_spawn")
@@ -142,10 +144,12 @@ let current_node = null
 window.addEventListener("keydown", function (e) {
   switch (e.key) {
   case "n":
-    if (current_node == null)
-      current_node = board.get_node_for(character)
-    current_node = board.next_step(current_node, target_movement)
-    current_node.colour = "orange"
+    game_object.character.moving = true
+
+    //if (current_node == null)
+    //  current_node = board.get_node_for(character)
+    //current_node = board.next_step(current_node, target_movement)
+    //current_node.colour = "orange"
     break
   case "m":
     ray_trace_path = !ray_trace_path
@@ -233,7 +237,10 @@ function game_loop() {
       editor.draw()
       board.draw()
     }
-    character.move_on_path()
+    if (character.moving) {
+      game_object.board.move()
+    }
+    //character.move_on_path()
     // This is making the purple-movement circle be activated for zerglings
     zergling.move(ally_base_middle_tower_1)
     action_bar.draw()

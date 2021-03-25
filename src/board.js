@@ -68,7 +68,6 @@ function Board(game_object) {
       return a.distance - b.distance
     })
 
-    var going_to_collide = this.editor.bitmap.some((bit) => is_colliding(future_movement, bit))
     // Step: Select only neighbour nodes that are not blocked && haven't already been visited
     neighbours_sorted_by_distance_asc = neighbours_sorted_by_distance_asc.filter((node) => {
       return node.blocked !== true &&
@@ -86,15 +85,19 @@ function Board(game_object) {
   }
 
   this.move = function() {
-    last_closest_node = walk_the_path(last_closest_node, grid[current_target_index]);
+    console.log("moving'")
+    if (this.last_closest_node == null)
+      this.last_closest_node = this.get_node_for(this.game_object.character)
+    this.last_closest_node = this.next_step(this.last_closest_node, this.target_node);
     // We have a next step
-    if (typeof(last_closest_node) === "object") {
-      already_visited.push(last_closest_node)
-      last_closest_node.colour = "cyan"
-      setTimeout(run, 300)
+    if (typeof(this.last_closest_node) === "object") {
+      this.already_visited.push(this.last_closest_node)
+      this.game_object.character.x = this.last_closest_node.x
+      this.game_object.character.y = this.last_closest_node.y
       // We're already at the best spot
-    } else if (last_closest_node === true) {
+    } else if (this.last_closest_node === true) {
       console.log("reached")
+      this.game_object.character.moving = false
       // We're stuck
     } else {
       // TODO: got this once after had already reached. 

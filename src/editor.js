@@ -27,8 +27,10 @@ function Editor(game_object) {
     } else {
       switch (this.paint_mode_brush) {
       case "collider":
-        this.bitmap.push({x: this.game_object.camera.x + ev.clientX, y: this.game_object.camera.y + ev.clientY, width: this.game_object.tile_size, height: this.game_object.tile_size})
-        window.localStorage.setItem("map", JSON.stringify(this.bitmap))
+        let collision_click = { x: this.game_object.camera.x + ev.clientX, y: this.game_object.camera.y + ev.clientY, width: 1, height: 1 }
+        let node = this.game_object.board.get_node_for(collision_click)
+        node.blocked = true
+        node.colour = "yellow"
         break
 
       case "waypoint":
