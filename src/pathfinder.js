@@ -78,6 +78,35 @@ const handle_click = function(event) {
 }
 canvas.addEventListener("click", handle_click, false)
 
+// Receives a node with the current position, with the target position and returns the next closest node to the target
+// It is divided in the following steps:
+//
+// - Select all neighbours
+//   Select all neighbouring possible positions for the current node
+//
+// - Sort neighbours by distance
+//   Updates the neighbours with their distances to the target node
+//
+// - Select only neighbour nodes that are not blocked && haven't already been visited
+//   
+// - Return the closest valid node to the target
+//   
+// Parameters:
+// - closest_node = the current node to be checked
+// - target_node  = the node to be reached
+//
+// Returns:
+// - Node, if there is a next step to be taken
+// - undefined, if there are no steps to be taken
+// - true, if the current position is already the best choice
+// 
+// Global dependencies:
+// - grid                       The array containing all the Nodes on the map
+//                              For this implementation to work, it is assumed that the Node has an #id attribute
+//                                that is the same as its index in the grid array. Easy to change, if needed.
+// - current_origin_index       The index for the initial position of the walk
+// - canvas_rect                The bounds object for the Canvas
+// - tile_size                  The size of the tiles for the grid Nodes (supposed to be squares)
 
 const walk_the_path = function(closest_node, target_node) {
   // Step: Select all neighbours
