@@ -42,7 +42,7 @@ function Editor(game_object) {
   }
 
   this.draw = function() {
-    draw_grid(this.game_object.ctx, this.game_object.canvas_rect, this.game_object.tile_size);
+    //draw_grid(this.game_object.ctx, this.game_object.canvas_rect, this.game_object.tile_size);
     this.waypoints.forEach((wp) => {
       this.game_object.ctx.fillStyle = wp.colour
       this.game_object.ctx.fillRect(wp.x - this.game_object.camera.x, wp.y - this.game_object.camera.y, this.game_object.tile_size, this.game_object.tile_size)

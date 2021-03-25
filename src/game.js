@@ -17,6 +17,10 @@ const game_object = {
   camera
 }
 
+import Board from "./board.js"
+const board = new Board(game_object)
+game_object.board = board
+
 import Editor from "./editor.js"
 const editor = new Editor(game_object)
 
@@ -61,15 +65,20 @@ game_object.entities = entities
 
 var target_movement = {
   x: 0,
-  y: 0
+  y: 0,
+  width: 1,
+  height: 1
 }
 
 const click_callbacks = []
 
 const set_mouse_click_movement = function(ev) {
-  target_movement.x = ev.clientX + camera.x - (character.width / 2)
-  target_movement.y = ev.clientY + camera.y - (character.height / 2)
-  character.find_path(target_movement)
+  target_movement.x = ev.clientX + camera.x //- (character.width / 2)
+  target_movement.y = ev.clientY + camera.y //- (character.height / 2)
+  //var click_target = { x: camera.x + event.clientX, y: camera.y + event.clientY, width: 1, height: 1 }
+  target_movement = board.get_node_for(target_movement)
+  board.set_target(target_movement)
+  //character.find_path(target_movement)
   //character.moving = true
 }
 
@@ -129,8 +138,15 @@ const draw_ray_trace = function() {
 }
 
 var ray_trace_path = false
+let current_node = null
 window.addEventListener("keydown", function (e) {
   switch (e.key) {
+  case "n":
+    if (current_node == null)
+      current_node = board.get_node_for(character)
+    current_node = board.next_step(current_node, target_movement)
+    current_node.colour = "orange"
+    break
   case "m":
     ray_trace_path = !ray_trace_path
     console.log(`Ray trace path ${ray_trace_path}`)
@@ -215,6 +231,7 @@ function game_loop() {
     }
     if (editor.paint_mode) {
       editor.draw()
+      board.draw()
     }
     character.move_on_path()
     // This is making the purple-movement circle be activated for zerglings

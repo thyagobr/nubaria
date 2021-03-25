@@ -3,7 +3,7 @@ const path = require('path');
 module.exports = {
   mode: 'development',
   target: 'web',
-  entry: './src/pathfinder.js',
+  entry: './src/game.js',
   devtool: 'inline-source-map',
   output: {
     filename: 'main.js',
