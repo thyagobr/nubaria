@@ -1,12 +1,10 @@
 import { is_colliding } from "./tapete.js"
+const distance = function(a, b) { return Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2)) }
 
 const canvas = document.getElementById('screen');
 const ctx = canvas.getContext('2d');
-
 const canvas_rect = canvas.getBoundingClientRect()
 const tile_size = 20;
-
-const distance = function(a, b) { return Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2)) }
 
 function game_loop() {
   draw_grid(ctx, canvas_rect, tile_size)
@@ -17,6 +15,7 @@ requestAnimationFrame(game_loop)
 
 const grid = []
 const already_visited = [] // for movement
+
 var current_origin_index = null
 var initial_position_index = null
 
@@ -90,39 +89,39 @@ canvas.addEventListener("click", handle_click, false)
 const walk_the_path = function(closest_node) {
   // Step: Select all neighbours
   let visited = []
-  var nodes_per_row = Math.trunc(canvas_rect.width / tile_size)
-  var origin_index = (closest_node == null ? current_origin_index : closest_node.id)
+  let nodes_per_row = Math.trunc(canvas_rect.width / tile_size)
+  let origin_index = (closest_node == null ? current_origin_index : closest_node.id)
 
+  // This neighbours-fetching method uses the Node's index in the array to calculate
+  // the indices for all its neighbours.
   // This method doesn't check if we're out of bounds
-  // North node
-  visited.push(grid[origin_index - (nodes_per_row + 1)])
-  // Northwest node
-  visited.push(grid[origin_index - nodes_per_row - 2])
-  // West node
-  visited.push(grid[origin_index - 1])
-  // Southwest node
-  visited.push(grid[origin_index + nodes_per_row])
-  // South node
-  visited.push(grid[origin_index + (nodes_per_row + 1)])
-  // Southeast node
-  visited.push(grid[origin_index + (nodes_per_row + 2)])
-  // East node
-  visited.push(grid[origin_index + 1])
-  // Northeast node
-  visited.push(grid[origin_index - nodes_per_row])
-  // END -- Select all neighbours
+  // Positions  
+  let neighbours = [
+    grid[origin_index - (nodes_per_row + 1)], // North
+    grid[origin_index - nodes_per_row - 2], // Northwest
+    grid[origin_index - 1], // West
+    grid[origin_index + nodes_per_row], // Southwest
+    grid[origin_index + (nodes_per_row + 1)], // South
+    grid[origin_index + (nodes_per_row + 2)], // Southeast
+    grid[origin_index + 1], // East
+    grid[origin_index - nodes_per_row] // Northeast
+  ].filter((neighbour) => neighbour != null && neighbour != undefined)
 
-  let closest_visited_node = null
-  let previous_node_sorted = null
-
-  let sorted_visits = visited.sort((a, b) => {
+  // Step: Sort neighbours by distance (smaller distance first)
+  let neighbours_sorted_by_distance_asc = neighbours.sort((a, b) => {
     a.distance = distance(a, grid[current_target_index])
     b.distance = distance(b, grid[current_target_index])
     return a.distance - b.distance
-  }).filter((node) => node.blocked !== true && !already_visited.some((visited_node) => visited_node.id == node.id))
+  })
 
-  already_visited.push(sorted_visits[0])
-  return sorted_visits[0];
+  // Step: Select only neighbour nodes that are not blocked && haven't already been visited
+  neighbours_sorted_by_distance_asc = neighbours_sorted_by_distance_asc.filter((node) => {
+    return node.blocked !== true && !already_visited.some((visited_node) => visited_node.id == node.id)
+  })
+
+  // Step: Return the closest valid node to the target and add it to the visited list
+  already_visited.push(neighbours_sorted_by_distance_asc[0])
+  return neighbours_sorted_by_distance_asc[0];
 }
 
 const handle_keydown = function(event) {
