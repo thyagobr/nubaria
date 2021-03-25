@@ -6,13 +6,6 @@ const ctx = canvas.getContext('2d');
 const canvas_rect = canvas.getBoundingClientRect()
 const tile_size = 20;
 
-function game_loop() {
-  draw_grid(ctx, canvas_rect, tile_size)
-
-  requestAnimationFrame(game_loop)
-}
-requestAnimationFrame(game_loop)
-
 const grid = []
 const already_visited = [] // for movement
 
@@ -119,8 +112,7 @@ const walk_the_path = function(closest_node) {
     return node.blocked !== true && !already_visited.some((visited_node) => visited_node.id == node.id)
   })
 
-  // Step: Return the closest valid node to the target and add it to the visited list
-  already_visited.push(neighbours_sorted_by_distance_asc[0])
+  // Step: Return the closest valid node to the target
   return neighbours_sorted_by_distance_asc[0];
 }
 
@@ -138,6 +130,7 @@ const handle_keydown = function(event) {
     } else {
       last_closest_node = walk_the_path(last_closest_node);
       if (last_closest_node) {
+        already_visited.push(last_closest_node)
         last_closest_node.colour = "cyan"
       } else {
         console.log("no path")
@@ -147,3 +140,11 @@ const handle_keydown = function(event) {
   }
 }
 window.addEventListener("keydown", handle_keydown, false)
+
+function game_loop() {
+  draw_grid(ctx, canvas_rect, tile_size)
+
+  requestAnimationFrame(game_loop)
+}
+requestAnimationFrame(game_loop)
+
