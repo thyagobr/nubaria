@@ -7,7 +7,7 @@ const canvas_rect = canvas.getBoundingClientRect()
 const tile_size = 20;
 
 const grid = []
-const already_visited = [] // for movement
+let already_visited = [] // for movement
 
 var current_origin_index = null
 var initial_position_index = null
@@ -106,11 +106,10 @@ canvas.addEventListener("click", handle_click, false)
 //                                that is the same as its index in the grid array. Easy to change, if needed.
 // - canvas_rect                The bounds object for the Canvas
 // - tile_size                  The size of the tiles for the grid Nodes (supposed to be squares)
-
-const walk_the_path = function(closest_node, target_node) {
+const walk_the_path = function(game_object, closest_node, target_node) {
   // Step: Select all neighbours
   let visited = []
-  let nodes_per_row = Math.trunc(canvas_rect.width / tile_size)
+  let nodes_per_row = Math.trunc(game_object.canvas_rect.width / game_object.tile_size)
   let origin_index = closest_node.id
 
   // This neighbours-fetching method uses the Node's index in the array to calculate
@@ -151,11 +150,13 @@ const walk_the_path = function(closest_node, target_node) {
   }
 }
 
+let game_object = { canvas_rect, tile_size }
+
 const run = function() {
   if ((last_closest_node.x == grid[current_target_index].x) && (last_closest_node.y == grid[current_target_index].y)) {
     console.log("here")
   } else {
-    last_closest_node = walk_the_path(last_closest_node, grid[current_target_index]);
+    last_closest_node = walk_the_path(game_object, last_closest_node, grid[current_target_index]);
     // We have a next step
     if (typeof(last_closest_node) === "object") {
       already_visited.push(last_closest_node)
@@ -166,9 +167,20 @@ const run = function() {
       console.log("reached")
       // We're stuck
     } else {
+      // TODO: got this once after had already reached. 
       console.log("no path")
     }
   }
+}
+
+const clear_screen = () => grid.forEach((node) => node.colour = "white")
+const reset_pathing_example = () => {
+  clear_screen()
+  grid[current_target_index].colour = "red"
+  last_closest_node = grid[initial_position_index]
+  last_closest_node.colour = "blueviolet"
+  grid.forEach((node) => { if (node.blocked) { node.colour = "gray" } })
+  already_visited = []
 }
 
 const handle_keydown = function(event) {
@@ -180,6 +192,7 @@ const handle_keydown = function(event) {
     brush_type = "starting_point"
     break
   case "n":
+    reset_pathing_example()
     run()
     break
   }
