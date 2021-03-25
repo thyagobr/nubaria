@@ -104,7 +104,6 @@ canvas.addEventListener("click", handle_click, false)
 // - grid                       The array containing all the Nodes on the map
 //                              For this implementation to work, it is assumed that the Node has an #id attribute
 //                                that is the same as its index in the grid array. Easy to change, if needed.
-// - current_origin_index       The index for the initial position of the walk
 // - canvas_rect                The bounds object for the Canvas
 // - tile_size                  The size of the tiles for the grid Nodes (supposed to be squares)
 
@@ -112,7 +111,7 @@ const walk_the_path = function(closest_node, target_node) {
   // Step: Select all neighbours
   let visited = []
   let nodes_per_row = Math.trunc(canvas_rect.width / tile_size)
-  let origin_index = (closest_node == null ? current_origin_index : closest_node.id)
+  let origin_index = closest_node.id
 
   // This neighbours-fetching method uses the Node's index in the array to calculate
   // the indices for all its neighbours.
@@ -144,7 +143,12 @@ const walk_the_path = function(closest_node, target_node) {
 
   // Step: Return the closest valid node to the target
   // returns true if the closest point is the target itself
-  return (neighbours_sorted_by_distance_asc[0].id == target_node.id ? true : neighbours_sorted_by_distance_asc[0])
+  // returns false if there is nowhere to go
+  if (neighbours_sorted_by_distance_asc.length == 0) {
+    return false
+  } else {
+    return (neighbours_sorted_by_distance_asc[0].id == target_node.id ? true : neighbours_sorted_by_distance_asc[0])
+  }
 }
 
 const run = function() {
@@ -152,12 +156,15 @@ const run = function() {
     console.log("here")
   } else {
     last_closest_node = walk_the_path(last_closest_node, grid[current_target_index]);
+    // We have a next step
     if (typeof(last_closest_node) === "object") {
       already_visited.push(last_closest_node)
       last_closest_node.colour = "cyan"
       setTimeout(run, 300)
+      // We're already at the best spot
     } else if (last_closest_node === true) {
       console.log("reached")
+      // We're stuck
     } else {
       console.log("no path")
     }
