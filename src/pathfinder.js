@@ -79,7 +79,7 @@ const handle_click = function(event) {
 canvas.addEventListener("click", handle_click, false)
 
 
-const walk_the_path = function(closest_node) {
+const walk_the_path = function(closest_node, target_node) {
   // Step: Select all neighbours
   let visited = []
   let nodes_per_row = Math.trunc(canvas_rect.width / tile_size)
@@ -102,18 +102,37 @@ const walk_the_path = function(closest_node) {
 
   // Step: Sort neighbours by distance (smaller distance first)
   let neighbours_sorted_by_distance_asc = neighbours.sort((a, b) => {
-    a.distance = distance(a, grid[current_target_index])
-    b.distance = distance(b, grid[current_target_index])
+    a.distance = distance(a, target_node)
+    b.distance = distance(b, target_node)
     return a.distance - b.distance
   })
 
   // Step: Select only neighbour nodes that are not blocked && haven't already been visited
   neighbours_sorted_by_distance_asc = neighbours_sorted_by_distance_asc.filter((node) => {
-    return node.blocked !== true && !already_visited.some((visited_node) => visited_node.id == node.id)
+    return node.blocked !== true &&
+      !already_visited.some((visited_node) => visited_node.id == node.id)
   })
 
   // Step: Return the closest valid node to the target
-  return neighbours_sorted_by_distance_asc[0];
+  // returns true if the closest point is the target itself
+  return (neighbours_sorted_by_distance_asc[0].id == target_node.id ? true : neighbours_sorted_by_distance_asc[0])
+}
+
+const run = function() {
+  if ((last_closest_node.x == grid[current_target_index].x) && (last_closest_node.y == grid[current_target_index].y)) {
+    console.log("here")
+  } else {
+    last_closest_node = walk_the_path(last_closest_node, grid[current_target_index]);
+    if (typeof(last_closest_node) === "object") {
+      already_visited.push(last_closest_node)
+      last_closest_node.colour = "cyan"
+      setTimeout(run, 300)
+    } else if (last_closest_node === true) {
+      console.log("reached")
+    } else {
+      console.log("no path")
+    }
+  }
 }
 
 const handle_keydown = function(event) {
@@ -125,17 +144,7 @@ const handle_keydown = function(event) {
     brush_type = "starting_point"
     break
   case "n":
-    if ((last_closest_node === null) || (last_closest_node.x == grid[current_target_index].x) && (last_closest_node.y == grid[current_target_index].y)) {
-      console.log("here")
-    } else {
-      last_closest_node = walk_the_path(last_closest_node);
-      if (last_closest_node) {
-        already_visited.push(last_closest_node)
-        last_closest_node.colour = "cyan"
-      } else {
-        console.log("no path")
-      }
-    }
+    run()
     break
   }
 }
