@@ -3,7 +3,7 @@ const distance = function (a, b) {
 }
 
 const Vector2 = {
-  distance: (a, b) => Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2))
+  distance: (a, b) => Math.trunc(Math.sqrt(Math.pow(b.x - a.x, 2) + Math.pow(b.y - a.y, 2)))
 }
 
 const is_colliding = function(self, target) {

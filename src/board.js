@@ -70,8 +70,7 @@ function Board(game_object) {
 
     // Step: Select only neighbour nodes that are not blocked && haven't already been visited
     neighbours_sorted_by_distance_asc = neighbours_sorted_by_distance_asc.filter((node) => {
-      return node.blocked !== true &&
-        !this.already_visited.some((visited_node) => visited_node.id == node.id)
+      return node.blocked !== true
     })
 
     // Step: Return the closest valid node to the target
@@ -85,17 +84,19 @@ function Board(game_object) {
   }
 
   this.move = function() {
-    console.log("moving'")
-    if (this.last_closest_node == null)
-      this.last_closest_node = this.get_node_for(this.game_object.character)
-    this.last_closest_node = this.next_step(this.last_closest_node, this.target_node);
+    this.game_object.character.draw_movement_target(this.target_node)
+
+    let current_node = this.get_node_for(this.game_object.character)
+    let closest_node = this.next_step(current_node, this.target_node);
+
     // We have a next step
-    if (typeof(this.last_closest_node) === "object") {
-      this.already_visited.push(this.last_closest_node)
-      this.game_object.character.x = this.last_closest_node.x
-      this.game_object.character.y = this.last_closest_node.y
+    if (typeof(closest_node) === "object") {
+      let future_movement = {}
+      future_movement.x = this.game_object.character.x + (closest_node.x >= this.game_object.character.x ? this.game_object.character.speed : -this.game_object.character.speed)
+      future_movement.y = this.game_object.character.y + (closest_node.y >= this.game_object.character.y ? this.game_object.character.speed : -this.game_object.character.speed)
+      this.game_object.character.coords(future_movement)
       // We're already at the best spot
-    } else if (this.last_closest_node === true) {
+    } else if (closest_node === true) {
       console.log("reached")
       this.game_object.character.moving = false
       // We're stuck

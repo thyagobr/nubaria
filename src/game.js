@@ -80,6 +80,7 @@ const set_mouse_click_movement = function(ev) {
   //var click_target = { x: camera.x + event.clientX, y: camera.y + event.clientY, width: 1, height: 1 }
   target_movement = board.get_node_for(target_movement)
   board.set_target(target_movement)
+  game_object.character.moving = true
   //character.find_path(target_movement)
   //character.moving = true
 }
