@@ -1,8 +1,9 @@
 import { distance, is_colliding } from "./tapete.js"
 
-function Character(game_object, editor, id) {
-  this.editor = editor
+function Character(game_object, id) {
   this.game_object = game_object
+  this.game_object.character = this
+  this.editor = game_object.editor
   this.image = new Image();
   this.image.src = "crisiscorepeeps.png"
   this.image_width = 32

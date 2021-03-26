@@ -1,18 +1,23 @@
 // Grid
-const draw_grid = function (ctx, canvas_rect, tile_size) {
-  for (var i = 1; i < (canvas_rect.height / tile_size); i++) {
-    ctx.beginPath()
-    ctx.moveTo(0, i * tile_size)
-    ctx.lineTo(canvas_rect.right, i * tile_size)
-    ctx.stroke();
-  }
+function Grid(go) {
+  this.go = go
+  this.go.grid = this
 
-  for (var i = 1; i < (canvas_rect.width / tile_size); i++) {
-    ctx.beginPath()
-    ctx.moveTo(i * tile_size, 0)
-    ctx.lineTo(i * tile_size, canvas_rect.bottom)
-    ctx.stroke();
+  this.draw = () => {
+    for (var i = 1; i < (this.go.canvas_rect.height / this.go.tile_size); i++) {
+      this.go.ctx.beginPath()
+      this.go.ctx.moveTo(0, i * this.go.tile_size)
+      this.go.ctx.lineTo(this.go.canvas_rect.right, i * this.go.tile_size)
+      this.go.ctx.stroke();
+    }
+
+    for (var i = 1; i < (this.go.canvas_rect.width / this.go.tile_size); i++) {
+      this.go.ctx.beginPath()
+      this.go.ctx.moveTo(i * this.go.tile_size, 0)
+      this.go.ctx.lineTo(i * this.go.tile_size, this.go.canvas_rect.bottom)
+      this.go.ctx.stroke();
+    }
   }
 }
 
-export default draw_grid;
+export default Grid;

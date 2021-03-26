@@ -4,6 +4,7 @@ import { is_colliding, Vector2 } from "./tapete.js"
 // A grid of tiles for the manipulation
 function Board(game_object) {
   this.game_object = game_object
+  this.game_object.board = this
 
   this.height = this.game_object.canvas_rect.height
   this.width = this.game_object.canvas_rect.width
@@ -28,6 +29,8 @@ function Board(game_object) {
   }
 
   this.get_node_for = (rect) => {
+    if (rect.width == undefined) rect.width = 1
+    if (rect.height == undefined) rect.height = 1
     return this.grid.find((node) => is_colliding(node, rect))
   }
 
@@ -51,6 +54,7 @@ function Board(game_object) {
     // This method doesn't check if we're out of bounds
     // Positions  
     let neighbours = [
+      closest_node,
       this.grid[origin_index - (nodes_per_row + 1)], // North
       this.grid[origin_index - nodes_per_row - 2], // Northwest
       this.grid[origin_index - 1], // West
@@ -86,14 +90,43 @@ function Board(game_object) {
   this.move = function() {
     this.game_object.character.draw_movement_target(this.target_node)
 
-    let current_node = this.get_node_for(this.game_object.character)
+    let char_pos = {
+      x: this.game_object.character.x,
+      y: this.game_object.character.y
+    }
+    let current_node = this.get_node_for(char_pos)
     let closest_node = this.next_step(current_node, this.target_node);
 
     // We have a next step
     if (typeof(closest_node) === "object") {
-      let future_movement = {}
-      future_movement.x = this.game_object.character.x + (closest_node.x >= this.game_object.character.x ? this.game_object.character.speed : -this.game_object.character.speed)
-      future_movement.y = this.game_object.character.y + (closest_node.y >= this.game_object.character.y ? this.game_object.character.speed : -this.game_object.character.speed)
+      let future_movement = { ...char_pos }
+      let x_speed = 0
+      let y_speed = 0
+      if (closest_node.x != this.game_object.character.x) {
+        let distance_x = future_movement.x - closest_node.x
+        if (Math.abs(distance_x) >= this.game_object.character.speed) {
+          x_speed = (distance_x > 0 ? -this.game_object.character.speed : this.game_object.character.speed)
+        } else {
+          x_speed = (distance_x > 0 ? distance_x : distance_x * -1)
+        }
+      }
+
+      if (closest_node.y != this.game_object.character.y) {
+        let distance_y = future_movement.y - closest_node.y
+        if (Math.abs(distance_y) >= this.game_object.character.speed) {
+          y_speed = (distance_y > 0 ? -this.game_object.character.speed : this.game_object.character.speed)
+        } else {
+          if (future_movement.y < closest_node.y) {
+            y_speed = Math.abs(distance_y)
+          } else {
+            y_speed = distance_y * -1
+          }
+        }
+      }
+
+      future_movement.x = future_movement.x + x_speed
+      future_movement.y = future_movement.y + y_speed
+
       this.game_object.character.coords(future_movement)
       // We're already at the best spot
     } else if (closest_node === true) {
