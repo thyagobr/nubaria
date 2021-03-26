@@ -20,6 +20,13 @@ function Board(game_object) {
 
   this.draw = () => {
     this.grid.forEach((node) => {
+      // Don't try to render if out of camera focus
+      if (
+        (node.x < this.game_object.camera.x) ||
+        (node.x >= this.game_object.camera.x + this.game_object.canvas_rect.width) ||
+        (node.y < this.game_object.camera.y) ||
+        (node.y >= this.game_object.camera.y + this.game_object.canvas_rect.height)
+      ) return
       this.game_object.ctx.lineWidth = "1"
       this.game_object.ctx.strokeStyle = node.border_colour
       this.game_object.ctx.fillStyle = node.colour

@@ -3,12 +3,14 @@ import Screen from "./screen.js"
 import Board from "./board.js"
 import Camera from "./camera.js"
 import Character from "./character.js"
+import Editor from "./editor.js"
 
 const go = new GameObject()
 const screen = new Screen(go)
 const board = new Board(go)
 const camera = new Camera(go)
 const character = new Character(go)
+const editor = new Editor(go)
 
 const FPS = 16.66
 
@@ -41,10 +43,26 @@ const on_mousemove = (ev) => {
 go.canvas.addEventListener("mousemove", on_mousemove, false)
 // END Mousemove callbacks
 
+const on_keydown = (ev) => {
+  console.log(ev.key)
+  switch (ev.key) {
+  case "e":
+    go.editor.paint_mode = !go.editor.paint_mode
+    // Expand the screen for editor buttons
+    if (go.editor.paint_mode) {
+      go.canvas.width = go.canvas.width + 200
+    } else {
+      go.canvas.width = go.canvas.width - 200
+    }
+  }
+}
+window.addEventListener("keydown", on_keydown, false)
+
 const draw = () => {
   screen.draw()
   board.draw()
   character.draw()
+  if (go.editor.paint_mode) editor.draw()
 }
 
 function game_loop() {
