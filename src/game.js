@@ -75,6 +75,7 @@ var target_movement = {
 const click_callbacks = []
 
 const set_mouse_click_movement = function(ev) {
+  console.log("click")
   target_movement.x = ev.clientX + camera.x //- (character.width / 2)
   target_movement.y = ev.clientY + camera.y //- (character.height / 2)
   //var click_target = { x: camera.x + event.clientX, y: camera.y + event.clientY, width: 1, height: 1 }
@@ -239,6 +240,7 @@ function game_loop() {
       board.draw()
     }
     if (character.moving) {
+      console.log("ye")
       game_object.board.move()
     }
     //character.move_on_path()

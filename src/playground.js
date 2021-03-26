@@ -30,12 +30,12 @@ go.canvas.addEventListener("click", on_click, false);
 // END Click callbacks
 
 function game_loop() {
-  screen.clear()
+  screen.draw()
   if (character.moving) {
     board.move()
   }
   board.draw()
   character.draw()
-  setTimeout(game_loop, 30)
+  setTimeout(game_loop, 16.66)
 }
 setTimeout(game_loop, 500)
