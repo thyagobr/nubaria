@@ -24,11 +24,18 @@ const set_mouse_click_movement = function(ev) {
   character.moving = true
 }
 
+const edit_mode_callbacks = [editor.paint_on_click_callback]
 const game_mode_callbacks = [set_mouse_click_movement]
 const on_click = function (ev) {
-  game_mode_callbacks.forEach((callback) => {
-    callback(ev)
-  })
+  if (go.editor.paint_mode) {
+    edit_mode_callbacks.forEach((callback) => {
+      callback(ev)
+    })
+  } else {
+    game_mode_callbacks.forEach((callback) => {
+      callback(ev)
+    })
+  }
 }
 go.canvas.addEventListener("click", on_click, false);
 // END Click callbacks
@@ -46,6 +53,9 @@ go.canvas.addEventListener("mousemove", on_mousemove, false)
 const on_keydown = (ev) => {
   console.log(ev.key)
   switch (ev.key) {
+  case "o":
+    go.board.calculate_neighbours()
+    break
   case "e":
     go.editor.paint_mode = !go.editor.paint_mode
     // Expand the screen for editor buttons

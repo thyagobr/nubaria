@@ -12,8 +12,8 @@ function Board(game_object) {
 
   this.grid = []
 
-  for (var j = 0; j <= (4096 / this.tile_size); j++) {
-    for (var i = 0; i <= (4096/ this.tile_size); i++) {
+  for (var j = 0; j <= (this.game_object.screen.height / this.tile_size); j++) {
+    for (var i = 0; i <= (this.game_object.screen.width / this.tile_size); i++) {
       this.grid.push(new Node({ id: this.grid.length, x: i * this.tile_size, y: j * this.tile_size, width: this.tile_size, height: this.tile_size }))
     }
   }
@@ -50,6 +50,32 @@ function Board(game_object) {
     this.target_node.colour = "red"
   }
 
+  // Still stuck to the character movement
+  this.calculate_neighbours = () => {
+    let character_rect = {
+      x: this.game_object.character.x,
+      y: this.game_object.character.y,
+      width: this.game_object.character.width,
+      height: this.game_object.character.height
+    }
+
+    let character_collisions = this.grid.filter((node) => {
+      return is_colliding(character_rect, node)
+    })
+
+    character_rect.x -= this.game_object.character.speed
+    character_rect.y -= this.game_object.character.speed
+    character_rect.width += this.game_object.character.speed
+    character_rect.height += this.game_object.character.speed
+
+    let future_movement_collisions = this.grid.filter((node) => {
+      return is_colliding(character_rect, node)
+    })
+
+    return future_movement_collisions
+  }
+
+
   this.next_step = (closest_node) => {
     // Step: Select all neighbours
     let visited = []
@@ -60,17 +86,18 @@ function Board(game_object) {
     // the indices for all its neighbours.
     // This method doesn't check if we're out of bounds
     // Positions  
-    let neighbours = [
-      closest_node,
-      this.grid[origin_index - (nodes_per_row + 1)], // North
-      this.grid[origin_index - nodes_per_row - 2], // Northwest
-      this.grid[origin_index - 1], // West
-      this.grid[origin_index + nodes_per_row], // Southwest
-      this.grid[origin_index + (nodes_per_row + 1)], // South
-      this.grid[origin_index + (nodes_per_row + 2)], // Southeast
-      this.grid[origin_index + 1], // East
-      this.grid[origin_index - nodes_per_row] // Northeast
-    ].filter((neighbour) => neighbour != null && neighbour != undefined)
+    //let neighbours = [
+    //  this.grid[origin_index - (nodes_per_row + 1)], // North
+    //  this.grid[origin_index - nodes_per_row - 2], // Northwest
+    //  this.grid[origin_index - 1], // West
+    //  this.grid[origin_index + nodes_per_row], // Southwest
+    //  this.grid[origin_index + (nodes_per_row + 1)], // South
+    //  this.grid[origin_index + (nodes_per_row + 2)], // Southeast
+    //  this.grid[origin_index + 1], // East
+    //  this.grid[origin_index - nodes_per_row],// Northeast
+    //  closest_node
+    //].filter((neighbour) => neighbour != null && neighbour != undefined)
+    let neighbours = this.calculate_neighbours()
 
     // Step: Sort neighbours by distance (smaller distance first)
     let neighbours_sorted_by_distance_asc = neighbours.sort((a, b) => {
@@ -110,11 +137,15 @@ function Board(game_object) {
       let x_speed = 0
       let y_speed = 0
       if (closest_node.x != this.game_object.character.x) {
-        let distance_x = future_movement.x - closest_node.x
+        let distance_x = char_pos.x - closest_node.x
         if (Math.abs(distance_x) >= this.game_object.character.speed) {
           x_speed = (distance_x > 0 ? -this.game_object.character.speed : this.game_object.character.speed)
         } else {
-          x_speed = (distance_x > 0 ? distance_x : distance_x * -1)
+          if (char_pos.x < closest_node.x) {
+            x_speed = Math.abs(distance_x) * -1
+          } else {
+            x_speed = Math.abs(distance_x)
+          }
         }
       }
 
