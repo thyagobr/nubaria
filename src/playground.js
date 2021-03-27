@@ -53,9 +53,6 @@ go.canvas.addEventListener("mousemove", on_mousemove, false)
 const on_keydown = (ev) => {
   console.log(ev.key)
   switch (ev.key) {
-  case "o":
-    go.board.calculate_neighbours()
-    break
   case "e":
     go.editor.paint_mode = !go.editor.paint_mode
     // Expand the screen for editor buttons
@@ -73,6 +70,9 @@ const draw = () => {
   board.draw()
   character.draw()
   if (go.editor.paint_mode) editor.draw()
+  if (character.moving) {
+    go.character.draw_movement_target(go.board.target_node)
+  }
 }
 
 function game_loop() {
