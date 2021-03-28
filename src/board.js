@@ -9,6 +9,8 @@ function Board(game_object) {
   this.height = this.game_object.canvas_rect.height
   this.width = this.game_object.canvas_rect.width
   this.tile_size = this.game_object.tile_size
+  this.should_draw = false
+  this.toggle_grid = () => this.should_draw = !this.should_draw
 
   this.grid = []
 
@@ -19,6 +21,7 @@ function Board(game_object) {
   }
 
   this.draw = () => {
+    if (!this.should_draw) return
     this.grid.forEach((node) => {
       // Don't try to render if out of camera focus
       if (

@@ -6,6 +6,7 @@ function Camera(go) {
   this.camera_speed = 3
 
   this.move_camera_with_mouse = (ev) => {
+    if (this.go.editor.paint_mode) return
     // If the mouse is 100 pixels close to the bottom of the canvas
     if ((this.go.canvas_rect.height - ev.clientY) < 100) {
       // If our current y + the movement we'll make further there is greater than
@@ -29,6 +30,17 @@ function Camera(go) {
       if (this.x + this.camera_speed < 0) return
       this.go.camera.x = this.go.camera.x - this.camera_speed
     }
+  }
+
+  this.focus = (point) => {
+    let x = point.x - this.go.canvas_rect.width / 2
+    let y = point.y - this.go.canvas_rect.height / 2
+    // specific map cuts (it has a map offset of 60,160)
+    if (x < 60) { x = 60 }
+    if (y < 140) { y = 140 }
+    // offset changes end
+    this.x = x
+    this.y = y
   }
 }
 

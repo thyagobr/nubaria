@@ -63,6 +63,7 @@ const on_keydown = (ev) => {
   console.log(ev.key)
   switch (ev.key) {
   case "e":
+    go.board.toggle_grid()
     go.editor.paint_mode = !go.editor.paint_mode
     // Expand the screen for editor buttons
     if (go.editor.paint_mode) {
@@ -85,6 +86,13 @@ const draw = () => {
   }
 }
 
+const start = () => {
+  character.move_to_waypoint("green_spawn_heroes")
+  camera.focus(character)
+
+  setTimeout(game_loop, FPS)
+}
+
 function game_loop() {
   if (character.moving) {
     character.move()
@@ -93,6 +101,7 @@ function game_loop() {
 
   draw()
 
-  setTimeout(game_loop, FPS)
+  setTimeout(game_loop, 33.33)
 }
-setTimeout(game_loop, FPS)
+
+start()

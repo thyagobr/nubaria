@@ -16,6 +16,12 @@ function Character(game_object, id) {
   this.moving = false
   this.direction = null
 
+  this.move_to_waypoint = (wp_name) => {
+    let wp = this.game_object.editor.waypoints.find((wp) => wp.name === wp_name)
+    let node = this.game_object.board.grid[wp.id]
+    this.coords(node)
+  }
+
   this.coords = function(coords) {
     this.x = coords.x
     this.y = coords.y

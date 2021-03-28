@@ -14,6 +14,10 @@ function Editor(game_object) {
     if (!this.paint_mode) return
     console.log(ev.clientX)
     console.log(ev.clientY)
+
+    let collision_click = { x: this.game_object.camera.x + ev.clientX, y: this.game_object.camera.y + ev.clientY, width: 1, height: 1 }
+    let node = this.game_object.board.get_node_for(collision_click)
+
     if (ev.clientX > this.game_object.canvas_rect.width) {
       var base_width = this.game_object.canvas_rect.width
       var base_height = this.game_object.canvas_rect.height
@@ -27,27 +31,31 @@ function Editor(game_object) {
     } else {
       switch (this.paint_mode_brush) {
       case "collider":
-        let collision_click = { x: this.game_object.camera.x + ev.clientX, y: this.game_object.camera.y + ev.clientY, width: 1, height: 1 }
-        let node = this.game_object.board.get_node_for(collision_click)
         node.blocked = true
         node.colour = "yellow"
         break
 
       case "waypoint":
-        var wp = {x: this.game_object.camera.x + ev.clientX, y: this.game_object.camera.y + ev.clientY, width: this.game_object.tile_size, height: this.game_object.tile_size, colour: "cyan"}
+        let wp = { id: node.id }
         wp.name = window.prompt("Waypoint name")
-        this.waypoints.push(wp)
-        window.localStorage.setItem("wps", JSON.stringify(this.waypoints))
+        wp.colour = "cyan"
+        if (wp.name) {
+          this.waypoints.push(wp)
+          window.localStorage.setItem("wps", JSON.stringify(this.waypoints))
+        } else {
+          window.alert("Can't add WP without a name")
+        }
         break
       }
     }
   }
 
   this.draw = function() {
-    //this.waypoints.forEach((wp) => {
-    //  this.game_object.ctx.fillStyle = wp.colour
-    //  this.game_object.ctx.fillRect(wp.x - this.game_object.camera.x, wp.y - this.game_object.camera.y, this.game_object.tile_size, this.game_object.tile_size)
-    //})
+    this.waypoints.forEach((wp) => {
+      let node = this.game_object.board.grid[wp.id]
+      this.game_object.ctx.fillStyle = wp.colour
+      this.game_object.ctx.fillRect(node.x - this.game_object.camera.x, node.y - this.game_object.camera.y, this.game_object.tile_size, this.game_object.tile_size)
+    })
     //this.bitmap.forEach((bit) => {
     //  this.game_object.ctx.fillStyle = "purple"
     //  // I'm not very sure why this camera has to be added on the painting and removed here
