@@ -6,6 +6,7 @@ function GameObject() {
   this.canvas_rect = canvas.getBoundingClientRect()
   this.ctx = ctx
   this.tile_size = 20
+  this.creeps = []
 }
 
 export default GameObject

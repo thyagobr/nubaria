@@ -34,6 +34,10 @@ function Character(game_object, id) {
     this.game_object.ctx.stroke()
   }
 
+  this.move = () => {
+    this.game_object.board.move(this, this.game_object.board.target_node)
+  }
+
   Array.prototype.last = function() { return this[this.length - 1] }
   Array.prototype.first = function() { return this[0] }
 
@@ -119,48 +123,48 @@ function Character(game_object, id) {
     }
   }
 
-  this.move = function(target_movement) {
-    if (this.moving) {
-      var future_movement = { x: this.x, y: this.y }
+  //this.move = function(target_movement) {
+  //  if (this.moving) {
+  //    var future_movement = { x: this.x, y: this.y }
 
-      if ((distance(this.x, target_movement.x) <= 1) && (distance(this.y, target_movement.y) <= 1)) {
-        this.moving = false;
-        target_movement = {}
-        console.log("Stopped");
-      } else {
-        this.draw_movement_target(target_movement)
+  //    if ((distance(this.x, target_movement.x) <= 1) && (distance(this.y, target_movement.y) <= 1)) {
+  //      this.moving = false;
+  //      target_movement = {}
+  //      console.log("Stopped");
+  //    } else {
+  //      this.draw_movement_target(target_movement)
 
-        // Pathing
-        if (distance(this.x, target_movement.x) > 1) {
-          if (this.x > target_movement.x) {
-            future_movement.x = this.x - 2;
-          } else {
-            future_movement.x = this.x + 2;
-          }
-        }
-        if (distance(this.y, target_movement.y) > 1) {
-          if (this.y > target_movement.y) {
-            future_movement.y = this.y - 2;
-          } else {
-            future_movement.y = this.y + 2;
-          }
-        }
-      }
+  //      // Pathing
+  //      if (distance(this.x, target_movement.x) > 1) {
+  //        if (this.x > target_movement.x) {
+  //          future_movement.x = this.x - 2;
+  //        } else {
+  //          future_movement.x = this.x + 2;
+  //        }
+  //      }
+  //      if (distance(this.y, target_movement.y) > 1) {
+  //        if (this.y > target_movement.y) {
+  //          future_movement.y = this.y - 2;
+  //        } else {
+  //          future_movement.y = this.y + 2;
+  //        }
+  //      }
+  //    }
 
-      future_movement.width = this.width
-      future_movement.height = this.height
+  //    future_movement.width = this.width
+  //    future_movement.height = this.height
 
-      if ((this.game_object.entities.every((entity) => entity.id === this.id || !is_colliding(future_movement, entity) )) &&
-        (!this.editor.bitmap.some((bit) => is_colliding(future_movement, bit)))) {
-        this.x = future_movement.x
-        this.y = future_movement.y
-      } else {
-        console.log("Blocked");
-        this.moving = false
-      }
-    }
-    // END - Character Movement
-  }
+  //    if ((this.game_object.entities.every((entity) => entity.id === this.id || !is_colliding(future_movement, entity) )) &&
+  //      (!this.editor.bitmap.some((bit) => is_colliding(future_movement, bit)))) {
+  //      this.x = future_movement.x
+  //      this.y = future_movement.y
+  //    } else {
+  //      console.log("Blocked");
+  //      this.moving = false
+  //    }
+  //  }
+  //  // END - Character Movement
+  //}
 }
 
 export default Character

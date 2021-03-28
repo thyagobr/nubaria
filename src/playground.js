@@ -4,6 +4,7 @@ import Board from "./board.js"
 import Camera from "./camera.js"
 import Character from "./character.js"
 import Editor from "./editor.js"
+import Creep from "./creep.js"
 
 const go = new GameObject()
 const screen = new Screen(go)
@@ -11,6 +12,14 @@ const board = new Board(go)
 const camera = new Camera(go)
 const character = new Character(go)
 const editor = new Editor(go)
+
+const creep = new Creep(go)
+creep.image.src = "zergling.png"
+creep.image_width = 150
+creep.image_height = 150
+creep.width = go.tile_size * 4
+creep.height = go.tile_size * 4
+creep.moving = true
 
 const FPS = 16.66
 
@@ -69,6 +78,7 @@ const draw = () => {
   screen.draw()
   board.draw()
   character.draw()
+  creep.draw()
   if (go.editor.paint_mode) editor.draw()
   if (character.moving) {
     go.character.draw_movement_target(go.board.target_node)
@@ -77,8 +87,9 @@ const draw = () => {
 
 function game_loop() {
   if (character.moving) {
-    board.move()
+    character.move()
   }
+  creep.move()
 
   draw()
 
