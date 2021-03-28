@@ -16,19 +16,33 @@ function Creep(go) {
   this.direction = null
   this.speed = 2
   this.movement_board = this.go.board.grid
+  this.current_movement_target = null
 
   this.coords = function(coords) {
     this.x = coords.x
     this.y = coords.y
   }
 
+  this.move_to_waypoint = (wp_name) => {
+    let wp = this.go.editor.waypoints.find((wp) => wp.name === wp_name)
+    let node = this.go.board.grid[wp.id]
+    this.coords(node)
+  }
+
   this.draw = function() {
     this.go.ctx.drawImage(this.image, 0, 0, this.image_width, this.image_height, this.x - this.go.camera.x, this.y - this.go.camera.y, this.width, this.height)
   }
 
+  this.set_movement_target = (wp_name) => {
+    let wp = this.go.editor.waypoints.find((wp) => wp.name === wp_name)
+    let node = this.go.board.grid[wp.id]
+    this.current_movement_target = node
+  }
+
   this.move = () => {
-    let target_node = this.go.board.get_node_for(this.go.character)
-    this.go.board.move(this, target_node)
+    if (this.current_movement_target) {
+      this.go.board.move(this, this.current_movement_target)
+    }
   }
 
 }

@@ -91,6 +91,10 @@ const start = () => {
   character.move_to_waypoint("green_spawn_heroes")
   camera.focus(character)
 
+  // Sample creep
+  creep.move_to_waypoint("black_middle_creep_spawn")
+  creep.set_movement_target("green_tower_mid_first")
+
   setTimeout(game_loop, FPS)
 }
 
@@ -98,7 +102,7 @@ function game_loop() {
   if (character.moving) {
     character.move()
   }
-  //creep.move()
+  creep.move()
 
   draw()
 

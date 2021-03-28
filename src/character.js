@@ -1,26 +1,38 @@
 import { distance, is_colliding } from "./tapete.js"
+import ResourceBar from "./resource_bar"
 
-function Character(game_object, id) {
-  this.game_object = game_object
-  this.game_object.character = this
-  this.editor = game_object.editor
+function Character(go, id) {
+  this.go = go
+  this.go.character = this
+  this.editor = go.editor
   this.image = new Image();
   this.image.src = "crisiscorepeeps.png"
   this.image_width = 32
   this.image_height = 32
   this.id = id
-  this.x = this.game_object.canvas_rect.width / 2
-  this.y = this.game_object.canvas_rect.height / 2
-  this.width = this.game_object.tile_size * 2
-  this.height = this.game_object.tile_size * 2
+  this.x = this.go.canvas_rect.width / 2
+  this.y = this.go.canvas_rect.height / 2
+  this.width = this.go.tile_size * 2
+  this.height = this.go.tile_size * 2
   this.moving = false
   this.direction = null
+
+  // Combat
+  this.hp = 10.0
+  this.current_hp = 10.0
+
+  this.mana = 10.0
+  this.current_mana = 10.0
+  // END Combat
+
+  this.health_bar = new ResourceBar(go, { character: this, offset: 20, colour: "red" })
+  this.mana_bar = new ResourceBar(go, { character: this, offset: 10, colour: "blue" })
 
   this.movement_board = []
 
   this.move_to_waypoint = (wp_name) => {
-    let wp = this.game_object.editor.waypoints.find((wp) => wp.name === wp_name)
-    let node = this.game_object.board.grid[wp.id]
+    let wp = this.go.editor.waypoints.find((wp) => wp.name === wp_name)
+    let node = this.go.board.grid[wp.id]
     this.coords(node)
   }
 
@@ -31,20 +43,22 @@ function Character(game_object, id) {
 
   this.draw = function() {
     if (this.moving && this.target_movement) this.draw_movement_target()
-    this.game_object.ctx.drawImage(this.image, 0, 0, this.image_width, this.image_height, this.x - this.game_object.camera.x, this.y - this.game_object.camera.y, this.width, this.height)
+    this.health_bar.draw(this.hp, this.current_hp)
+    this.mana_bar.draw(this.mana, this.current_mana)
+    this.go.ctx.drawImage(this.image, 0, 0, this.image_width, this.image_height, this.x - this.go.camera.x, this.y - this.go.camera.y, this.width, this.height)
   }
 
   this.draw_movement_target = function(target_movement = this.target_movement) {
-    this.game_object.ctx.beginPath()
-    this.game_object.ctx.arc((target_movement.x - this.game_object.camera.x) + 10, (target_movement.y - this.game_object.camera.y) + 10, 20, 0, 2 * Math.PI, false)
-    this.game_object.ctx.strokeStyle = "purple"
-    this.game_object.ctx.lineWidth = 4;
-    this.game_object.ctx.stroke()
+    this.go.ctx.beginPath()
+    this.go.ctx.arc((target_movement.x - this.go.camera.x) + 10, (target_movement.y - this.go.camera.y) + 10, 20, 0, 2 * Math.PI, false)
+    this.go.ctx.strokeStyle = "purple"
+    this.go.ctx.lineWidth = 4;
+    this.go.ctx.stroke()
   }
 
   this.move = () => {
-    if (this.movement_board.length === 0) { this.movement_board = [].concat(this.game_object.board.grid) }
-    this.game_object.board.move(this, this.game_object.board.target_node)
+    if (this.movement_board.length === 0) { this.movement_board = [].concat(this.go.board.grid) }
+    this.go.board.move(this, this.go.board.target_node)
   }
 
   Array.prototype.last = function() { return this[this.length - 1] }
@@ -163,7 +177,7 @@ function Character(game_object, id) {
   //    future_movement.width = this.width
   //    future_movement.height = this.height
 
-  //    if ((this.game_object.entities.every((entity) => entity.id === this.id || !is_colliding(future_movement, entity) )) &&
+  //    if ((this.go.entities.every((entity) => entity.id === this.id || !is_colliding(future_movement, entity) )) &&
   //      (!this.editor.bitmap.some((bit) => is_colliding(future_movement, bit)))) {
   //      this.x = future_movement.x
   //      this.y = future_movement.y
