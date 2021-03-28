@@ -14,6 +14,7 @@ function Board(game_object) {
 
   this.grid = []
 
+  // Build the grid
   for (var j = 0; j <= (this.game_object.screen.height / this.tile_size); j++) {
     for (var i = 0; i <= (this.game_object.screen.width / this.tile_size); i++) {
       this.grid.push(new Node({ id: this.grid.length, x: i * this.tile_size, y: j * this.tile_size, width: this.tile_size, height: this.tile_size }))
@@ -38,19 +39,22 @@ function Board(game_object) {
     })
   }
 
+  // Receives a rect and returns it's first colliding Node
   this.get_node_for = (rect) => {
     if (rect.width == undefined) rect.width = 1
     if (rect.height == undefined) rect.height = 1
     return this.grid.find((node) => is_colliding(node, rect))
   }
 
+  // Sets a global target node
+  // It was used before the movement got detached from the player character
   this.target_node = null
   this.set_target = (node) => {
     this.grid.forEach((node) => node.distance = 0)
     this.target_node = node
   }
 
-  // Still stuck to the character movement
+  // Calculates possible possitions for the next movement
   this.calculate_neighbours = (character) => {
     let character_rect = {
       x: character.x - character.speed,
@@ -59,14 +63,14 @@ function Board(game_object) {
       height: character.height + character.speed
     }
 
-    let future_movement_collisions = this.grid.filter((node) => {
+    let future_movement_collisions = character.movement_board.filter((node) => {
       return is_colliding(character_rect, node)
     })
 
     // I'm gonna copy them here otherwise different entities calculating distance
     // will affect each other's numbers. This can be solved with a different
     // calculation algorithm as well.
-    return future_movement_collisions.map((node) => { return { ...node } })
+    return future_movement_collisions
   }
 
 
@@ -82,13 +86,13 @@ function Board(game_object) {
     // We add the walk movement to re-visited nodes to signify this cost
     let neighbours_sorted_by_distance_asc = neighbours.sort((a, b) => {
       if (a.distance) {
-        a.distance += character.speed
+        //a.distance += 2 * character.speed
       } else {
         a.distance = Vector2.distance(a, target_node)
       }
 
       if (b.distance) {
-        b.distance += character.speed
+        //b.distance += character.speed
       } else {
         b.distance = Vector2.distance(b, target_node)
       }
@@ -107,7 +111,8 @@ function Board(game_object) {
     if (neighbours_sorted_by_distance_asc.length == 0) {
       return false
     } else {
-      return (neighbours_sorted_by_distance_asc[0].id == target_node.id ? true : neighbours_sorted_by_distance_asc[0])
+      let future_node = neighbours_sorted_by_distance_asc[0]
+      return (future_node.id == target_node.id ? true : future_node)
     }
   }
 
@@ -118,7 +123,7 @@ function Board(game_object) {
     }
 
     let current_node = this.get_node_for(char_pos)
-    let closest_node = this.next_step(character, current_node, target_node);
+    let closest_node = this.next_step(character, current_node, target_node)
 
     // We have a next step
     if (typeof(closest_node) === "object") {
@@ -158,6 +163,7 @@ function Board(game_object) {
       // We're already at the best spot
     } else if (closest_node === true) {
       console.log("reached")
+      character.movement_board = []
       character.moving = false
       // We're stuck
     } else {

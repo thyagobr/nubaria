@@ -15,6 +15,7 @@ function Creep(go) {
   this.moving = false
   this.direction = null
   this.speed = 2
+  this.movement_board = this.go.board.grid
 
   this.coords = function(coords) {
     this.x = coords.x

@@ -30,6 +30,7 @@ const set_mouse_click_movement = function(ev) {
   target_movement.y = ev.clientY + camera.y
   target_movement = board.get_node_for(target_movement)
   board.set_target(target_movement)
+  character.movement_board = []
   character.moving = true
 }
 
@@ -97,7 +98,7 @@ function game_loop() {
   if (character.moving) {
     character.move()
   }
-  creep.move()
+  //creep.move()
 
   draw()
 

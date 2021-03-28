@@ -16,6 +16,8 @@ function Character(game_object, id) {
   this.moving = false
   this.direction = null
 
+  this.movement_board = []
+
   this.move_to_waypoint = (wp_name) => {
     let wp = this.game_object.editor.waypoints.find((wp) => wp.name === wp_name)
     let node = this.game_object.board.grid[wp.id]
@@ -41,6 +43,7 @@ function Character(game_object, id) {
   }
 
   this.move = () => {
+    if (this.movement_board.length === 0) { this.movement_board = [].concat(this.game_object.board.grid) }
     this.game_object.board.move(this, this.game_object.board.target_node)
   }
 
