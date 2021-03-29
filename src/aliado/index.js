@@ -1,11 +1,17 @@
 import GameObject from "../game_object.js"
 import Menu from "./menu"
 import Player from "./player"
+import { is_colliding } from "../tapete"
 
 const go = new GameObject()
 go.canvas.height = 1000
 go.canvas.width = 1200
 go.players = []
+// These enable player movement
+go.game_state = "uninitialized"
+go.current_movement_target = null
+go.current_piece_selected = null
+// END
 const menu = new Menu(go)
 const player1 = new Player(go)
 
@@ -229,7 +235,35 @@ const draw = () => {
   player1.draw()
 }
 
-const game_mode_callbacks = [menu.on_click_menu_button]
+import { Vector2 } from "../tapete"
+
+const mouse_click = (ev) => {
+  console.log(`Click: ${ev.clientX},${ev.clientY}`)
+  if (go.game_state == "awaiting_player_movement") {
+    let mouse_click_rect = { x: ev.clientX, y: ev.clientY, width: 1, height: 1 }
+    // Let's see if they clicked a piece of his
+    let clicked_piece = go.current_player.pieces.
+      filter((piece) => !piece.at_home).
+      find((piece) => {
+        return Vector2.distance(piece, mouse_click_rect) <= 15
+      })
+
+    if (clicked_piece) {
+      go.current_piece_selected = clicked_piece
+      return
+    }
+
+    let clicked_square = go.squares.find((square) => {
+      let square_rect = { ...square, width: square_size, height: square_size }
+      return is_colliding(square_rect, mouse_click_rect)
+    })
+    if (clicked_square) {
+      go.current_movement_target = clicked_square
+    }
+  }
+}
+
+const game_mode_callbacks = [mouse_click, menu.on_click_menu_button]
 const on_click = function (ev) {
   game_mode_callbacks.forEach((callback) => {
     callback(ev)

@@ -58,9 +58,27 @@ function Menu(go) {
     // Can the plaeyer do anything?
     let movable_pieces = this.go.current_player.pieces.filter((piece) => piece.current_node != null)
     if (movable_pieces.length > 0) {
-      Array.from(Array(total_movement)).forEach((i) => {
-        movable_pieces[0].current_node = movable_pieces[0].current_node.connected[0]
+      go.game_state = "awaiting_player_movement"
+      go.total_movement_left = total_movement
+      //Array.from(Array(total_movement)).forEach((i) => {
+      //  movable_pieces[0].current_node = movable_pieces[0].current_node.connected[0]
+      //})
+    }
+  }
+
+  this.move = () => {
+    if (go.current_piece_selected) {
+      // Is the movement left enough to exactly reach this square?
+      let next = go.current_piece_selected.current_node
+      Array.from(Array(go.total_movement_left)).forEach((i) => {
+        next = next.connected[0]
       })
+      // If the end result matches with the clicked target, let's go
+      if (next == go.current_movement_target) {
+        go.current_piece_selected.set_current_node(next)
+      } else {
+        console.log("Can't go there")
+      }
     }
   }
 
@@ -75,6 +93,17 @@ function Menu(go) {
       width: 150,
       height: 50,
       perform: this.roll_dice
+    }))
+  this.buttons.push(new Button(
+    go,
+    {
+      id: "move",
+      text: "Move",
+      x: 10,
+      y: 70,
+      width: 150,
+      height: 50,
+      perform: this.move
     }))
 }
 

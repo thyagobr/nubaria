@@ -2,6 +2,14 @@ function Piece(player) {
   this.player = player
   this.at_home = true
   this.current_node = null
+  this.x = null
+  this.y = null
+  this.set_current_node = (node) => {
+    this.current_node = node
+    this.x = this.current_node.x + this.player.go.square_size / 2
+    this.y = this.current_node.y + this.player.go.square_size / 2
+    this.at_home = false
+  }
 }
 
 function Player(go) {
@@ -36,8 +44,7 @@ function Player(go) {
   }
 
   this.spawn_piece = () => {
-    this.pieces[0].current_node = this.go.squares[18]
-    this.pieces[0].at_home = false
+    this.pieces[0].set_current_node(this.go.squares[18])
   }
 }
 
