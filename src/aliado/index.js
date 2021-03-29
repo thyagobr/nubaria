@@ -1,10 +1,13 @@
 import GameObject from "../game_object.js"
 import Menu from "./menu"
+import Player from "./player"
 
 const go = new GameObject()
 go.canvas.height = 1000
 go.canvas.width = 1200
+go.players = []
 const menu = new Menu(go)
+const player1 = new Player(go)
 
 const FPS = 33.33
 
@@ -14,9 +17,13 @@ const start = () => {
 
 const house_size = 150
 const square_size = 50
+go.house_size = house_size
+go.square_size = square_size
 const starting_point = { x: 10, y: house_size + 10 }
 const colours = ["blue", "purple", "white", "yellow", "red", "green"]
 const squares = []
+go.squares = squares
+go.current_player = player1
 
 const draw_house = (x, y, colour) => {
   go.ctx.strokeStyle = "black"
@@ -34,12 +41,7 @@ const draw_square = (x, y, w, h, colour) => {
   go.ctx.strokeRect(x, y, w, h)
 }
 
-const draw = () => {
-  draw_house(10, 10, "red")
-  draw_house(810, 10, "white")
-  draw_house(10, 810, "purple")
-  draw_house(810, 810, "green")
-
+const create_board = () => {
   // left outter lane
   for (var i = 0; i < 13; i++) {
     let square = { 
@@ -48,18 +50,8 @@ const draw = () => {
       size: square_size,
       colour: colours[i % colours.length]
     }
-
-    squares.push(square)
-
-    draw_square(
-      square.x,
-      square.y,
-      square.size,
-      square.size,
-      square.colour
-    )
+    go.squares.push(square)
   }
-
   // left-bottom outter intermission
   var left_bottom_init_post = {
     x: squares[squares.length - 1].x + square_size,
@@ -72,17 +64,9 @@ const draw = () => {
       size: square_size,
       colour: colours[(i + 1) % colours.length]
     }
-
-    squares.push(square)
-
-    draw_square(
-      square.x,
-      square.y,
-      square.size,
-      square.size,
-      square.colour
-    )
+    go.squares.push(square)
   }
+
   for (var i = 0; i < 2; i++) {
     var y_offset = 0
     let square = { 
@@ -91,19 +75,8 @@ const draw = () => {
       size: square_size,
       colour: colours[(i + 4) % colours.length]
     }
-
-    squares.push(square)
-
-    draw_square(
-      square.x,
-      square.y,
-      square.size,
-      square.size,
-      square.colour
-    )
+    go.squares.push(square)
   }
-
-
   // bottom outter lane
   var bottom_outter_init_pos = {
     x: squares[squares.length - 1].x,
@@ -116,18 +89,8 @@ const draw = () => {
       size: square_size,
       colour: colours[i % colours.length]
     }
-
-    squares.push(square)
-
-    draw_square(
-      square.x,
-      square.y,
-      square.size,
-      square.size,
-      square.colour
-    )
+    go.squares.push(square)
   }
-
   // bottom-right outter intermission
   var bottom_right_outter_init_pos = {
     x: squares[squares.length - 1].x,
@@ -140,16 +103,7 @@ const draw = () => {
       size: square_size,
       colour: colours[(i + 1) % colours.length]
     }
-
-    squares.push(square)
-
-    draw_square(
-      square.x,
-      square.y,
-      square.size,
-      square.size,
-      square.colour
-    )
+    go.squares.push(square)
   }
 
   for (var i = 0; i < 2; i++) {
@@ -161,17 +115,8 @@ const draw = () => {
       colour: colours[(i + 4) % colours.length]
     }
 
-    squares.push(square)
-
-    draw_square(
-      square.x,
-      square.y,
-      square.size,
-      square.size,
-      square.colour
-    )
+    go.squares.push(square)
   }
-
 
   // right outter lane
   var right_outter_init_pos = {
@@ -185,16 +130,7 @@ const draw = () => {
       size: square_size,
       colour: colours[i % colours.length]
     }
-
-    squares.push(square)
-
-    draw_square(
-      square.x,
-      square.y,
-      square.size,
-      square.size,
-      square.colour
-    )
+    go.squares.push(square)
   }
 
   // right-top outter intermission
@@ -206,16 +142,7 @@ const draw = () => {
       size: square_size,
       colour: colours[(i + 1) % colours.length]
     }
-
-    squares.push(square)
-
-    draw_square(
-      square.x,
-      square.y,
-      square.size,
-      square.size,
-      square.colour
-    )
+    go.squares.push(square)
   }
 
   var x_offset = squares[squares.length - 1].x
@@ -226,16 +153,7 @@ const draw = () => {
       size: square_size,
       colour: colours[(i + 4) % colours.length]
     }
-
-    squares.push(square)
-
-    draw_square(
-      square.x,
-      square.y,
-      square.size,
-      square.size,
-      square.colour
-    )
+    go.squares.push(square)
   }
 
   // top outter lane
@@ -250,16 +168,7 @@ const draw = () => {
       size: square_size,
       colour: colours[i % colours.length]
     }
-
-    squares.push(square)
-
-    draw_square(
-      square.x,
-      square.y,
-      square.size,
-      square.size,
-      square.colour
-    )
+    go.squares.push(square)
   }
 
   // top-left outter intermission
@@ -274,16 +183,7 @@ const draw = () => {
       size: square_size,
       colour: colours[(i + 1) % colours.length]
     }
-
-    squares.push(square)
-
-    draw_square(
-      square.x,
-      square.y,
-      square.size,
-      square.size,
-      square.colour
-    )
+    go.squares.push(square)
   }
 
   var x_offset = squares[squares.length - 1].x - square_size
@@ -295,9 +195,26 @@ const draw = () => {
       size: square_size,
       colour: colours[(i + 1) % colours.length]
     }
+    go.squares.push(square)
+  }
+}
 
-    squares.push(square)
+const temp_link_squares = () => {
+  go.squares.forEach((square, index) => {
+    square.connected = [go.squares[(index + 1) % go.squares.length]]
+  })
+}
 
+create_board()
+temp_link_squares()
+
+const draw = () => {
+  draw_house(10, 10, "red")
+  draw_house(810, 10, "white")
+  draw_house(10, 810, "purple")
+  draw_house(810, 810, "green")
+
+  go.squares.forEach((square) => {
     draw_square(
       square.x,
       square.y,
@@ -305,11 +222,20 @@ const draw = () => {
       square.size,
       square.colour
     )
-  }
+  })
 
   // Buttons
   menu.draw()
+  player1.draw()
 }
+
+const game_mode_callbacks = [menu.on_click_menu_button]
+const on_click = function (ev) {
+  game_mode_callbacks.forEach((callback) => {
+    callback(ev)
+  })
+}
+go.canvas.addEventListener("click", on_click, false);
 
 function game_loop() {
   draw()
