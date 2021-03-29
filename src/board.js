@@ -67,9 +67,6 @@ function Board(game_object) {
       return is_colliding(character_rect, node)
     })
 
-    // I'm gonna copy them here otherwise different entities calculating distance
-    // will affect each other's numbers. This can be solved with a different
-    // calculation algorithm as well.
     return future_movement_collisions
   }
 

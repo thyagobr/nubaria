@@ -6,6 +6,8 @@ import Character from "./character.js"
 import Editor from "./editor.js"
 import Creep from "./creep.js"
 
+import { Vector2 } from "./tapete.js"
+
 const go = new GameObject()
 const screen = new Screen(go)
 const board = new Board(go)
@@ -87,6 +89,27 @@ const draw = () => {
   }
 }
 
+function Tower(go, data) {
+  this.go = go
+  this.pos = data.pos
+
+  this.attack = () => {
+    //let calculation_data = { ...this.pos }
+    //calculation_data.speed = 50
+    //let tiles_in_radius = this.go.board.calculate_neighbours(calculation_data)
+    let distance = Vector2.distance(this.pos, creep)
+    if (distance < 200) {
+      tower_attack.draw()
+    }
+  }
+}
+
+let wp_tower_mid_green = go.editor.waypoints.find((wp) => wp.name == "green_tower_mid_first")
+let node_tower_mid_green = go.board.grid[wp_tower_mid_green.id]
+const tower_mid_green = new Tower(go, { pos: { ...node_tower_mid_green, movement_board: go.board.grid } })
+import Particle from "./particle"
+const tower_attack = new Particle(go, { pos: tower_mid_green.pos  })
+
 const start = () => {
   character.move_to_waypoint("green_spawn_heroes")
   camera.focus(character)
@@ -105,6 +128,7 @@ function game_loop() {
   creep.move()
 
   draw()
+  tower_mid_green.attack()
 
   setTimeout(game_loop, 33.33)
 }
