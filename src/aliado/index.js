@@ -1,7 +1,7 @@
 import GameObject from "../game_object.js"
 import Menu from "./menu"
 import Player from "./player"
-import { is_colliding } from "../tapete"
+import { Vector2, is_colliding } from "../tapete"
 
 const go = new GameObject()
 go.canvas.height = 1000
@@ -54,7 +54,8 @@ const create_board = () => {
       x: 10,
       y: starting_point.y + (i * square_size),
       size: square_size,
-      colour: colours[i % colours.length]
+      colour: colours[i % colours.length],
+      default_colour: colours[i % colours.length]
     }
     go.squares.push(square)
   }
@@ -68,7 +69,8 @@ const create_board = () => {
       x: left_bottom_init_post.x + (i * square_size),
       y: left_bottom_init_post.y,
       size: square_size,
-      colour: colours[(i + 1) % colours.length]
+      colour: colours[(i + 1) % colours.length],
+      default_colour: colours[(i + 1) % colours.length]
     }
     go.squares.push(square)
   }
@@ -79,7 +81,8 @@ const create_board = () => {
       x: squares[squares.length - 1].x,
       y: squares[squares.length - 1].y + (i + 1 * square_size),
       size: square_size,
-      colour: colours[(i + 4) % colours.length]
+      colour: colours[(i + 4) % colours.length],
+      default_colour: colours[(i + 4) % colours.length]
     }
     go.squares.push(square)
   }
@@ -93,7 +96,8 @@ const create_board = () => {
       x: bottom_outter_init_pos.x + (i * square_size),
       y: bottom_outter_init_pos.y,
       size: square_size,
-      colour: colours[i % colours.length]
+      colour: colours[i % colours.length],
+      default_colour: colours[i % colours.length]
     }
     go.squares.push(square)
   }
@@ -107,7 +111,8 @@ const create_board = () => {
       x: bottom_right_outter_init_pos.x,
       y: bottom_right_outter_init_pos.y - (i * square_size),
       size: square_size,
-      colour: colours[(i + 1) % colours.length]
+      colour: colours[(i + 1) % colours.length],
+      default_colour: colours[(i + 1) % colours.length]
     }
     go.squares.push(square)
   }
@@ -118,7 +123,8 @@ const create_board = () => {
       x: squares[squares.length - 1].x + (i + 1 * square_size),
       y: squares[squares.length - 1].y,
       size: square_size,
-      colour: colours[(i + 4) % colours.length]
+      colour: colours[(i + 4) % colours.length],
+      default_colour: colours[(i + 4) % colours.length]
     }
 
     go.squares.push(square)
@@ -134,7 +140,8 @@ const create_board = () => {
       x: right_outter_init_pos.x,
       y: right_outter_init_pos.y - (i * square_size),
       size: square_size,
-      colour: colours[i % colours.length]
+      colour: colours[i % colours.length],
+      default_colour: colours[i % colours.length]
     }
     go.squares.push(square)
   }
@@ -146,7 +153,8 @@ const create_board = () => {
       x: squares[squares.length - 1].x - (i + 1 * square_size),
       y: squares[squares.length - 1].y,
       size: square_size,
-      colour: colours[(i + 1) % colours.length]
+      colour: colours[(i + 1) % colours.length],
+      default_colour: colours[(i + 1) % colours.length]
     }
     go.squares.push(square)
   }
@@ -157,7 +165,8 @@ const create_board = () => {
       x: x_offset,
       y: squares[squares.length - 1].y - (i + 1 * square_size),
       size: square_size,
-      colour: colours[(i + 4) % colours.length]
+      colour: colours[(i + 4) % colours.length],
+      default_colour: colours[(i + 4) % colours.length]
     }
     go.squares.push(square)
   }
@@ -172,7 +181,8 @@ const create_board = () => {
       x: top_outter_init_post.x - (i * square_size),
       y: top_outter_init_post.y,
       size: square_size,
-      colour: colours[i % colours.length]
+      colour: colours[i % colours.length],
+      default_colour: colours[i % colours.length]
     }
     go.squares.push(square)
   }
@@ -187,7 +197,8 @@ const create_board = () => {
       x: top_left_outter_init_pos.x,
       y: top_left_outter_init_pos.y + (i * square_size),
       size: square_size,
-      colour: colours[(i + 1) % colours.length]
+      colour: colours[(i + 1) % colours.length],
+      default_colour: colours[(i + 1) % colours.length]
     }
     go.squares.push(square)
   }
@@ -199,7 +210,8 @@ const create_board = () => {
       x: x_offset - (i * square_size),
       y: y_offset,
       size: square_size,
-      colour: colours[(i + 1) % colours.length]
+      colour: colours[(i + 1) % colours.length],
+      default_colour: colours[(i + 1) % colours.length]
     }
     go.squares.push(square)
   }
@@ -235,8 +247,6 @@ const draw = () => {
   player1.draw()
 }
 
-import { Vector2 } from "../tapete"
-
 const mouse_click = (ev) => {
   console.log(`Click: ${ev.clientX},${ev.clientY}`)
   if (go.game_state == "awaiting_player_movement") {
@@ -250,6 +260,7 @@ const mouse_click = (ev) => {
 
     if (clicked_piece) {
       go.current_piece_selected = clicked_piece
+      clicked_piece.colour = "cyan"
       return
     }
 
@@ -258,7 +269,11 @@ const mouse_click = (ev) => {
       return is_colliding(square_rect, mouse_click_rect)
     })
     if (clicked_square) {
+      if (go.current_movement_target) {
+        go.current_movement_target.colour = go.current_movement_target.default_colour
+      }
       go.current_movement_target = clicked_square
+      clicked_square.colour = "cyan"
     }
   }
 }

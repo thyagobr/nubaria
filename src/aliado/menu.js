@@ -76,6 +76,11 @@ function Menu(go) {
       // If the end result matches with the clicked target, let's go
       if (next == go.current_movement_target) {
         go.current_piece_selected.set_current_node(next)
+        go.current_piece_selected.colour = go.current_piece_selected.default_colour
+        go.current_piece_selected = null
+        go.current_movement_target.colour = go.current_movement_target.default_colour
+        go.current_movement_target = null
+        go.total_movement_left = null
       } else {
         console.log("Can't go there")
       }

@@ -2,6 +2,8 @@ function Piece(player) {
   this.player = player
   this.at_home = true
   this.current_node = null
+  this.default_colour = "purple"
+  this.colour = "purple"
   this.x = null
   this.y = null
   this.set_current_node = (node) => {
@@ -27,14 +29,14 @@ function Player(go) {
     this.pieces.forEach((piece, index) => {
       if (piece.at_home) {
         this.go.ctx.beginPath()
-        this.go.ctx.fillStyle = "purple"
+        this.go.ctx.fillStyle = piece.colour
         this.go.ctx.lineWidth = 3
         this.go.ctx.arc(40 + (index * 30), 880, 15, 0, 2 * Math.PI)
         this.go.ctx.fill()
         this.go.ctx.stroke()
       } else if (piece.current_node !== null) {
         this.go.ctx.beginPath()
-        this.go.ctx.fillStyle = "purple"
+        this.go.ctx.fillStyle = piece.colour
         this.go.ctx.lineWidth = 3
         this.go.ctx.arc(piece.current_node.x + this.go.square_size / 2, piece.current_node.y + this.go.square_size / 2, 15, 0, 2 * Math.PI)
         this.go.ctx.fill()
