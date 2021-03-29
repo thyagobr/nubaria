@@ -46,7 +46,10 @@ function Player(go) {
   }
 
   this.spawn_piece = () => {
-    this.pieces[0].set_current_node(this.go.squares[18])
+    let pieces_at_home = this.pieces.filter((piece) => piece.at_home)
+    if (pieces_at_home.length > 0) {
+      pieces_at_home[0].set_current_node(this.go.squares[18])
+    }
   }
 }
 
