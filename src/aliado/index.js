@@ -1,7 +1,10 @@
 import GameObject from "../game_object.js"
+import Menu from "./menu"
 
 const go = new GameObject()
 go.canvas.height = 1000
+go.canvas.width = 1200
+const menu = new Menu(go)
 
 const FPS = 33.33
 
@@ -303,6 +306,9 @@ const draw = () => {
       square.colour
     )
   }
+
+  // Buttons
+  menu.draw()
 }
 
 function game_loop() {
