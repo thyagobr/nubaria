@@ -1,3 +1,4 @@
+import { is_colliding } from "../tapete"
 function Piece(player) {
   this.player = player
   this.at_home = true
@@ -48,8 +49,28 @@ function Player(go) {
   this.spawn_piece = () => {
     let pieces_at_home = this.pieces.filter((piece) => piece.at_home)
     if (pieces_at_home.length > 0) {
+      var collided_piece = this.check_piece_collision(pieces_at_home[0], this.go.squares[18])[0]
+      if (collided_piece) {
+        if (collided_piece.player == go.current_player) {
+          console.log("STACK")
+        } else {
+          console.log("BACK HOME BABE")
+        }
+      }
       pieces_at_home[0].set_current_node(this.go.squares[18])
     }
+  }
+
+  this.check_piece_collision = (piece, square) => {
+    return this.go.players.reduce((colliding_pieces, player) => {
+      let tmp = player.pieces.filter((piece) => {
+        let piece_rect = { ...piece, width: 1, height: 1 }
+        let square_rect = { ...square, width: square.size, height: square.size }
+        return is_colliding(square_rect, piece_rect)
+      })
+
+     return  colliding_pieces.concat(tmp)
+    }, [])
   }
 }
 
