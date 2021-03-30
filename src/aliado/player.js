@@ -7,6 +7,7 @@ function Piece(player) {
   this.colour = "purple"
   this.x = null
   this.y = null
+  this.stacked_with = []
   this.set_current_node = (node) => {
     this.current_node = node
     this.x = this.current_node.x + this.player.go.square_size / 2
@@ -27,7 +28,9 @@ function Player(go) {
   }
 
   this.draw = () => {
-    this.pieces.forEach((piece, index) => {
+    this.pieces.
+      filter((piece) => !piece.stacked).
+      forEach((piece, index) => {
       if (piece.at_home) {
         this.go.ctx.beginPath()
         this.go.ctx.fillStyle = piece.colour
@@ -42,6 +45,12 @@ function Player(go) {
         this.go.ctx.arc(piece.current_node.x + this.go.square_size / 2, piece.current_node.y + this.go.square_size / 2, 15, 0, 2 * Math.PI)
         this.go.ctx.fill()
         this.go.ctx.stroke()
+        if (piece.stacked_with.length > 0) {
+          this.go.ctx.fillStyle = "white";
+          this.go.ctx.font = "12px sans-serif"
+          var text_measurement = this.go.ctx.measureText(piece.stacked_with.length + 1)
+          this.go.ctx.fillText(piece.stacked_with.length + 1, piece.current_node.x + this.go.square_size / 2 - (text_measurement.width / 2), piece.current_node.y + (this.go.square_size / 2) + (text_measurement.width / 2))
+        }
       }
     })
   }
@@ -52,12 +61,15 @@ function Player(go) {
       var collided_piece = this.check_piece_collision(pieces_at_home[0], this.go.squares[18])[0]
       if (collided_piece) {
         if (collided_piece.player == go.current_player) {
-          console.log("STACK")
+          collided_piece.stacked_with.push(pieces_at_home[0])
+          pieces_at_home[0].stacked = true
+          pieces_at_home[0].at_home = false
         } else {
           console.log("BACK HOME BABE")
         }
+      } else {
+        pieces_at_home[0].set_current_node(this.go.squares[18])
       }
-      pieces_at_home[0].set_current_node(this.go.squares[18])
     }
   }
 

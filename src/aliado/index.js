@@ -255,7 +255,9 @@ const mouse_click = (ev) => {
     let clicked_piece = go.current_player.pieces.
       filter((piece) => !piece.at_home).
       find((piece) => {
-        return Vector2.distance(piece, mouse_click_rect) <= 15
+        //console.log(`Checking piece at: ${piece.x},${piece.y}`)
+        let distance = Vector2.distance(piece, mouse_click_rect)
+        return distance <= 15
       })
 
     if (clicked_piece) {
