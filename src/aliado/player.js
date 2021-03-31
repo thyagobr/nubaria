@@ -65,6 +65,7 @@ function Player(go) {
           pieces_at_home[0].stacked = true
           pieces_at_home[0].at_home = false
         } else {
+          // Future Kill piece algorithm
           console.log("BACK HOME BABE")
         }
       } else {

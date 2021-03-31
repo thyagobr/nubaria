@@ -75,11 +75,29 @@ function Menu(go) {
       })
       // If the end result matches with the clicked target, let's go
       if (next == go.current_movement_target) {
-        go.current_piece_selected.set_current_node(next)
+        // Checking if there is already one of our
+        let collided_piece = null
+        go.players.forEach((player) => collided_piece = player.pieces.find((piece) => !piece.at_home && !piece.stacked && piece.current_node == next))
+        if (collided_piece) {
+          collided_piece.stacked_with.push(go.current_piece_selected)
+          let stacked_piece = null
+          while(stacked_piece = go.current_piece_selected.stacked_with.pop()) {
+            collided_piece.stacked_with.push(stacked_piece)
+          }
+          go.current_piece_selected.stacked = true
+          go.current_piece_selected.at_home = false
+          go.current_piece_selected.current_node = null // Works?
+        } else {
+          // Changing place and reseting former place's default unselected colour
+          go.current_piece_selected.set_current_node(next)
+        }
+        // Unselect piece
         go.current_piece_selected.colour = go.current_piece_selected.default_colour
         go.current_piece_selected = null
         go.current_movement_target.colour = go.current_movement_target.default_colour
         go.current_movement_target = null
+
+        // Remove movement from movement pool
         go.total_movement_left = null
       } else {
         console.log("Can't go there")
