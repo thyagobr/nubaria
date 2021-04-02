@@ -78,14 +78,16 @@ function Menu(go) {
 
     console.log(`${go.dice_1}, ${go.dice_2}`)
 
-    if (go.dice_1 == 6) {
-      go.dice_1_used = true
-      go.total_movement_left -= go.dice_1
-      go.current_player.spawn_piece()
-      console.log(`${go.dice_1} used`)
-    }
+    // Only spend the 6 if there are pieces at home
+      if ((go.dice_1 == 6) && (go.current_player.pieces.some((piece) => piece.at_home))) {
+        go.dice_1_used = true
+        go.total_movement_left -= go.dice_1
+        go.current_player.spawn_piece()
+        console.log(`${go.dice_1} used`)
+      }
 
-    if (go.dice_2 == 6) {
+    // Only spend the 6 if there are pieces at home
+    if ((go.dice_2 == 6) && (go.current_player.pieces.some((piece) => piece.at_home))) {
       go.dice_2_used = true
       go.total_movement_left -= go.dice_2
       go.current_player.spawn_piece()
