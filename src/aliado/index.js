@@ -14,6 +14,7 @@ go.current_piece_selected = null
 // END
 const menu = new Menu(go)
 const player1 = new Player(go)
+const player2 = new Player(go)
 
 const FPS = 33.33
 
@@ -227,11 +228,6 @@ create_board()
 temp_link_squares()
 
 const draw = () => {
-  draw_house(10, 10, "red")
-  draw_house(810, 10, "white")
-  draw_house(10, 810, "purple")
-  draw_house(810, 810, "green")
-
   go.squares.forEach((square) => {
     draw_square(
       square.x,
@@ -245,6 +241,7 @@ const draw = () => {
   // Buttons
   menu.draw()
   player1.draw()
+  player2.draw()
 }
 
 const mouse_click = (ev) => {

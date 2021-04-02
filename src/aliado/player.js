@@ -1,10 +1,12 @@
 import { is_colliding } from "../tapete"
+import House from "./house"
+
 function Piece(player) {
   this.player = player
   this.at_home = true
   this.current_node = null
-  this.default_colour = "purple"
-  this.colour = "purple"
+  this.default_colour = player.house.colour
+  this.colour = player.house.colour
   this.x = null
   this.y = null
   this.stacked_with = []
@@ -20,6 +22,7 @@ function Player(go) {
   this.go = go
   this.id = this.go.players.length
   this.go.players.push(this)
+  this.house = new House(this)
   this.at_home = true
   this.current_square = null
   this.pieces = []
@@ -28,6 +31,7 @@ function Player(go) {
   }
 
   this.draw = () => {
+    this.house.draw()
     this.pieces.
       filter((piece) => !piece.stacked).
       forEach((piece, index) => {
@@ -35,7 +39,13 @@ function Player(go) {
         this.go.ctx.beginPath()
         this.go.ctx.fillStyle = piece.colour
         this.go.ctx.lineWidth = 3
-        this.go.ctx.arc(40 + (index * 30), 880, 15, 0, 2 * Math.PI)
+        this.go.ctx.arc(
+          this.house.x + (this.go.house_size / 5) + (index * 30), // x
+          this.house.y + (this.go.house_size / 2), // y
+          15, // r
+          0, // starting angle
+          2 * Math.PI // end angle
+        )
         this.go.ctx.fill()
         this.go.ctx.stroke()
       } else if (piece.current_node !== null) {
@@ -58,7 +68,7 @@ function Player(go) {
   this.spawn_piece = () => {
     let pieces_at_home = this.pieces.filter((piece) => piece.at_home)
     if (pieces_at_home.length > 0) {
-      var collided_piece = this.check_piece_collision(pieces_at_home[0], this.go.squares[18])[0]
+      var collided_piece = this.check_piece_collision(pieces_at_home[0], this.go.squares[this.house.spawn_index])[0]
       if (collided_piece) {
         if (collided_piece.player == go.current_player) {
           collided_piece.stacked_with.push(pieces_at_home[0])
@@ -69,7 +79,7 @@ function Player(go) {
           console.log("BACK HOME BABE")
         }
       } else {
-        pieces_at_home[0].set_current_node(this.go.squares[18])
+        pieces_at_home[0].set_current_node(this.go.squares[this.house.spawn_index])
       }
     }
   }
