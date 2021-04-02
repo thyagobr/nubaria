@@ -4,8 +4,10 @@ import Player from "./player"
 import { Vector2, is_colliding } from "../tapete"
 
 const go = new GameObject()
-go.canvas.height = 1000
+go.canvas.height = 1200
 go.canvas.width = 1200
+go.board_height = 1000
+go.board_width = 1200
 go.players = []
 // These enable player movement
 go.game_state = "uninitialized"

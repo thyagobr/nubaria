@@ -4,28 +4,60 @@ import Button from "./button"
 function Menu(go) {
   this.go = go
   this.go.menu = this
+  this.dice_1 = null
+  this.dice_2 = null
 
   this.draw = () => {
     this.buttons.forEach((button) => {
       this.go.ctx.strokeStyle = "black"
-      this.go.ctx.strokeRect(this.go.canvas_rect.width + button.x + 5, button.y + 5, 145, 45)
+      this.go.ctx.strokeRect(button.x, button.y + 5, 145, 45)
       this.go.ctx.fillStyle = "purple"
-      this.go.ctx.fillRect(this.go.canvas_rect.width + button.x, button.y, 150, 50)
+      this.go.ctx.fillRect(button.x, button.y, 150, 50)
       this.go.ctx.fillStyle = "white";
       this.go.ctx.font = "21px sans-serif"
       var text_measurement = this.go.ctx.measureText(button.text)
-      this.go.ctx.fillText(button.text, this.go.canvas_rect.width + button.x + (button.width / 2) - (text_measurement.width / 2), button.y + 10 + (button.height / 2) - 5)
+      this.go.ctx.fillText(button.text, button.x + (button.width / 2) - (text_measurement.width / 2), button.y + 10 + (button.height / 2) - 5)
     })
+
+    this.draw_dice()
+  }
+
+  this.draw_dice = () => {
+    // d1
+    this.go.ctx.strokeStyle = "black"
+    this.go.ctx.strokeRect(170, this.go.board_height + 15, 40, 45)
+    this.go.ctx.fillStyle = "white"
+    this.go.ctx.fillRect(170, this.go.board_height + 15, 40, 45)
+    if (go.dice_1_used) {
+      this.go.ctx.fillStyle = "rgba(0, 0, 0, 0.6)"
+      this.go.ctx.fillRect(170, this.go.board_height + 15, 40, 45)
+    }
+    this.go.ctx.fillStyle = "black";
+    this.go.ctx.font = "21px sans-serif"
+    var text_measurement = this.go.ctx.measureText(go.dice_1 || "-")
+    this.go.ctx.fillText(go.dice_1 || "-", 170 + 20 - (text_measurement.width / 2), this.go.board_height + 15 + 30)
+    // d2
+    this.go.ctx.strokeStyle = "black"
+    this.go.ctx.strokeRect(230, this.go.board_height + 15, 40, 45)
+    this.go.ctx.fillStyle = "white"
+    this.go.ctx.fillRect(230, this.go.board_height + 15, 40, 45)
+    if (go.dice_2_used) {
+      this.go.ctx.fillStyle = "rgba(0, 0, 0, 0.6)"
+      this.go.ctx.fillRect(230, this.go.board_height + 15, 40, 45)
+    }
+    this.go.ctx.fillStyle = "black";
+    this.go.ctx.font = "21px sans-serif"
+    var text_dice_2 = go.dice_2 || "-"
+    var text_measurement = this.go.ctx.measureText(text_dice_2)
+    this.go.ctx.fillText(text_dice_2, 230 + 20 - (text_measurement.width / 2), this.go.board_height + 15 + 30)
   }
 
   // TODO: investigate why canvas_rect width works here...
   this.on_click_menu_button = (ev) => {
     let collision_click = { x: ev.clientX, y: ev.clientY, width: 1, height: 1 }
-    if (ev.clientX > this.go.canvas_rect.width) {
+    if (ev.clientY > this.go.board_height) {
       this.buttons.find((button) => {
-        var local_button = { ...button }
-        local_button.x = local_button.x + this.go.canvas_rect.width;
-        if (is_colliding(local_button, { x: ev.clientX, y: ev.clientY, width: 1, height: 1})) {
+        if (is_colliding(button, { x: ev.clientX, y: ev.clientY, width: 1, height: 1})) {
           button.perform()
         }
       })
@@ -33,39 +65,37 @@ function Menu(go) {
   }
 
   this.roll_dice = () => {
-    let dice_1 = Math.trunc(Math.random() * 6) + 1
-    let dice_2 = Math.trunc(Math.random() * 6) + 1
-    let dice_1_used = false
-    let dice_2_used = false
-    let total_movement = dice_1 + dice_2
+    go.dice_1 = Math.trunc(Math.random() * 6) + 1
+    go.dice_2 = Math.trunc(Math.random() * 6) + 1
+    go.dice_1_used = false
+    go.dice_2_used = false
+    go.total_movement_left = go.dice_1 + go.dice_2
 
-    console.log(`${dice_1}, ${dice_2}`)
+    console.log(`${go.dice_1}, ${go.dice_2}`)
 
-    if (dice_1 == 6) {
-      dice_1_used = true
-      total_movement -= dice_1
-      this.go.current_player.spawn_piece()
-      console.log(`${dice_1} used`)
+    if (go.dice_1 == 6) {
+      go.dice_1_used = true
+      go.total_movement_left -= go.dice_1
+      go.current_player.spawn_piece()
+      console.log(`${go.dice_1} used`)
     }
 
-    if (dice_2 == 6) {
-      dice_2_used = true
-      total_movement -= dice_2
-      this.go.current_player.spawn_piece()
-      console.log(`${dice_2} used`)
+    if (go.dice_2 == 6) {
+      go.dice_2_used = true
+      go.total_movement_left -= go.dice_2
+      go.current_player.spawn_piece()
+      console.log(`${go.dice_2} used`)
     }
 
     // Can the plaeyer do anything?
     let movable_pieces = this.go.current_player.pieces.filter((piece) => piece.current_node != null)
     if (movable_pieces.length > 0) {
       go.game_state = "awaiting_player_movement"
-      go.total_movement_left = total_movement
-      //Array.from(Array(total_movement)).forEach((i) => {
-      //  movable_pieces[0].current_node = movable_pieces[0].current_node.connected[0]
-      //})
     }
   }
 
+  // TODO; We need to add here the idea of marking which dice has been used
+  // Currently, it's all mixed under total_movement
   this.move = () => {
     if (go.current_piece_selected) {
       // Is the movement left enough to exactly reach this square?
@@ -76,8 +106,12 @@ function Menu(go) {
       // If the end result matches with the clicked target, let's go
       if (next == go.current_movement_target) {
         // Checking if there is already one of our
-        let collided_piece = null
-        go.players.forEach((player) => collided_piece = player.pieces.find((piece) => !piece.at_home && !piece.stacked && piece.current_node == next))
+        let collided_piece = go.players.find((player) => {
+          return player.pieces.find((piece) => {
+            return !piece.at_home && !piece.stacked && piece.current_node == next
+          })}
+        )
+
         if (collided_piece) {
           collided_piece.stacked_with.push(go.current_piece_selected)
           let stacked_piece = null
@@ -112,7 +146,7 @@ function Menu(go) {
       id: "roll_dice",
       text: "Roll the die",
       x: 10,
-      y: 10,
+      y: this.go.board_height + 10,
       width: 150,
       height: 50,
       perform: this.roll_dice
@@ -123,7 +157,7 @@ function Menu(go) {
       id: "move",
       text: "Move",
       x: 10,
-      y: 70,
+      y: this.go.board_height + 70,
       width: 150,
       height: 50,
       perform: this.move
