@@ -14,12 +14,17 @@ function Menu(go) {
       this.go.ctx.fillStyle = "purple"
       this.go.ctx.fillRect(button.x, button.y, 150, 50)
       this.go.ctx.fillStyle = "white";
-      this.go.ctx.font = "21px sans-serif"
+      this.go.ctx.font = "sans-serif"
       var text_measurement = this.go.ctx.measureText(button.text)
       this.go.ctx.fillText(button.text, button.x + (button.width / 2) - (text_measurement.width / 2), button.y + 10 + (button.height / 2) - 5)
     })
 
     this.draw_dice()
+    this.draw_current_player()
+  }
+
+  this.draw_current_player = () => {
+    this.go.ctx.fillText(`Current player: ${this.go.current_player.house.colour}`, 10, 995)
   }
 
   this.draw_dice = () => {
