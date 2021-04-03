@@ -1,29 +1,12 @@
 import { is_colliding } from "../tapete"
 import House from "./house"
-
-function Piece(player) {
-  this.player = player
-  this.at_home = true
-  this.current_node = null
-  this.default_colour = player.house.colour
-  this.colour = player.house.colour
-  this.x = null
-  this.y = null
-  this.stacked_with = []
-  this.set_current_node = (node) => {
-    this.current_node = node
-    this.x = this.current_node.x + this.player.go.square_size / 2
-    this.y = this.current_node.y + this.player.go.square_size / 2
-    this.at_home = false
-  }
-}
+import Piece from "./piece"
 
 function Player(go) {
   this.go = go
   this.id = this.go.players.length
   this.go.players.push(this)
   this.house = new House(this)
-  this.at_home = true
   this.current_square = null
   this.pieces = []
   for (var i = 0; i < 4; i++) {

@@ -79,12 +79,12 @@ function Menu(go) {
     console.log(`${go.dice_1}, ${go.dice_2}`)
 
     // Only spend the 6 if there are pieces at home
-      if ((go.dice_1 == 6) && (go.current_player.pieces.some((piece) => piece.at_home))) {
-        go.dice_1_used = true
-        go.total_movement_left -= go.dice_1
-        go.current_player.spawn_piece()
-        console.log(`${go.dice_1} used`)
-      }
+    if ((go.dice_1 == 6) && (go.current_player.pieces.some((piece) => piece.at_home))) {
+      go.dice_1_used = true
+      go.total_movement_left -= go.dice_1
+      go.current_player.spawn_piece()
+      console.log(`${go.dice_1} used`)
+    }
 
     // Only spend the 6 if there are pieces at home
     if ((go.dice_2 == 6) && (go.current_player.pieces.some((piece) => piece.at_home))) {
@@ -107,11 +107,42 @@ function Menu(go) {
     if (go.current_piece_selected) {
       // Is the movement left enough to exactly reach this square?
       let next = go.current_piece_selected.current_node
-      Array.from(Array(go.total_movement_left)).forEach((i) => {
-        next = next.connected[0]
-      })
+      let does_it_reach_with_d1 = false
+      let does_it_reach_with_d2 = false
+
+      if ((go.dice_1 == 6) || (go.dice_2 == 6)) {
+        if (!go.dice_1_used) {
+          Array.from(Array(go.dice_1)).forEach((i) => {
+            next = next.connected[0]
+          })
+          does_it_reach_with_d1 = (next == go.current_movement_target)
+        }
+
+        if (!go.dice_2_used && !does_it_reach_with_d1) {
+          next = go.current_piece_selected.current_node
+          Array.from(Array(go.dice_2)).forEach((i) => {
+            next = next.connected[0]
+          })
+          does_it_reach_with_d2 = (next == go.current_movement_target)
+        }
+      }
+      if (!does_it_reach_with_d1 && !does_it_reach_with_d2) {
+        next = go.current_piece_selected.current_node
+        Array.from(Array(go.total_movement_left)).forEach((i) => {
+          next = next.connected[0]
+        })
+      }
+
       // If the end result matches with the clicked target, let's go
       if (next == go.current_movement_target) {
+        if (does_it_reach_with_d1) {
+          go.dice_1_used = true
+          go.total_movement_left -= go.dice_1_used
+        }
+        if (does_it_reach_with_d2) {
+          go.dice_2_used = true
+          go.total_movement_left -= go.dice_2_used
+        }
         // Checking if there is already one of our
         let collided_piece = go.players.find((player) => {
           return player.pieces.find((piece) => {
@@ -139,7 +170,7 @@ function Menu(go) {
         go.current_movement_target = null
 
         // Remove movement from movement pool
-        go.total_movement_left = null
+        if (go.total_movement_left = 0) { go.total_movement_left = null }
       } else {
         console.log("Can't go there")
       }
