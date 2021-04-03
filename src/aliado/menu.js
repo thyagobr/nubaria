@@ -24,6 +24,9 @@ function Menu(go) {
   }
 
   this.draw_current_player = () => {
+    this.go.ctx.fillStyle = "white"
+    this.go.ctx.fillRect(10, 975, 250, 30)
+    this.go.ctx.fillStyle = "black"
     this.go.ctx.fillText(`Current player: ${this.go.current_player.house.colour}`, 10, 995)
   }
 
@@ -69,6 +72,16 @@ function Menu(go) {
     }
   }
 
+  this.house_leaving_combos = [
+    [6, 6]
+  ]
+
+  this.dice_combo_leaves_the_house = () => {
+    let dice_combo_leaves_the_house = this.house_leaving_combos.some((combo) => {
+      return ((go.dice_1 == combo[0]) && (go.dice_2 == combo[1]))
+    })
+  }
+
   this.roll_dice = () => {
     go.dice_1 = Math.trunc(Math.random() * 6) + 1
     go.dice_2 = Math.trunc(Math.random() * 6) + 1
@@ -79,6 +92,11 @@ function Menu(go) {
     console.log(`${go.dice_1}, ${go.dice_2}`)
 
     // Only spend the 6 if there are pieces at home
+    let all_pieces_at_home = go.current_player.pieces.every((piece) => piece.at_home)
+    if (all_pieces_at_home && !this.dice_combo_leaves_the_house()) {
+      console.log("next_turn")
+      go.game_state = "next_turn"
+    }
     if ((go.dice_1 == 6) && (go.current_player.pieces.some((piece) => piece.at_home))) {
       go.dice_1_used = true
       go.total_movement_left -= go.dice_1

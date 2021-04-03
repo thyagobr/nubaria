@@ -1,9 +1,9 @@
 const HOUSE_POSITIONS = [
   // x, y, colour, index_of_spawn
   [10, 10, "red", 0],
-  [10, 810, "purple", 36],
-  [810, 810, "green", 52],
-  [810, 10, "white", 18],
+  [10, 810, "purple", 18],
+  [810, 810, "green", 36],
+  [810, 10, "white", 54],
 ]
 
 function House(player) {

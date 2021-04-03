@@ -102,7 +102,10 @@ function Piece(player) {
       this.go.current_movement_target = null
 
       // Remove movement from movement pool
-      if (this.go.total_movement_left = 0) { this.go.total_movement_left = null }
+      if (this.go.dice_1_used && this.go.dice_2_used) {
+        this.go.game_state = "next_turn"
+        this.go.total_movement_left = null
+      }
     } else {
       console.log("Can't this.go.there")
     }

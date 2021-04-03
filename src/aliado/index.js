@@ -26,6 +26,11 @@ const start = () => {
   setTimeout(game_loop, FPS)
 }
 
+const next_turn = () => {
+  let current_player_id = go.current_player.id
+  go.current_player = go.players[(current_player_id + 1) % go.players.length]
+}
+
 const house_size = 150
 const square_size = 50
 go.house_size = house_size
@@ -292,6 +297,12 @@ go.canvas.addEventListener("click", on_click, false);
 
 function game_loop() {
   draw()
+
+  if (((go.game_state == "next_turn") || ((go.dice_1_used) && (go.dice_2_used))) && (go.game_state != "awaiting_player_die_roll")) {
+    console.log("awaiting player die roll")
+    go.game_state = "awaiting_player_die_roll"
+    next_turn()
+  }
 
   setTimeout(game_loop, FPS)
 }
