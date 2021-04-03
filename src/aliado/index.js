@@ -17,6 +17,8 @@ go.current_piece_selected = null
 const menu = new Menu(go)
 const player1 = new Player(go)
 const player2 = new Player(go)
+const player3 = new Player(go)
+const player4 = new Player(go)
 
 const FPS = 33.33
 
@@ -242,8 +244,9 @@ const draw = () => {
 
   // Buttons
   menu.draw()
-  player1.draw()
-  player2.draw()
+  go.players.forEach((player) => {
+    player.draw()
+  })
 }
 
 const mouse_click = (ev) => {

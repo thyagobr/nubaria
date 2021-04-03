@@ -104,77 +104,7 @@ function Menu(go) {
   // TODO; We need to add here the idea of marking which dice has been used
   // Currently, it's all mixed under total_movement
   this.move = () => {
-    if (go.current_piece_selected) {
-      // Is the movement left enough to exactly reach this square?
-      let next = go.current_piece_selected.current_node
-      let does_it_reach_with_d1 = false
-      let does_it_reach_with_d2 = false
-
-      if ((go.dice_1 == 6) || (go.dice_2 == 6)) {
-        if (!go.dice_1_used) {
-          Array.from(Array(go.dice_1)).forEach((i) => {
-            next = next.connected[0]
-          })
-          does_it_reach_with_d1 = (next == go.current_movement_target)
-        }
-
-        if (!go.dice_2_used && !does_it_reach_with_d1) {
-          next = go.current_piece_selected.current_node
-          Array.from(Array(go.dice_2)).forEach((i) => {
-            next = next.connected[0]
-          })
-          does_it_reach_with_d2 = (next == go.current_movement_target)
-        }
-      }
-      if (!does_it_reach_with_d1 && !does_it_reach_with_d2) {
-        next = go.current_piece_selected.current_node
-        Array.from(Array(go.total_movement_left)).forEach((i) => {
-          next = next.connected[0]
-        })
-      }
-
-      // If the end result matches with the clicked target, let's go
-      if (next == go.current_movement_target) {
-        if (does_it_reach_with_d1) {
-          go.dice_1_used = true
-          go.total_movement_left -= go.dice_1_used
-        }
-        if (does_it_reach_with_d2) {
-          go.dice_2_used = true
-          go.total_movement_left -= go.dice_2_used
-        }
-        // Checking if there is already one of our
-        let collided_piece = go.players.find((player) => {
-          return player.pieces.find((piece) => {
-            return !piece.at_home && !piece.stacked && piece.current_node == next
-          })}
-        )
-
-        if (collided_piece) {
-          collided_piece.stacked_with.push(go.current_piece_selected)
-          let stacked_piece = null
-          while(stacked_piece = go.current_piece_selected.stacked_with.pop()) {
-            collided_piece.stacked_with.push(stacked_piece)
-          }
-          go.current_piece_selected.stacked = true
-          go.current_piece_selected.at_home = false
-          go.current_piece_selected.current_node = null // Works?
-        } else {
-          // Changing place and reseting former place's default unselected colour
-          go.current_piece_selected.set_current_node(next)
-        }
-        // Unselect piece
-        go.current_piece_selected.colour = go.current_piece_selected.default_colour
-        go.current_piece_selected = null
-        go.current_movement_target.colour = go.current_movement_target.default_colour
-        go.current_movement_target = null
-
-        // Remove movement from movement pool
-        if (go.total_movement_left = 0) { go.total_movement_left = null }
-      } else {
-        console.log("Can't go there")
-      }
-    }
+    this.go.current_piece_selected.move()
   }
 
   this.buttons = []
