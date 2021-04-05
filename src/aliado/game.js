@@ -312,4 +312,4 @@ function game_loop() {
 }
 
 export { start_game }
-window.Aliado.start_game = start_game()
+window.Aliado.start_game = start_game
