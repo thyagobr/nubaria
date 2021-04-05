@@ -17,9 +17,6 @@ const FPS = 33.33
 
 const start_game = () => {
   go = new GameObject()
-  menu = new Menu(go)
-  player1 = new Player(go)
-
   go.house_size = house_size
   go.square_size = square_size
   go.canvas.height = 1200
@@ -27,12 +24,14 @@ const start_game = () => {
   go.board_height = 1000
   go.board_width = 1200
   go.players = []
-  // These enable player movement
   go.game_state = "uninitialized"
   go.current_movement_target = null
   go.current_piece_selected = null
-  // END
   go.squares = squares
+
+  menu = new Menu(go)
+
+  player1 = new Player(go)
   go.current_player = player1
 
   game_mode_callbacks.push(menu.on_click_menu_button)
