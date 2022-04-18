@@ -30,12 +30,6 @@ function Creep(go) {
   this.is_dead = function() { return this.current_hp <= 0 }
   this.is_alive = function() { return this.current_hp > 0 }
 
-  this.move_to_waypoint = (wp_name) => {
-    let wp = this.go.editor.waypoints.find((wp) => wp.name === wp_name)
-    let node = this.go.board.grid[wp.id]
-    this.coords(node)
-  }
-
   this.draw = function() {
     this.go.ctx.drawImage(this.image, 0, 0, this.image_width, this.image_height, this.x, this.y, this.width, this.height)
     this.health_bar.draw(this.hp, this.current_hp)

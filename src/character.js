@@ -18,8 +18,8 @@ function Character(go, id) {
   this.direction = null
 
   // Combat
-  this.hp = 10.0
-  this.current_hp = 10.0
+  this.hp = 100.0
+  this.current_hp = 100.0
 
   this.mana = 10.0
   this.current_mana = 10.0

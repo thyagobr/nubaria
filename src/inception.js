@@ -26,6 +26,7 @@ function spawn_creep() {
 
 const creeps = [spawn_creep(), spawn_creep()]
 const projectiles = []
+let game_over = false
 
 let keys_currently_down = {
   d: false,
@@ -72,6 +73,7 @@ const draw = () => {
   screen.draw()
   creeps.forEach((creep) => {
     if (creep.is_alive()) {
+      move_creep(creep)
       creep.draw()
     }
   })
@@ -91,7 +93,14 @@ function game_loop() {
   process_keys_down()
   draw()
 
-  setTimeout(game_loop, 33.33)
+  // This is ending the game_loop
+  // On a real case, we don't want the game over to cancel the loop
+  if (character.is_dead()) {
+    game_over = true
+    screen.draw_game_over()
+  } else {
+    setTimeout(game_loop, 33.33)
+  }
 }
 
 function on_mousemove(evt) {
@@ -148,6 +157,14 @@ const projectile = {
   }
 }
 
+function move_creep(creep) {
+  var angle = Math.atan2(creep.x - character.x,
+    creep.y - character.y)
+
+  creep.x = (creep.x) + creep.speed * -Math.sin(angle)
+  creep.y = (creep.y) + creep.speed * -Math.cos(angle)
+}
+
 function check_collisions() {
   // creeps collision
   for (var i = 0; i < projectiles.length; i++) {
@@ -165,6 +182,15 @@ function check_collisions() {
           creeps.splice(creep_index, 1)
         }
       }
+    }
+  }
+
+  // player collisions
+  for (var creep_index = 0; creep_index < creeps.length; creep_index++) {
+    let creep = creeps[creep_index]
+    if (is_colliding(character, creep)) {
+      console.log("HIT")
+      character.current_hp -= 5
     }
   }
 }

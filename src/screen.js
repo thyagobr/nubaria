@@ -22,6 +22,11 @@ function Screen(go) {
         this.go.canvas_rect.width, this.go.canvas_rect.height)
     }
   }
+
+  this.draw_game_over = () => {
+    this.go.ctx.fillStyle = "black"
+    this.go.ctx.fillRect(0, 0, this.go.canvas.width, this.go.canvas.height);
+  }
 }
 
 export default Screen
