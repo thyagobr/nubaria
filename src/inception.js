@@ -88,7 +88,14 @@ const start = () => {
   setTimeout(game_loop, FPS)
 }
 
+let last_time = Date.now()
+
 function game_loop() {
+  if ((Date.now() - last_time) > 5000) {
+    last_time = Date.now()
+    creeps.push(spawn_creep())
+  }
+
   check_collisions()
   process_keys_down()
   draw()
