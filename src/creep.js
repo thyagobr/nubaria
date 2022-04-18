@@ -28,7 +28,7 @@ function Creep(go) {
   }
 
   this.is_dead = function() { return this.current_hp <= 0 }
-  this.is_alive = function() { debugger; return this.current_hp > 0 }
+  this.is_alive = function() { return this.current_hp > 0 }
 
   this.move_to_waypoint = (wp_name) => {
     let wp = this.go.editor.waypoints.find((wp) => wp.name === wp_name)

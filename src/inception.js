@@ -12,13 +12,19 @@ const character = new Character(go)
 
 const FPS = 16.66
 
-const creep = new Creep(go)
-creep.image.src = "zergling.png"
-creep.image_width = 150
-creep.image_height = 150
-creep.width = go.tile_size * 4
-creep.height = go.tile_size * 4
+function spawn_creep() {
+  let creep = new Creep(go)
+  creep.image.src = "zergling.png"
+  creep.image_width = 150
+  creep.image_height = 150
+  creep.width = go.tile_size * 4
+  creep.height = go.tile_size * 4
+  creep.x = Math.floor(Math.random() * go.canvas_rect.width)
+  creep.y = Math.floor(Math.random() * go.canvas_rect.height)
+  return creep
+}
 
+const creeps = [spawn_creep(), spawn_creep()]
 const projectiles = []
 
 let keys_currently_down = {
@@ -64,9 +70,11 @@ window.addEventListener("keyup", on_keyup, false)
 
 const draw = () => {
   screen.draw()
-  if (creep.is_alive()) {
-    creep.draw()
-  }
+  creeps.forEach((creep) => {
+    if (creep.is_alive()) {
+      creep.draw()
+    }
+  })
   character.draw()
   projectile.draw()
 }
@@ -74,8 +82,6 @@ const draw = () => {
 const start = () => {
   character.x = 100
   character.y = 100
-  creep.x = 300
-  creep.y = 176
 
   setTimeout(game_loop, FPS)
 }
@@ -143,13 +149,22 @@ const projectile = {
 }
 
 function check_collisions() {
-    for (var i = 0; i < projectiles.length; i++) {
-      let projectile = projectiles[i]
+  // creeps collision
+  for (var i = 0; i < projectiles.length; i++) {
+    let projectile = projectiles[i]
     // console.log(`Projectile: (${projectile.current.x}, ${projectile.current.y},${projectile.current.width},${projectile.current.height})`)
     // console.log(`Creep:      (${creep.x}, ${creep.y},${creep.width},${creep.height})`)
-    if (is_colliding(projectile.current, creep)) {
-      projectiles.splice(i, 1)
-      creep.current_hp -= 5
+    for (var creep_index = 0; creep_index < creeps.length; creep_index++) {
+      let creep = creeps[creep_index]
+      if (is_colliding(projectile.current, creep)) {
+        // remove projectiles from existence
+        projectiles.splice(i, 1)
+        // damage
+        creep.current_hp -= 5
+        if (creep.is_dead()) {
+          creeps.splice(creep_index, 1)
+        }
+      }
     }
   }
 }
