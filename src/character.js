@@ -30,6 +30,9 @@ function Character(go, id) {
 
   this.movement_board = []
 
+  this.is_dead = () => this.current_hp <= 0
+  this.is_alive = () => !is_dead
+
   this.move_to_waypoint = (wp_name) => {
     let wp = this.go.editor.waypoints.find((wp) => wp.name === wp_name)
     let node = this.go.board.grid[wp.id]
@@ -56,10 +59,29 @@ function Character(go, id) {
     this.go.ctx.stroke()
   }
 
-  this.move = () => {
+  // AUTO-MOVE (pathfinder) -- rename it to move when using playground
+  this.auto_move = () => {
     if (this.movement_board.length === 0) { this.movement_board = [].concat(this.go.board.grid) }
     this.go.board.move(this, this.go.board.target_node)
   }
+  
+  this.move = (direction) => {
+    switch(direction) {
+      case "right":
+        this.x += this.speed
+        break;
+      case "up":
+        this.y -= this.speed
+        break;
+      case "left":
+        this.x -= this.speed
+        break;
+      case "down":
+        this.y += this.speed
+        break;
+    }
+  }
+
 
   Array.prototype.last = function() { return this[this.length - 1] }
   Array.prototype.first = function() { return this[0] }
@@ -68,7 +90,7 @@ function Character(go, id) {
   this.target_movement = null
   // Stores the path being calculated
   this.current_path = []
-  this.speed = 3
+  this.speed = 5
 
   this.find_path = (target_movement) => {
     this.current_path = []

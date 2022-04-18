@@ -47,7 +47,7 @@ const on_click = function (ev) {
     })
   }
 }
-go.canvas.addEventListener("click", on_click, false);
+// go.canvas.addEventListener("click", on_click, false);
 // END Click callbacks
 
 // Mousemove callbacks
@@ -57,22 +57,21 @@ const on_mousemove = (ev) => {
     callback(ev)
   })
 }
-go.canvas.addEventListener("mousemove", on_mousemove, false)
+//go.canvas.addEventListener("mousemove", on_mousemove, false)
 // END Mousemove callbacks
 
 const on_keydown = (ev) => {
-  console.log(ev.key)
   switch (ev.key) {
-  case "e":
-    go.board.toggle_grid()
-    go.editor.paint_mode = !go.editor.paint_mode
-    // Expand the screen for editor buttons
-    if (go.editor.paint_mode) {
-      go.canvas.width = go.canvas.width + 200
-    } else {
-      go.canvas.width = go.canvas.width - 200
-    }
+    case "d":
+      character.x += 10
+    case "w":
+      character.y -= 5
+    case "a":
+      character.x -= 5
+    case "s":
+      character.y += 5
   }
+  console.log(ev.key)
 }
 window.addEventListener("keydown", on_keydown, false)
 
@@ -80,7 +79,6 @@ const draw = () => {
   screen.draw()
   board.draw()
   character.draw()
-  creep.draw()
   if (go.editor.paint_mode) editor.draw()
   if (character.moving) {
     go.character.draw_movement_target(go.board.target_node)
@@ -88,12 +86,13 @@ const draw = () => {
 }
 
 const start = () => {
-  character.move_to_waypoint("green_spawn_heroes")
-  camera.focus(character)
+  //character.move_to_waypoint("green_spawn_heroes")
+  character.x = 100
+  character.y = 100
 
   // Sample creep
-  creep.move_to_waypoint("black_middle_creep_spawn")
-  creep.set_movement_target("green_tower_mid_first")
+  //creep.move_to_waypoint("black_middle_creep_spawn")
+  //creep.set_movement_target("green_tower_mid_first")
 
   setTimeout(game_loop, FPS)
 }

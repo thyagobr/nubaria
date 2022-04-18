@@ -197,7 +197,7 @@ const handle_keydown = function(event) {
     break
   }
 }
-window.addEventListener("keydown", handle_keydown, false)
+// window.addEventListener("keydown", handle_keydown, false)
 
 function game_loop() {
   draw_grid(ctx, canvas_rect, tile_size)
