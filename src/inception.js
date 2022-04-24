@@ -93,12 +93,12 @@ function spawn_creep() {
   creep.image_height = 150
   creep.width = go.tile_size * 4
   creep.height = go.tile_size * 4
-  creep.x = Math.floor(Math.random() * go.canvas_rect.width)
-  creep.y = Math.floor(Math.random() * go.canvas_rect.height)
+  creep.x = 900
+  creep.y = 20
   return creep
 }
 
-const creeps = [spawn_creep(), spawn_creep()]
+const creeps = [spawn_creep()]
 const projectiles = []
 let game_over = false
 
@@ -174,18 +174,18 @@ let last_time = Date.now()
 let tower_shot_last_time = Date.now()
 
 function game_loop() {
-  if ((Date.now() - last_time) > 3000 - (creeps_killed * 10)) {
+  if ((Date.now() - last_time) > 3000 - (creeps_killed * 20)) {
     last_time = Date.now()
     creeps.push(spawn_creep())
   }
 
-  if ((Date.now() - tower_shot_last_time) > 1000) {
-    tower_shot_last_time = Date.now()
-    var targeted_creep = creeps.find(creep => Vector2.distance(creep, tower) < 500)
-    if (targeted_creep) {
-      tower.attack(targeted_creep)
-    }
-  }
+  //if ((Date.now() - tower_shot_last_time) > 1000) {
+  //  tower_shot_last_time = Date.now()
+  //  var targeted_creep = creeps.find(creep => Vector2.distance(creep, tower) < 500)
+  //  if (targeted_creep) {
+  //    tower.attack(targeted_creep)
+  //  }
+  //}
 
   //server.ping(character)
 
@@ -250,11 +250,19 @@ const projectile = {
 }
 
 function move_creep(creep) {
-  var angle = Math.atan2(creep.x - character.x,
-    creep.y - character.y)
+  var angle = Math.atan2(creep.x - tower.collision_box.x,
+    creep.y - tower.collision_box.y)
 
-  creep.x = (creep.x) + creep.speed * -Math.sin(angle)
-  creep.y = (creep.y) + creep.speed * -Math.cos(angle)
+  let future = {
+    ...creep,
+    x: (creep.x) + creep.speed * -Math.sin(angle),
+    y: (creep.y) + creep.speed * -Math.cos(angle)
+  }
+
+  if (!is_colliding(tower.collision_box, future)) {
+    creep.x = future.x
+    creep.y = future.y
+  }
 }
 
 let creeps_killed = 0;
@@ -283,7 +291,6 @@ function check_collisions(projectiles) {
   for (var creep_index = 0; creep_index < creeps.length; creep_index++) {
     let creep = creeps[creep_index]
     if (is_colliding(character, creep)) {
-      console.log("HIT")
       character.current_hp -= 5
     }
   }
@@ -304,18 +311,24 @@ function Tower(go) {
   this.projectile_image = new Image()
   this.projectile_image.src = "blue_fire.png"
   this.id = 1
-  this.x = 100
-  this.y = 100
-  this.width = 50
-  this.height = 100
+  this.x = 335
+  this.y = 220
+  this.width = 140
+  this.height = this.image.height
+  this.collision_box = {
+    x: this.x + 30,
+    y: this.y + 180,
+    width: this.width,
+    height: this.height
+  },
   this.draw = function() {
-    go.ctx.drawImage(this.image, 100 - go.camera.x, (go.canvas_rect.height / 4) - go.camera.y)
+    go.ctx.drawImage(this.image, this.x - go.camera.x, this.y - go.camera.y)
     this.draw_projectiles()
   }
   this.draw_projectiles = function() {
     for (var i = 0; i < tower_projectiles.length; i++) {
       let current = tower_projectiles[i]
-      if (current.distance > 300) {
+      if (current.distance > 500) {
         tower_projectiles.splice(i, 1)
       } else {
         current.distance += 5
@@ -342,10 +355,7 @@ function Tower(go) {
         x: this.x + (this.image.width / 2),
         y: this.y + (this.image.height / 2)
       },
-      target: {
-        x: target.x,
-        y: target.y
-      },
+      target: target,
       distance: 20,
     })
   }
