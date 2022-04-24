@@ -6,7 +6,7 @@ function Camera(go) {
   this.camera_speed = 3
 
   this.move_camera_with_mouse = (ev) => {
-    if (this.go.editor.paint_mode) return
+    //if (this.go.editor.paint_mode) return
     // If the mouse is 100 pixels close to the bottom of the canvas
     if ((this.go.canvas_rect.height - ev.clientY) < 100) {
       // If our current y + the movement we'll make further there is greater than
@@ -14,7 +14,7 @@ function Camera(go) {
       // (the canvas height), don't go further own
       if (this.y + this.camera_speed > this.go.screen.height - this.go.canvas_rect.height) return
       this.go.camera.y = this.go.camera.y + this.camera_speed
-    // If the mouse is 100 pixels close to the top of the canvas
+      // If the mouse is 100 pixels close to the top of the canvas
     } else if ((this.go.canvas_rect.height - ev.clientY) > this.go.canvas_rect.height - 100) {
       if (this.y + this.camera_speed < 0) return
       this.go.camera.y = this.go.camera.y - this.camera_speed
@@ -41,6 +41,14 @@ function Camera(go) {
     // offset changes end
     this.x = x
     this.y = y
+  }
+
+  this.global_coords = (obj) => {
+    return {
+      ...obj,
+      x: obj.x - this.x,
+      y: obj.y - this.y
+    }
   }
 }
 

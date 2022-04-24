@@ -1,10 +1,10 @@
 function Screen(go) {
   this.go = go
   this.go.screen = this
-  //this.background_image = new Image()
-  //this.background_image.src = "map4096.jpeg"
-  this.width  = 3740
-  this.height = 3740
+  this.background_image = new Image()
+  this.background_image.src = "background_city.jpeg"
+  this.width  = 1080
+  this.height = 1920
 
   this.clear = () => {
     this.go.ctx.clearRect(0, 0, this.go.canvas.width, this.go.canvas.height);

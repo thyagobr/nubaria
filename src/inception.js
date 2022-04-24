@@ -5,7 +5,6 @@ import Character from "./character.js"
 import Creep from "./creep.js"
 import { is_colliding, Vector2 } from "./tapete.js"
 
-
 const go = new GameObject()
 const screen = new Screen(go)
 const camera = new Camera(go)
@@ -14,6 +13,22 @@ character.name = `Player ${String(Math.floor(Math.random() * 10)).slice(0, 2)}`
 const players = []
 
 const FPS = 16.66
+
+const mousemove_callbacks = [go.camera.move_camera_with_mouse, track_mouse_position]
+const on_mousemove = (ev) => {
+  mousemove_callbacks.forEach((callback) => {
+    callback(ev)
+  })
+}
+function track_mouse_position(evt) {
+  var rect = go.canvas.getBoundingClientRect()
+  mouse_position = {
+    x: evt.clientX - rect.left + camera.x,
+    y: evt.clientY - rect.top + camera.y
+  }
+}
+go.canvas.addEventListener("mousemove", on_mousemove, false)
+// END Mousemove callbacks
 
 //function Server() {
 //  this.conn = new WebSocket("ws://localhost:8999")
@@ -40,8 +55,7 @@ const FPS = 16.66
 //        }
 //        break;
 //    }
-//  }
-//
+//  } //
 //  this.login = function(character) {
 //    let payload = {
 //      action: "login",
@@ -190,15 +204,6 @@ function game_loop() {
   }
 }
 
-function on_mousemove(evt) {
-  var rect = go.canvas.getBoundingClientRect()
-  mouse_position = {
-    x: evt.clientX - rect.left,
-    y: evt.clientY - rect.top
-  }
-}
-go.canvas.addEventListener('mousemove', on_mousemove, false)
-
 function on_click(evt) {
   projectiles.push({
     current: {
@@ -232,12 +237,12 @@ const projectile = {
         var angle = Math.atan2(current.origin.x - current.target.x,
           current.origin.y - current.target.y)
 
-        current.current.x = (current.origin.x) + current.distance * -Math.sin(angle) - camera.x
-        current.current.y = (current.origin.y) + current.distance * -Math.cos(angle) - camera.y
+        current.current.x = (current.origin.x) + current.distance * -Math.sin(angle)
+        current.current.y = (current.origin.y) + current.distance * -Math.cos(angle)
 
         go.ctx.beginPath()
         go.ctx.fillStyle = "red"
-        go.ctx.fillRect(current.current.x, current.current.y, 10, 10)
+        go.ctx.fillRect(current.current.x - camera.x, current.current.y - camera.y, 10, 10)
         go.ctx.stroke()
       }
     }
@@ -304,7 +309,7 @@ function Tower(go) {
   this.width = 50
   this.height = 100
   this.draw = function() {
-    go.ctx.drawImage(this.image, 100, go.canvas_rect.height / 4)
+    go.ctx.drawImage(this.image, 100 - go.camera.x, (go.canvas_rect.height / 4) - go.camera.y)
     this.draw_projectiles()
   }
   this.draw_projectiles = function() {
@@ -318,10 +323,10 @@ function Tower(go) {
         var angle = Math.atan2(current.origin.x - current.target.x,
           current.origin.y - current.target.y)
 
-        current.current.x = (current.origin.x) + current.distance * -Math.sin(angle) - camera.x
-        current.current.y = (current.origin.y) + current.distance * -Math.cos(angle) - camera.y
+        current.current.x = (current.origin.x) + current.distance * -Math.sin(angle)
+        current.current.y = (current.origin.y) + current.distance * -Math.cos(angle)
 
-        go.ctx.drawImage(this.projectile_image, current.current.x, current.current.y, 50, 50)
+        go.ctx.drawImage(this.projectile_image, current.current.x - camera.x, current.current.y - camera.y, 50, 50)
       }
     }
   }
