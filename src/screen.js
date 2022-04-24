@@ -24,8 +24,11 @@ function Screen(go) {
   }
 
   this.draw_game_over = () => {
-    this.go.ctx.fillStyle = "black"
+    this.go.ctx.fillStyle = "rgba(0, 0, 0, 0.7)"
     this.go.ctx.fillRect(0, 0, this.go.canvas.width, this.go.canvas.height);
+    this.go.ctx.fillStyle = "white"
+    this.go.ctx.font = '72px serif'
+    this.go.ctx.fillText("Game Over", (this.go.canvas.width / 2) - (this.go.ctx.measureText("Game Over").width / 2), this.go.canvas.height / 2);
   }
 }
 

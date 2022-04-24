@@ -3,7 +3,7 @@ import Screen from "./screen.js"
 import Camera from "./camera.js"
 import Character from "./character.js"
 import Creep from "./creep.js"
-import { is_colliding } from "./tapete.js"
+import { is_colliding, Vector2 } from "./tapete.js"
 
 
 const go = new GameObject()
@@ -15,63 +15,62 @@ const players = []
 
 const FPS = 16.66
 
-function Server() {
-  this.conn = new WebSocket("ws://localhost:8999")
-  this.conn.onopen = () => this.login(character)
-  this.conn.onmessage = function(event) {
-    let payload = JSON.parse(event.data)
-    switch (payload.action) {
-      case "login":
-        let new_char = new Character(go)
-        new_char.name = payload.data.character.name
-        new_char.x = payload.data.character.x
-        new_char.y = payload.data.character.y
-        console.log(`Adding new char`)
-        players.push(new_char)
-        break;
-
-      case "ping":
-        // go.ctx.fillRect(payload.data.character.x, payload.data.character.y, 50, 50)
-        // go.ctx.stroke()
-        let player = players[0] //players.find(player => player.name === payload.data.character.name)
-        if (player) {
-          player.x = payload.data.character.x
-          player.y = payload.data.character.y
-        }
-        break;
-    }
-  }
-
-  this.login = function(character) {
-    let payload = {
-      action: "login",
-      data: {
-        character: {
-          name: "Archon",
-          x: character.x,
-          y: character.y
-        }
-      }
-    }
-    this.conn.send(JSON.stringify(payload))
-  }
-
-  this.ping = function(character) {
-    let payload = {
-      action: "ping",
-      data: {
-        character: {
-          name: character.name, 
-          x: character.x,
-          y: character.y
-        }
-      }
-    }
-    this.conn.send(JSON.stringify(payload))
-  }
-}
-
-const server = new Server()
+//function Server() {
+//  this.conn = new WebSocket("ws://localhost:8999")
+//  this.conn.onopen = () => this.login(character)
+//  this.conn.onmessage = function(event) {
+//    let payload = JSON.parse(event.data)
+//    switch (payload.action) {
+//      case "login":
+//        let new_char = new Character(go)
+//        new_char.name = payload.data.character.name
+//        new_char.x = payload.data.character.x
+//        new_char.y = payload.data.character.y
+//        console.log(`Adding new char`)
+//        players.push(new_char)
+//        break;
+//
+//      case "ping":
+//        go.ctx.fillRect(payload.data.character.x, payload.data.character.y, 50, 50)
+//        go.ctx.stroke()
+//        let player = players[0] //players.find(player => player.name === payload.data.character.name)
+//        if (player) {
+//          player.x = payload.data.character.x
+//          player.y = payload.data.character.y
+//        }
+//        break;
+//    }
+//  }
+//
+//  this.login = function(character) {
+//    let payload = {
+//      action: "login",
+//      data: {
+//        character: {
+//          name: "Archon",
+//          x: character.x,
+//          y: character.y
+//        }
+//      }
+//    }
+//    this.conn.send(JSON.stringify(payload))
+//  }
+//
+//  this.ping = function(character) {
+//    let payload = {
+//      action: "ping",
+//      data: {
+//        character: {
+//          name: character.name, 
+//          x: character.x,
+//          y: character.y
+//        }
+//      }
+//    }
+//    this.conn.send(JSON.stringify(payload))
+//  }
+//}
+//const server = new Server()
 
 function spawn_creep() {
   let creep = new Creep(go)
@@ -130,6 +129,8 @@ const on_keyup = (ev) => {
 }
 window.addEventListener("keyup", on_keyup, false)
 
+const tower = new Tower(go)
+
 const draw = () => {
   screen.draw()
   players.forEach(player => {
@@ -138,12 +139,14 @@ const draw = () => {
   })
   creeps.forEach((creep) => {
     if (creep.is_alive()) {
-      //move_creep(creep)
+      move_creep(creep)
       creep.draw()
     }
   })
   character.draw()
   projectile.draw()
+  tower.draw()
+  draw_score()
 }
 
 const start = () => {
@@ -154,16 +157,26 @@ const start = () => {
 }
 
 let last_time = Date.now()
+let tower_shot_last_time = Date.now()
 
 function game_loop() {
-  if ((Date.now() - last_time) > 5000) {
+  if ((Date.now() - last_time) > 3000 - (creeps_killed * 10)) {
     last_time = Date.now()
-    //creeps.push(spawn_creep())
+    creeps.push(spawn_creep())
   }
 
-  server.ping(character)
+  if ((Date.now() - tower_shot_last_time) > 1000) {
+    tower_shot_last_time = Date.now()
+    var targeted_creep = creeps.find(creep => Vector2.distance(creep, tower) < 500)
+    if (targeted_creep) {
+      tower.attack(targeted_creep)
+    }
+  }
 
-  check_collisions()
+  //server.ping(character)
+
+  check_collisions(projectiles)
+  check_collisions(tower_projectiles)
   process_keys_down()
   draw()
 
@@ -239,7 +252,8 @@ function move_creep(creep) {
   creep.y = (creep.y) + creep.speed * -Math.cos(angle)
 }
 
-function check_collisions() {
+let creeps_killed = 0;
+function check_collisions(projectiles) {
   // creeps collision
   for (var i = 0; i < projectiles.length; i++) {
     let projectile = projectiles[i]
@@ -254,6 +268,7 @@ function check_collisions() {
         creep.current_hp -= 5
         if (creep.is_dead()) {
           creeps.splice(creep_index, 1)
+          creeps_killed += 1
         }
       }
     }
@@ -266,6 +281,68 @@ function check_collisions() {
       console.log("HIT")
       character.current_hp -= 5
     }
+  }
+}
+
+// game ---
+function draw_score() {
+  go.ctx.font = "48px serif"
+  go.ctx.fillText(`Creeps killed: ${creeps_killed}`, 10, 50)
+}
+
+const tower_projectiles = []
+function Tower(go) {
+  this.image = new Image();
+  this.image.src = "radiant_tower.png"
+  this.image_width = 32
+  this.image_height = 32
+  this.projectile_image = new Image()
+  this.projectile_image.src = "blue_fire.png"
+  this.id = 1
+  this.x = 100
+  this.y = 100
+  this.width = 50
+  this.height = 100
+  this.draw = function() {
+    go.ctx.drawImage(this.image, 100, go.canvas_rect.height / 4)
+    this.draw_projectiles()
+  }
+  this.draw_projectiles = function() {
+    for (var i = 0; i < tower_projectiles.length; i++) {
+      let current = tower_projectiles[i]
+      if (current.distance > 300) {
+        tower_projectiles.splice(i, 1)
+      } else {
+        current.distance += 5
+
+        var angle = Math.atan2(current.origin.x - current.target.x,
+          current.origin.y - current.target.y)
+
+        current.current.x = (current.origin.x) + current.distance * -Math.sin(angle) - camera.x
+        current.current.y = (current.origin.y) + current.distance * -Math.cos(angle) - camera.y
+
+        go.ctx.drawImage(this.projectile_image, current.current.x, current.current.y, 50, 50)
+      }
+    }
+  }
+  this.attack = function(target) {
+    tower_projectiles.push({
+      current: {
+        x: this.x + (this.image.width / 2),
+        y: this.y + (this.image.height / 2),
+        width: 10,
+        height: 10
+      },
+      origin: {
+        x: this.x + (this.image.width / 2),
+        y: this.y + (this.image.height / 2)
+      },
+      target: {
+        x: target.x,
+        y: target.y
+      },
+      distance: 20,
+    })
   }
 }
 
