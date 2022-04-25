@@ -179,13 +179,13 @@ function game_loop() {
     creeps.push(spawn_creep())
   }
 
-  //if ((Date.now() - tower_shot_last_time) > 1000) {
-  //  tower_shot_last_time = Date.now()
-  //  var targeted_creep = creeps.find(creep => Vector2.distance(creep, tower) < 500)
-  //  if (targeted_creep) {
-  //    tower.attack(targeted_creep)
-  //  }
-  //}
+  if ((Date.now() - tower_shot_last_time) > 1000) {
+    tower_shot_last_time = Date.now()
+    var targeted_creep = creeps.find(creep => Vector2.distance(creep, tower) < 500)
+    if (targeted_creep) {
+      tower.attack(targeted_creep)
+    }
+  }
 
   //server.ping(character)
 
