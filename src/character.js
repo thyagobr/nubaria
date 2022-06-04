@@ -92,7 +92,7 @@ function Character(go, id) {
   this.target_movement = null
   // Stores the path being calculated
   this.current_path = []
-  this.speed = 5
+  this.speed = 3
 
   this.find_path = (target_movement) => {
     this.current_path = []

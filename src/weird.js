@@ -17,16 +17,20 @@ const character = new Character(go)
 const world = new World(go)
 character.name = `Player ${String(Math.floor(Math.random() * 10)).slice(0, 2)}`
 
-const tree = new Doodad(go)
-tree.x = Math.trunc(Math.random() * go.world.width) - tree.width;
-tree.y = Math.trunc(Math.random() * go.world.height) - tree.height;
+const trees = []
+Array.from(Array(300)).forEach((j, i) => {
+  let tree = new Doodad(go)
+  tree.x = Math.trunc(Math.random() * go.world.width) - tree.width;
+  tree.y = Math.trunc(Math.random() * go.world.height) - tree.height;
+  trees.push(tree)
+})
 
 const FPS = 16.66
 
 const draw = () => {
   screen.draw()
   character.draw()
-  tree.draw()
+  trees.forEach(tree => tree.draw())
 }
 
 const game_loop = new GameLoop()

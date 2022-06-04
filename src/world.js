@@ -1,8 +1,8 @@
 function World(go) {
   this.go = go;
   this.go.world = this;
-  this.width = 2000;
-  this.height = 1000;
+  this.width = 10000;
+  this.height = 10000;
 }
 
 export default World;
