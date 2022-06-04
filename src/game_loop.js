@@ -15,7 +15,9 @@ function GameLoop() {
       this.process_keys_down()
       this.draw()
     } catch(e) {
+      console.log(e)
     }
+    console.log("loop")
 
     window.requestAnimationFrame(this.loop.bind(this));
   }

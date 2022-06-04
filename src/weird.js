@@ -2,7 +2,7 @@ import GameObject from "./game_object.js"
 import Screen from "./screen.js"
 import Camera from "./camera.js"
 import Character from "./character.js"
-import Creep from "./creep.js"
+import KeyboardInput from "./keyboard_input.js"
 import { is_colliding, Vector2 } from "./tapete.js"
 import { setMousemoveCallback } from "./events_callbacks.js"
 import GameLoop from "./game_loop.js"
@@ -10,6 +10,7 @@ import GameLoop from "./game_loop.js"
 const go = new GameObject()
 const screen = new Screen(go)
 const camera = new Camera(go)
+const keyboard_input = new KeyboardInput(go)
 const character = new Character(go)
 character.name = `Player ${String(Math.floor(Math.random() * 10)).slice(0, 2)}`
 const players = []
@@ -29,45 +30,6 @@ function track_mouse_position(evt) {
   }
 }
 
-// BEGIN: Key handling
-let keymap = {
-  d: "right",
-  w: "up",
-  a: "left",
-  s: "down",
-}
-
-let keys_currently_down = {
-  d: false,
-  w: false,
-  a: false,
-  s: false,
-}
-
-const on_keydown = (ev) => {
-  keys_currently_down[ev.key] = true
-}
-window.addEventListener("keydown", on_keydown, false)
-const on_keyup = (ev) => {
-  keys_currently_down[ev.key] = false
-}
-window.addEventListener("keyup", on_keyup, false)
-
-const process_keys_down = () => {
-  const keys_down = Object.keys(keys_currently_down).filter((key) => keys_currently_down[key] === true)
-  keys_down.forEach((key) => {
-    switch (key) {
-      case "d":
-      case "w":
-      case "a":
-      case "s":
-        character.move(keymap[key])
-        break
-    }
-  })
-}
-// END: Key handling
-
 const draw = () => {
   screen.draw()
   character.draw()
@@ -75,7 +37,7 @@ const draw = () => {
 
 const game_loop = new GameLoop()
 game_loop.draw = draw
-game_loop.process_keys_down = process_keys_down
+game_loop.process_keys_down = go.keyboard_input.process_keys_down
 
 const start = () => {
   character.x = 100
