@@ -36,8 +36,10 @@ function Camera(go) {
     let x = point.x - this.go.canvas_rect.width / 2
     let y = point.y - this.go.canvas_rect.height / 2
     // specific map cuts (it has a map offset of 60,160)
-    if (x < 40) { x = 60 }
-    if (y < 120) { y = 140 }
+    if (y < 0) { y = 0 }
+    if (x < 0) { x = 0 }
+    if (x + this.go.canvas_rect.width > this.go.world.width) { x = this.x }
+    if (y + this.go.canvas_rect.height > this.go.world.height) { y = this.y }
     // offset changes end
     this.x = x
     this.y = y

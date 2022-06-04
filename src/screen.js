@@ -1,8 +1,8 @@
 function Screen(go) {
   this.go = go
   this.go.screen = this
-  //this.background_image = new Image()
-  //this.background_image.src = "background_city.jpeg"
+  this.background_image = new Image()
+  this.background_image.src = "background_city.jpeg"
   this.width  = this.go.canvas_rect.width;
   this.height = this.go.canvas_rect.height;
 

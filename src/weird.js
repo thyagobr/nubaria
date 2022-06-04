@@ -6,33 +6,27 @@ import KeyboardInput from "./keyboard_input.js"
 import { is_colliding, Vector2 } from "./tapete.js"
 import { setMousemoveCallback } from "./events_callbacks.js"
 import GameLoop from "./game_loop.js"
+import World from "./world.js"
+import Doodad from "./doodad.js"
 
 const go = new GameObject()
 const screen = new Screen(go)
 const camera = new Camera(go)
 const keyboard_input = new KeyboardInput(go)
 const character = new Character(go)
+const world = new World(go)
 character.name = `Player ${String(Math.floor(Math.random() * 10)).slice(0, 2)}`
-const players = []
+
+const tree = new Doodad(go)
+tree.x = Math.trunc(Math.random() * go.world.width) - tree.width;
+tree.y = Math.trunc(Math.random() * go.world.height) - tree.height;
 
 const FPS = 16.66
-
-const mousemove_callbacks = setMousemoveCallback(go);
-mousemove_callbacks.push(go.camera.move_camera_with_mouse)
-mousemove_callbacks.push(track_mouse_position)
-
-let mouse_position = { x: 0, y: 0 }
-function track_mouse_position(evt) {
-  var rect = go.canvas.getBoundingClientRect()
-  mouse_position = {
-    x: evt.clientX - rect.left + camera.x,
-    y: evt.clientY - rect.top + camera.y
-  }
-}
 
 const draw = () => {
   screen.draw()
   character.draw()
+  tree.draw()
 }
 
 const game_loop = new GameLoop()

@@ -80,6 +80,8 @@ function Character(go, id) {
         this.y += this.speed
         break;
     }
+
+    this.go.camera.focus(this)
   }
 
 
