@@ -38,4 +38,43 @@ function setClickCallback(go) {
   return click_callbacks;
 }
 
-export { setMousemoveCallback };
+function setCallback(go, event) {
+  const callbacks = []
+  const handler = (e) => {
+    callbacks.forEach((callback) => {
+      callback(e)
+    })
+  }
+  go.canvas.addEventListener(event, handler, false)
+  return callbacks;
+}
+
+function setMouseMoveCallback(go) {
+  return setCallback(go, 'mousemove');
+}
+
+function setMousedownCallback(go) {
+  return setCallback(go, 'mousedown');
+}
+
+function setMouseupCallback(go) {
+  return setCallback(go, 'mouseup');
+}
+
+function setTouchstartCallback(go) {
+  return setCallback(go, 'touchstart');
+}
+
+function setTouchendCallback(go) {
+  return setCallback(go, 'touchend');
+}
+
+export {
+  setMousemoveCallback,
+  setClickCallback,
+  setMouseMoveCallback,
+  setMousedownCallback,
+  setMouseupCallback,
+  setTouchstartCallback,
+  setTouchendCallback,
+};

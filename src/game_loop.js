@@ -10,9 +10,11 @@
 function GameLoop() {
   this.draw = null
   this.process_keys_down = null
+  this.update = function () {}
   this.loop = function() {
     try {
       this.process_keys_down()
+      this.update()
       this.draw()
     } catch(e) {
       console.log(e)
