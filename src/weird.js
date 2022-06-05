@@ -31,6 +31,7 @@ const draw = () => {
   screen.draw()
   character.draw()
   trees.forEach(tree => tree.draw())
+  screen.draw_fog()
 }
 
 const game_loop = new GameLoop()

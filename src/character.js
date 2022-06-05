@@ -46,8 +46,8 @@ function Character(go, id) {
 
   this.draw = function() {
     if (this.moving && this.target_movement) this.draw_movement_target()
-    this.health_bar.draw(this.hp, this.current_hp)
-    this.mana_bar.draw(this.mana, this.current_mana)
+    //this.health_bar.draw(this.hp, this.current_hp)
+    //this.mana_bar.draw(this.mana, this.current_mana)
     this.go.ctx.drawImage(this.image, 0, 0, this.image_width, this.image_height, this.x - this.go.camera.x, this.y - this.go.camera.y, this.width, this.height)
   }
 

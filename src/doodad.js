@@ -5,8 +5,8 @@ function Doodad(go) {
   this.y = 0;
   this.image = new Image();
   this.image.src = "plants.png"
-  this.width = 100
-  this.x_offset = 126
+  this.width = 98
+  this.x_offset = 127
   this.height = 126
   this.y_offset = 290
 
