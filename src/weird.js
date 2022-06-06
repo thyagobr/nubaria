@@ -15,6 +15,7 @@ import {
 import GameLoop from "./game_loop.js"
 import World from "./world.js"
 import Doodad from "./doodad.js"
+import Controls from "./controls.js"
 
 const go = new GameObject()
 const screen = new Screen(go)
@@ -22,7 +23,19 @@ const camera = new Camera(go)
 const keyboard_input = new KeyboardInput(go)
 const character = new Character(go)
 const world = new World(go)
+const controls = new Controls(go)
 character.name = `Player ${String(Math.floor(Math.random() * 10)).slice(0, 2)}`
+
+const click_callbacks = setClickCallback(go)
+click_callbacks.push(clickable_clicked)
+function clickable_clicked(ev) {
+  go.clickables.forEach((clickable) => {
+    let click = { x: ev.clientX, y: ev.clientY, width: 1, height: 1 }
+    if (is_colliding(clickable, click)) {
+      clickable.activated = !clickable.activated
+    }
+  })
+}
 
 let mouse_is_down = false
 let mouse_position = {}
@@ -43,24 +56,12 @@ const touchstart_callbacks = setTouchstartCallback(go)
 touchstart_callbacks.push((ev) => mouse_is_down = true)
 const touchend_callbacks = setTouchendCallback(go)
 touchend_callbacks.push((ev) => mouse_is_down = false)
-function mouse_movement() {
-  if (!mouse_is_down) return;
-
-  if (mouse_position.x > character.x) {
-    character.move("right")
-  }
-
-  if (mouse_position.x < character.x) {
-    character.move("left")
-  }
-
-  if (mouse_position.y < character.y) {
-    character.move("up")
-  }
-
-  if (mouse_position.y > character.y) {
-    character.move("down")
-  }
+function controls_movement() {
+  go.clickables.forEach((clickable) => {
+    if (clickable.activated) {
+      clickable.click()
+    }
+  })
 }
 
 const trees = []
@@ -74,7 +75,7 @@ Array.from(Array(300)).forEach((j, i) => {
 const FPS = 16.66
 
 const update = () => {
-  mouse_movement()
+  controls_movement()
 }
 
 const draw = () => {
@@ -82,6 +83,7 @@ const draw = () => {
   character.draw()
   trees.forEach(tree => tree.draw())
   screen.draw_fog()
+  controls.draw()
 }
 
 const game_loop = new GameLoop()

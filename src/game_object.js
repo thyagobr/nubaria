@@ -8,7 +8,7 @@ function GameObject() {
   this.canvas.setAttribute('height', this.canvas_rect.height);
   this.ctx = ctx
   this.tile_size = 20
-  this.creeps = []
+  this.clickables = []
 }
 
 export default GameObject
