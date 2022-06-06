@@ -86,6 +86,21 @@ const draw = () => {
   controls.draw()
 }
 
+const cut_tree = () => {
+  const targeted_tree = trees.find((tree) => Vector2.distance(tree, character) < 100)
+  // console.log(`Character - x: ${character.x}, y: ${character.y}`)
+  if (targeted_tree) {
+    const index = trees.indexOf(targeted_tree)
+    if (index > -1) {
+      trees.splice(index, 1)
+    }
+    // console.log(`Tree - x: ${targeted_tree.x}, y: ${targeted_tree.y}`)
+    // console.log(`Distance: ${Vector2.distance(targeted_tree, character)}`)
+  }
+}
+
+keyboard_input.key_callbacks["f"] = [cut_tree]
+
 const game_loop = new GameLoop()
 game_loop.draw = draw
 game_loop.process_keys_down = go.keyboard_input.process_keys_down
