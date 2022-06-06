@@ -1,5 +1,6 @@
 import { distance, is_colliding } from "./tapete.js"
 import ResourceBar from "./resource_bar"
+import Inventory from "./inventory"
 
 function Character(go, id) {
   this.go = go
@@ -16,6 +17,7 @@ function Character(go, id) {
   this.height = this.go.tile_size * 2
   this.moving = false
   this.direction = null
+  this.inventory = new Inventory();
 
   // Combat
   this.hp = 100.0

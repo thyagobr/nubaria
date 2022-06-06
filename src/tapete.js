@@ -24,4 +24,12 @@ const draw_square = function (x = 10, y = 10, w = 20, h = 20, color = "rgb(190, 
   ctx.fillRect(x, y, w, h);
 }
 
-export { distance, is_colliding, draw_square, Vector2 }
+const random = (start, end) => {
+  if (end == undefined) {
+    end = start
+    start = 0
+  }
+  return Math.trunc(Math.random() * end) + start  
+}
+
+export { distance, is_colliding, draw_square, Vector2, random }

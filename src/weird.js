@@ -3,7 +3,7 @@ import Screen from "./screen.js"
 import Camera from "./camera.js"
 import Character from "./character.js"
 import KeyboardInput from "./keyboard_input.js"
-import { is_colliding, Vector2 } from "./tapete.js"
+import { is_colliding, Vector2, random } from "./tapete.js"
 import {
   setClickCallback,
   setMouseMoveCallback,
@@ -16,6 +16,7 @@ import GameLoop from "./game_loop.js"
 import World from "./world.js"
 import Doodad from "./doodad.js"
 import Controls from "./controls.js"
+import Item from "./item"
 
 const go = new GameObject()
 const screen = new Screen(go)
@@ -92,6 +93,11 @@ const cut_tree = () => {
   if (targeted_tree) {
     const index = trees.indexOf(targeted_tree)
     if (index > -1) {
+      const wood_total = random(1, 5)
+      const item_bundle = new Item("wood")
+      item_bundle.quantity = wood_total
+      character.inventory.add(item_bundle)
+
       trees.splice(index, 1)
     }
     // console.log(`Tree - x: ${targeted_tree.x}, y: ${targeted_tree.y}`)
