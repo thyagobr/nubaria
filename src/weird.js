@@ -20,8 +20,8 @@ import Controls from "./controls.js"
 const go = new GameObject()
 const screen = new Screen(go)
 const camera = new Camera(go)
-const keyboard_input = new KeyboardInput(go)
 const character = new Character(go)
+const keyboard_input = new KeyboardInput(go)
 const world = new World(go)
 const controls = new Controls(go)
 character.name = `Player ${String(Math.floor(Math.random() * 10)).slice(0, 2)}`

@@ -10,17 +10,19 @@ function KeyboardInput(go) {
 
   this.go = go;
   this.go.keyboard_input = this
+  this.key_callbacks = {
+    d: [() => this.go.character.move("right")],
+    w: [() => this.go.character.move("up")],
+    a: [() => this.go.character.move("left")],
+    s: [() => this.go.character.move("down")],
+  }
+
   this.process_keys_down = () => {
     const keys_down = Object.keys(this.keys_currently_down).filter((key) => this.keys_currently_down[key] === true)
     keys_down.forEach((key) => {
-      switch (key) {
-        case "d":
-        case "w":
-        case "a":
-        case "s":
-          this.go.character.move(this.keymap[key])
-          break
-      }
+      if (!(Object.keys(this.key_callbacks).includes(key))) return
+
+      this.key_callbacks[key].forEach((callback) => callback())
     })
   }
 
