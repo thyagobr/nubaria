@@ -17,6 +17,7 @@ import World from "./world.js"
 import Doodad from "./doodad.js"
 import Controls from "./controls.js"
 import Item from "./item"
+import Server from "./server"
 
 const go = new GameObject()
 const screen = new Screen(go)
@@ -26,6 +27,7 @@ const keyboard_input = new KeyboardInput(go)
 const world = new World(go)
 const controls = new Controls(go)
 character.name = `Player ${String(Math.floor(Math.random() * 10)).slice(0, 2)}`
+const server = new Server(go)
 
 const click_callbacks = setClickCallback(go)
 click_callbacks.push(clickable_clicked)
