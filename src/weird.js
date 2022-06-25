@@ -18,6 +18,7 @@ import Doodad from "./doodad.js"
 import Controls from "./controls.js"
 import Item from "./item"
 import Server from "./server"
+import Tile from "./tile.js"
 
 const go = new GameObject()
 const screen = new Screen(go)
@@ -86,16 +87,30 @@ const draw = () => {
   character.draw()
   trees.forEach(tree => tree.draw())
   screen.draw_fog()
-  controls.draw()
+  // controls.draw()
 }
 
 const dice = (sides, times = 1) => {
   return Array.from(Array(times)).map((i) => Math.floor(Math.random() * sides) + 1);
 }
 
+
+const make_fire = () => {
+  let dry_leaves = character.inventory.find("dry leaves")
+  let wood = character.inventory.find("wood")
+  if (dry_leaves && dry_leaves.quantity > 0 && wood && wood.quantity > 0) {
+    dry_leaves.quantity -= 1
+    wood.quantity -= 1
+    let row_index = Math.floor(character.x / 64)
+    let column_index = Math.floor(character.y / 64)
+    go.world.tiles[row_index][column_index] = new Tile("bonfire.png", 250, 300, 290, 250)
+  } else {
+    console.log("You dont have all required materials to make a fire.")
+  }
+}
+
 const cut_tree = () => {
   const targeted_tree = trees.find((tree) => Vector2.distance(tree, character) < 100)
-  // console.log(`Character - x: ${character.x}, y: ${character.y}`)
   if (targeted_tree) {
     const index = trees.indexOf(targeted_tree)
     if (index > -1) {
@@ -103,12 +118,13 @@ const cut_tree = () => {
       const item_bundle = new Item("wood")
       item_bundle.quantity = wood_total
       character.inventory.add(item_bundle)
-      console.log(dice(6, 3))
+      let dry_leaves_roll = dice(10)
+      if (dry_leaves_roll > 7) {
+        character.inventory.add(new Item("dry leaves", 1))
+      }
 
       trees.splice(index, 1)
     }
-    // console.log(`Tree - x: ${targeted_tree.x}, y: ${targeted_tree.y}`)
-    // console.log(`Distance: ${Vector2.distance(targeted_tree, character)}`)
   }
 }
 
@@ -118,6 +134,7 @@ const game_loop = new GameLoop()
 game_loop.draw = draw
 game_loop.process_keys_down = go.keyboard_input.process_keys_down
 game_loop.update = update
+keyboard_input.on_keydown_callbacks[1].push(() => make_fire())
 
 const start = () => {
   character.x = 100

@@ -1,4 +1,4 @@
-export default function Item(name) {
+export default function Item(name, quantity = 1) {
   this.name = name
-  this.quantity = 1
+  this.quantity = quantity
 }
