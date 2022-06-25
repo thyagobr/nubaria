@@ -90,16 +90,24 @@ function Character(go, id) {
 
     switch(direction) {
       case "right":
-        this.x += this.speed
+        if (this.x + this.speed < this.go.world.width) {
+          this.x += this.speed
+        }
         break;
       case "up":
-        this.y -= this.speed
+        if (this.y - this.speed > 0) {
+          this.y -= this.speed
+        }
         break;
       case "left":
-        this.x -= this.speed
+        if (this.x - this.speed > 0) {
+          this.x -= this.speed
+        }
         break;
       case "down":
-        this.y += this.speed
+        if (this.y + this.speed < this.go.world.height) {
+          this.y += this.speed
+        }
         break;
     }
     this.walk_cycle_index = (this.walk_cycle_index + (0.03 * this.speed)) % 3
