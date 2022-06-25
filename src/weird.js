@@ -89,6 +89,10 @@ const draw = () => {
   controls.draw()
 }
 
+const dice = (sides, times = 1) => {
+  return Array.from(Array(times)).map((i) => Math.floor(Math.random() * sides) + 1);
+}
+
 const cut_tree = () => {
   const targeted_tree = trees.find((tree) => Vector2.distance(tree, character) < 100)
   // console.log(`Character - x: ${character.x}, y: ${character.y}`)
@@ -99,6 +103,7 @@ const cut_tree = () => {
       const item_bundle = new Item("wood")
       item_bundle.quantity = wood_total
       character.inventory.add(item_bundle)
+      console.log(dice(6, 3))
 
       trees.splice(index, 1)
     }
