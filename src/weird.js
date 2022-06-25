@@ -117,6 +117,7 @@ game_loop.update = update
 const start = () => {
   character.x = 100
   character.y = 100
+  go.world.generate_map()
 
   window.requestAnimationFrame(game_loop.loop.bind(game_loop));
 }
