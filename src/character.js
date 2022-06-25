@@ -16,7 +16,8 @@ function Character(go, id) {
   this.width = this.go.tile_size * 2
   this.height = this.go.tile_size * 2
   this.moving = false
-  this.direction = null
+  this.direction = "down"
+  this.walk_cycle_index = 0
   this.inventory = new Inventory();
 
   // Combat
@@ -50,7 +51,24 @@ function Character(go, id) {
     if (this.moving && this.target_movement) this.draw_movement_target()
     //this.health_bar.draw(this.hp, this.current_hp)
     //this.mana_bar.draw(this.mana, this.current_mana)
-    this.go.ctx.drawImage(this.image, 0, 0, this.image_width, this.image_height, this.x - this.go.camera.x, this.y - this.go.camera.y, this.width, this.height)
+    this.go.ctx.drawImage(this.image, Math.floor(this.walk_cycle_index) * this.image_width, this.get_direction_sprite() * this.image_height, this.image_width, this.image_height, this.x - this.go.camera.x, this.y - this.go.camera.y, this.width, this.height)
+  }
+
+  this.get_direction_sprite = function() {
+    switch(this.direction) {
+      case "right":
+        return 2
+        break;
+      case "up":
+        return 3
+        break;
+      case "left":
+        return 1
+        break;
+      case "down":
+        return 0
+        break;
+    }
   }
 
   this.draw_movement_target = function(target_movement = this.target_movement) {
@@ -68,6 +86,8 @@ function Character(go, id) {
   }
   
   this.move = (direction) => {
+    this.direction = direction
+
     switch(direction) {
       case "right":
         this.x += this.speed
@@ -82,7 +102,7 @@ function Character(go, id) {
         this.y += this.speed
         break;
     }
-
+    this.walk_cycle_index = (this.walk_cycle_index + (0.03 * this.speed)) % 3
     this.go.camera.focus(this)
   }
 
