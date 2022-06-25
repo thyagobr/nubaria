@@ -19,6 +19,8 @@ import Controls from "./controls.js"
 import Item from "./item"
 import Server from "./server"
 import Tile from "./tile.js"
+import LootBox from "./loot_box.js"
+import Loot from "./loot.js"
 
 const go = new GameObject()
 const screen = new Screen(go)
@@ -29,6 +31,7 @@ const world = new World(go)
 const controls = new Controls(go)
 character.name = `Player ${String(Math.floor(Math.random() * 10)).slice(0, 2)}`
 const server = new Server(go)
+const loot_box = new LootBox(go)
 
 const click_callbacks = setClickCallback(go)
 click_callbacks.push(clickable_clicked)
@@ -87,6 +90,7 @@ const draw = () => {
   character.draw()
   trees.forEach(tree => tree.draw())
   screen.draw_fog()
+  loot_box.draw()
   // controls.draw()
 }
 
@@ -116,6 +120,12 @@ const cut_tree = () => {
     if (index > -1) {
       const wood_total = random(1, 5)
       const item_bundle = new Item("wood")
+      item_bundle.image.src = "branch.png"
+      const wood_loot = new Loot(item_bundle, wood_total)
+      loot_box.items.push(wood_loot)
+      loot_box.visible = true
+      loot_box.x = character.x
+      loot_box.y = character.y
       item_bundle.quantity = wood_total
       character.inventory.add(item_bundle)
       let dry_leaves_roll = dice(10)
