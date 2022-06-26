@@ -1,5 +1,6 @@
 import Item from "./item";
 import Loot from "./loot";
+import { Vector2 } from "./tapete"
 
 class LootBox {
     constructor(go) {
@@ -14,6 +15,12 @@ class LootBox {
     draw() {
         if (!this.visible) return;
 
+        // If the player moves away, delete items and hide loot box screen
+        if (Vector2.distance(this, this.go.character) > 500) {
+            this.items = []
+            this.visible = false
+        }
+
         this.go.ctx.fillStyle = "rgba(255, 200, 255, 0.5)";
         this.go.ctx.lineJoin = 'bevel';
         this.go.ctx.fillRect(this.x + 20 - this.go.camera.x, this.y + 20 - this.go.camera.y, this.width, this.items.length * 60 + 5);
@@ -26,11 +33,11 @@ class LootBox {
             loot.width = 340
             loot.height = 55
             this.go.ctx.fillRect(loot.x, loot.y, loot.width, loot.height)
-            this.go.ctx.drawImage(loot.item.image, loot.x + 5, loot.y + (index * 60) + 5, 45, 45)
+            this.go.ctx.drawImage(loot.item.image, loot.x + 5, loot.y + 5, 45, 45)
             this.go.ctx.fillStyle = "rgb(255, 255, 255)"
             this.go.ctx.font = '22px serif'
-            this.go.ctx.fillText(loot.quantity, loot.x + 65, loot.y + (index * 60) + 35)
-            this.go.ctx.fillText(loot.item.name, loot.x + 100, loot.y + (index * 60) + 35)
+            this.go.ctx.fillText(loot.quantity, loot.x + 65, loot.y + 35)
+            this.go.ctx.fillText(loot.item.name, loot.x + 100, loot.y + 35)
         }
     }
 
