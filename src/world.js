@@ -11,13 +11,7 @@ function World(go) {
     stone: new Tile("flintstone.png", 0, 0, 840, 859),
   }
   this.pick_random_tile = () => {
-    let rng = Math.random() * 100;
-    if (rng <= 1) {
-      return this.tile_set.stone
-      //return this.tile_set.dirt
-    } else {
-      return this.tile_set.grass
-    }
+    return this.tile_set.grass
   }
   this.tile_width = 64
   this.tile_height = 64

@@ -72,14 +72,6 @@ function controls_movement() {
   })
 }
 
-const trees = []
-Array.from(Array(300)).forEach((j, i) => {
-  let tree = new Doodad(go)
-  tree.x = Math.trunc(Math.random() * go.world.width) - tree.width;
-  tree.y = Math.trunc(Math.random() * go.world.height) - tree.height;
-  trees.push(tree)
-})
-
 const FPS = 16.66
 
 const update = () => {
@@ -90,9 +82,10 @@ const draw = () => {
   screen.draw()
   character.draw()
   trees.forEach(tree => tree.draw())
+  stones.forEach(stone => stone.draw())
   screen.draw_fog()
   loot_box.draw()
-  // controls.draw()
+  // controls.draw()a
 }
 
 const dice = (sides, times = 1) => {
@@ -113,6 +106,15 @@ const make_fire = () => {
     console.log("You dont have all required materials to make a fire.")
   }
 }
+//= Doodads
+
+const trees = []
+Array.from(Array(300)).forEach((j, i) => {
+  let tree = new Doodad({ go })
+  tree.x = Math.trunc(Math.random() * go.world.width) - tree.width;
+  tree.y = Math.trunc(Math.random() * go.world.height) - tree.height;
+  trees.push(tree)
+})
 
 let loot_table_tree = [{
   item: { name: "Wood", image_src: "branch.png" },
@@ -125,6 +127,41 @@ let loot_table_tree = [{
   min: 1,
   max: 3,
   chance: 60
+}]
+
+const cut_tree = () => {
+  const targeted_tree = trees.find((tree) => Vector2.distance(tree, character) < 100)
+  if (targeted_tree) {
+    const index = trees.indexOf(targeted_tree)
+    if (index > -1) {
+      loot_box.items = roll_loot(loot_table_tree)
+      loot_box.show()
+      trees.splice(index, 1)
+    }
+  }
+}
+keyboard_input.key_callbacks["f"] = [cut_tree]
+
+const stones = []
+Array.from(Array(30)).forEach((j, i) => {
+  let stone = new Doodad({ go })
+  stone.image.src = "flintstone.png"
+  stone.x = Math.trunc(Math.random() * go.world.width);
+  stone.y = Math.trunc(Math.random() * go.world.height);
+  stone.image_width = 840
+  stone.image_height = 859
+  stone.image_x_offset = 0
+  stone.image_y_offset = 0
+  stone.width = 32
+  stone.height = 32
+  stones.push(stone)
+})
+
+let loot_table_stone = [{
+  item: { name: "Flintstone", image_src: "flintstone.png"},
+  min: 1,
+  max: 1,
+  chance: 30
 }]
 
 const roll_loot = (loot_table) => {
@@ -140,19 +177,18 @@ const roll_loot = (loot_table) => {
   return result
 }
 
-const cut_tree = () => {
-  const targeted_tree = trees.find((tree) => Vector2.distance(tree, character) < 100)
-  if (targeted_tree) {
-    const index = trees.indexOf(targeted_tree)
+const break_stone = () => {
+  const targeted_stone = stones.find((stone) => Vector2.distance(stone, character) < 100)
+  if (targeted_stone) {
+    const index = stones.indexOf(targeted_stone)
     if (index > -1) {
-      loot_box.items = roll_loot(loot_table_tree)
+      loot_box.items = roll_loot(loot_table_stone)
       loot_box.show()
-      trees.splice(index, 1)
+      stones.splice(index, 1)
     }
   }
 }
-
-keyboard_input.key_callbacks["f"] = [cut_tree]
+keyboard_input.key_callbacks["f"].push(break_stone)
 
 const game_loop = new GameLoop()
 game_loop.draw = draw
