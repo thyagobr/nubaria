@@ -7,12 +7,13 @@ function World(go) {
   this.height = 10000;
   this.tile_set = {
     grass: new Tile("grass.png", 0, 0, 64, 63),
-    dirt: new Tile("dirt2.png", 0, 0, 64, 63)
+    dirt: new Tile("dirt2.png", 0, 0, 64, 63),
+    stone: new Tile("flintstone.png", 0, 0, 840, 859),
   }
   this.pick_random_tile = () => {
     let rng = Math.random() * 100;
-    if (rng <= 3) {
-      return this.tile_set.grass
+    if (rng <= 1) {
+      return this.tile_set.stone
       //return this.tile_set.dirt
     } else {
       return this.tile_set.grass

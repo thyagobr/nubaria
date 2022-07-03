@@ -114,26 +114,39 @@ const make_fire = () => {
   }
 }
 
+let loot_table_tree = [{
+  item: { name: "Wood", image_src: "branch.png" },
+  min: 1,
+  max: 3,
+  chance: 95
+},
+{
+  item: { name: "Dry Leaves", image_src: "leaves.jpeg" },
+  min: 1,
+  max: 3,
+  chance: 60
+}]
+
+const roll_loot = (loot_table) => {
+  let result = loot_table.map((loot_entry) => {
+      let roll = dice(100)
+      if (roll <= loot_entry.chance) {
+        const item_bundle = new Item(loot_entry.item.name)
+        item_bundle.image.src = loot_entry.item.image_src
+        item_bundle.quantity = random(loot_entry.min, loot_entry.max)
+        return new Loot(item_bundle, item_bundle.quantity)
+      }
+  }).filter((entry) => entry !== undefined)
+  return result
+}
+
 const cut_tree = () => {
   const targeted_tree = trees.find((tree) => Vector2.distance(tree, character) < 100)
   if (targeted_tree) {
     const index = trees.indexOf(targeted_tree)
     if (index > -1) {
-      const wood_total = random(1, 5)
-      const item_bundle = new Item("wood")
-      item_bundle.image.src = "branch.png"
-      const wood_loot = new Loot(item_bundle, wood_total)
-      loot_box.items.push(wood_loot)
-      loot_box.visible = true
-      loot_box.x = character.x
-      loot_box.y = character.y
-      item_bundle.quantity = wood_total
-      character.inventory.add(item_bundle)
-      let dry_leaves_roll = dice(10)
-      if (dry_leaves_roll > 7) {
-        character.inventory.add(new Item("dry leaves", 1))
-      }
-
+      loot_box.items = roll_loot(loot_table_tree)
+      loot_box.show()
       trees.splice(index, 1)
     }
   }

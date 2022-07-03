@@ -1,5 +1,3 @@
-import Item from "./item";
-import Loot from "./loot";
 import { Vector2 } from "./tapete"
 
 class LootBox {
@@ -16,13 +14,20 @@ class LootBox {
         if (!this.visible) return;
 
         // If the player moves away, delete items and hide loot box screen
-        if (Vector2.distance(this, this.go.character) > 500) {
+        if (
+            (Vector2.distance(this, this.go.character) > 500) ||
+            (this.items.length <= 0)
+        ) {
+
             this.items = []
             this.visible = false
         }
 
-        this.go.ctx.fillStyle = "rgba(255, 200, 255, 0.5)";
+        this.go.ctx.strokeStyle = "rgba(255, 255, 255, 0.5)";
         this.go.ctx.lineJoin = 'bevel';
+        this.go.ctx.lineWidth = 5;
+        this.go.ctx.strokeRect(this.x + 20 - this.go.camera.x, this.y + 20 - this.go.camera.y, this.width, this.items.length * 60 + 5);
+        this.go.ctx.fillStyle = "rgba(255, 200, 255, 0.5)";
         this.go.ctx.fillRect(this.x + 20 - this.go.camera.x, this.y + 20 - this.go.camera.y, this.width, this.items.length * 60 + 5);
 
         for (let index = 0; index < this.items.length; index++) {
@@ -41,10 +46,15 @@ class LootBox {
         }
     }
 
+    show() {
+      this.visible = true
+      this.x = this.go.character.x
+      this.y = this.go.character.y
+    }
+
     take_loot(loot_index) {
         let loot = this.items.splice(loot_index, 1)[0]
         this.go.character.inventory.add(loot.item)
-        if (this.items.length <= 0) this.visible = false
     }
 
     check_item_clicked(ev) {
