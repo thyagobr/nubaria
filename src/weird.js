@@ -96,7 +96,10 @@ const dice = (sides, times = 1) => {
 const make_fire = () => {
   let dry_leaves = character.inventory.find("dry leaves")
   let wood = character.inventory.find("wood")
-  if (dry_leaves && dry_leaves.quantity > 0 && wood && wood.quantity > 0) {
+  let flintstone = character.inventory.find("flintstone")
+  if (dry_leaves && dry_leaves.quantity > 0 &&
+     wood && wood.quantity > 0 && 
+     flintstone && flintstone.quantity > 0) {
     dry_leaves.quantity -= 1
     wood.quantity -= 1
     let row_index = Math.floor(character.x / 64)

@@ -17,7 +17,7 @@ export default function Inventory() {
   }
   this.find = (item_name) => {
     return this.slots.find((bundle) => {
-      return bundle.name == item_name
+      return bundle.name.toLowerCase() == item_name.toLowerCase()
     })
   }
 
