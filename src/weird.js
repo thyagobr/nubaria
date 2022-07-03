@@ -21,6 +21,7 @@ import Server from "./server"
 import Tile from "./tile.js"
 import LootBox from "./loot_box.js"
 import Loot from "./loot.js"
+import ResourceBar from "./resource_bar.js"
 
 const go = new GameObject()
 const screen = new Screen(go)
@@ -32,6 +33,7 @@ const controls = new Controls(go)
 character.name = `Player ${String(Math.floor(Math.random() * 10)).slice(0, 2)}`
 const server = new Server(go)
 const loot_box = new LootBox(go)
+const cold = new ResourceBar({ go, x: 5, y: 5, width: 200, height: 20 })
 
 const click_callbacks = setClickCallback(go)
 click_callbacks.push(clickable_clicked)
@@ -72,10 +74,33 @@ function controls_movement() {
   })
 }
 
-const FPS = 16.66
+let current_cold_level = 100
+function update_cold_level() {
+  if (fires.find((fire) => Vector2.distance(fire, character) <= 50)) {
+    if (current_cold_level < 100) {
+      if (current_cold_level + 5 > 100) {
+        current_cold_level = 100
+      } else {
+      current_cold_level += 5;
+      }
+    }
+  }
+  current_cold_level -= 1;
+}
+
+let FPS = 30
+let last_tick = Date.now()
 
 const update = () => {
+  if ((Date.now() - last_tick) > 1000) {
+    update_fps()
+    last_tick = Date.now()
+  }
   controls_movement()
+}
+
+function update_fps() {
+  update_cold_level()
 }
 
 const draw = () => {
@@ -85,6 +110,7 @@ const draw = () => {
   stones.forEach(stone => stone.draw())
   screen.draw_fog()
   loot_box.draw()
+  cold.draw(100, current_cold_level)
   // controls.draw()a
 }
 
@@ -92,7 +118,7 @@ const dice = (sides, times = 1) => {
   return Array.from(Array(times)).map((i) => Math.floor(Math.random() * sides) + 1);
 }
 
-
+const fires = []
 const make_fire = () => {
   let dry_leaves = character.inventory.find("dry leaves")
   let wood = character.inventory.find("wood")
@@ -105,6 +131,7 @@ const make_fire = () => {
     let row_index = Math.floor(character.x / 64)
     let column_index = Math.floor(character.y / 64)
     go.world.tiles[row_index][column_index] = new Tile("bonfire.png", 250, 300, 290, 250)
+    fires.push({ x: character.x, y: character.y })
   } else {
     console.log("You dont have all required materials to make a fire.")
   }
@@ -146,7 +173,7 @@ const cut_tree = () => {
 keyboard_input.key_callbacks["f"] = [cut_tree]
 
 const stones = []
-Array.from(Array(30)).forEach((j, i) => {
+Array.from(Array(300)).forEach((j, i) => {
   let stone = new Doodad({ go })
   stone.image.src = "flintstone.png"
   stone.x = Math.trunc(Math.random() * go.world.width);

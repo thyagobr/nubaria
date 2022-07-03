@@ -1,16 +1,20 @@
-function ResourceBar(go, data) {
+function ResourceBar({ go, x, y, width = 100, height = 10, colour = "red" }) {
   this.go = go
-  this.data = data
+  this.x = x
+  this.y = y
+  this.width = width
+  this.height = height
+  this.colour = colour
 
   this.draw = (full, current) => {
-    let bar_width = ((current / full) * this.data.character.width)
+    let bar_width = ((current / full) * this.width)
     this.go.ctx.strokeStyle = "black" 
     this.go.ctx.lineWidth = 4
-    this.go.ctx.strokeRect(this.data.character.x - this.go.camera.x, this.data.character.y - this.go.camera.y - this.data.offset, this.data.character.width, 5)
+    this.go.ctx.strokeRect(this.x, this.y, this.width, this.height)
     this.go.ctx.fillStyle = "black" 
-    this.go.ctx.fillRect(this.data.character.x - this.go.camera.x, this.data.character.y - this.go.camera.y - this.data.offset, this.data.character.width, 5)
-    this.go.ctx.fillStyle = this.data.colour
-    this.go.ctx.fillRect(this.data.character.x - this.go.camera.x, this.data.character.y - this.go.camera.y - this.data.offset, bar_width, 5)
+    this.go.ctx.fillRect(this.x, this.x, this.width, this.height)
+    this.go.ctx.fillStyle = this.colour
+    this.go.ctx.fillRect(this.x, this.y, bar_width, this.height)
   }
 }
 
