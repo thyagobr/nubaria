@@ -76,7 +76,7 @@ function controls_movement() {
 
 let current_cold_level = 100
 function update_cold_level() {
-  if (fires.find((fire) => Vector2.distance(fire, character) <= 50)) {
+  if (fires.find((fire) => Vector2.distance(fire, character) <= 150)) {
     if (current_cold_level < 100) {
       if (current_cold_level + 5 > 100) {
         current_cold_level = 100
@@ -84,8 +84,20 @@ function update_cold_level() {
       current_cold_level += 5;
       }
     }
-  }
+  } else {
   current_cold_level -= 1;
+  }
+}
+
+function update_boonfires_fuel() {
+  for (let index = 0; index < fires.length; index++) {
+    let fire = fires[index]
+    if (fire.fuel <= 0) {
+      fires.splice(index, 1);
+    } else {
+      fire.fuel -= 1;
+    }
+  }
 }
 
 let FPS = 30
@@ -101,13 +113,15 @@ const update = () => {
 
 function update_fps() {
   update_cold_level()
+  update_boonfires_fuel()
 }
 
 const draw = () => {
   screen.draw()
-  character.draw()
-  trees.forEach(tree => tree.draw())
   stones.forEach(stone => stone.draw())
+  trees.forEach(tree => tree.draw())
+  fires.forEach(fire => fire.draw())
+  character.draw()
   screen.draw_fog()
   loot_box.draw()
   cold.draw(100, current_cold_level)
@@ -128,10 +142,21 @@ const make_fire = () => {
      flintstone && flintstone.quantity > 0) {
     dry_leaves.quantity -= 1
     wood.quantity -= 1
-    let row_index = Math.floor(character.x / 64)
-    let column_index = Math.floor(character.y / 64)
-    go.world.tiles[row_index][column_index] = new Tile("bonfire.png", 250, 300, 290, 250)
-    fires.push({ x: character.x, y: character.y })
+    //let row_index = Math.floor(character.x / 64)
+    //let column_index = Math.floor(character.y / 64)
+    //go.world.tiles[row_index][column_index] = new Tile("bonfire.png", 250, 300, 290, 250)
+    let fire = new Doodad({ go })
+    fire.image.src = "bonfire.png"
+    fire.image_x_offset = 250
+    fire.image_y_offset = 250
+    fire.image_height = 350
+    fire.image_width = 300
+    fire.width = 64
+    fire.height = 64
+    fire.x = character.x;
+    fire.y = character.y;
+    fire.fuel = 20;
+    fires.push(fire)
   } else {
     console.log("You dont have all required materials to make a fire.")
   }
