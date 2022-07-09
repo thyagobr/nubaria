@@ -22,6 +22,7 @@ import Tile from "./tile.js"
 import LootBox from "./loot_box.js"
 import Loot from "./loot.js"
 import ResourceBar from "./resource_bar.js"
+import CastingBar from "./casting_bar.js"
 
 const go = new GameObject()
 const screen = new Screen(go)
@@ -34,6 +35,7 @@ character.name = `Player ${String(Math.floor(Math.random() * 10)).slice(0, 2)}`
 const server = new Server(go)
 const loot_box = new LootBox(go)
 const cold = new ResourceBar({ go, x: 5, y: 5, width: 200, height: 20 })
+const casting_bar = new CastingBar({ go })
 
 const click_callbacks = setClickCallback(go)
 click_callbacks.push(clickable_clicked)
@@ -126,6 +128,7 @@ const draw = () => {
   screen.draw_fog()
   loot_box.draw()
   cold.draw(100, current_cold_level)
+  casting_bar.draw()
   // controls.draw()a
 }
 
@@ -135,33 +138,37 @@ const dice = (sides, times = 1) => {
 
 const fires = []
 const make_fire = () => {
-  let dry_leaves = character.inventory.find("dry leaves")
-  let wood = character.inventory.find("wood")
-  let flintstone = character.inventory.find("flintstone")
-  if (dry_leaves && dry_leaves.quantity > 0 &&
-    wood && wood.quantity > 0 &&
-    flintstone && flintstone.quantity > 0) {
-    dry_leaves.quantity -= 1
-    wood.quantity -= 1
-    let fire = new Doodad({ go })
-    fire.image.src = "bonfire.png"
-    fire.image_x_offset = 250
-    fire.image_y_offset = 250
-    fire.image_height = 350
-    fire.image_width = 300
-    fire.width = 64
-    fire.height = 64
-    fire.x = character.x;
-    fire.y = character.y;
-    fire.fuel = 20;
-    fire.resource_bar = new ResourceBar({ go, x: fire.x, y: fire.y + fire.height, width: fire.width, height: 5 })
-    fire.resource_bar.static = true
-    fire.resource_bar.full = 20;
-    fire.resource_bar.current = 20;
-    fires.push(fire)
-  } else {
-    console.log("You dont have all required materials to make a fire.")
-  }
+  casting_bar.start(1500)
+
+  setTimeout(() => {
+    let dry_leaves = character.inventory.find("dry leaves")
+    let wood = character.inventory.find("wood")
+    let flintstone = character.inventory.find("flintstone")
+    if (dry_leaves && dry_leaves.quantity > 0 &&
+      wood && wood.quantity > 0 &&
+      flintstone && flintstone.quantity > 0) {
+      dry_leaves.quantity -= 1
+      wood.quantity -= 1
+      let fire = new Doodad({ go })
+      fire.image.src = "bonfire.png"
+      fire.image_x_offset = 250
+      fire.image_y_offset = 250
+      fire.image_height = 350
+      fire.image_width = 300
+      fire.width = 64
+      fire.height = 64
+      fire.x = character.x;
+      fire.y = character.y;
+      fire.fuel = 20;
+      fire.resource_bar = new ResourceBar({ go, x: fire.x, y: fire.y + fire.height, width: fire.width, height: 5 })
+      fire.resource_bar.static = true
+      fire.resource_bar.full = 20;
+      fire.resource_bar.current = 20;
+      fires.push(fire)
+    } else {
+      console.log("You dont have all required materials to make a fire.")
+    }
+  }, 1500)
 }
 //= Doodads
 
@@ -187,15 +194,20 @@ let loot_table_tree = [{
 }]
 
 const cut_tree = () => {
-  const targeted_tree = trees.find((tree) => Vector2.distance(tree, character) < 100)
-  if (targeted_tree) {
-    const index = trees.indexOf(targeted_tree)
-    if (index > -1) {
-      loot_box.items = roll_loot(loot_table_tree)
-      loot_box.show()
-      trees.splice(index, 1)
+  // Could give it the function to be ran at the end as a callback
+  casting_bar.start(3000)
+
+  setTimeout(() => {
+    const targeted_tree = trees.find((tree) => Vector2.distance(tree, character) < 100)
+    if (targeted_tree) {
+      const index = trees.indexOf(targeted_tree)
+      if (index > -1) {
+        loot_box.items = roll_loot(loot_table_tree)
+        loot_box.show()
+        trees.splice(index, 1)
+      }
     }
-  }
+  }, 3000);
 }
 keyboard_input.key_callbacks["f"] = [cut_tree]
 
@@ -235,15 +247,19 @@ const roll_loot = (loot_table) => {
 }
 
 const break_stone = () => {
-  const targeted_stone = stones.find((stone) => Vector2.distance(stone, character) < 100)
-  if (targeted_stone) {
-    const index = stones.indexOf(targeted_stone)
-    if (index > -1) {
-      loot_box.items = roll_loot(loot_table_stone)
-      loot_box.show()
-      stones.splice(index, 1)
+  casting_bar.start(3000)
+
+  setTimeout(() => {
+    const targeted_stone = stones.find((stone) => Vector2.distance(stone, character) < 100)
+    if (targeted_stone) {
+      const index = stones.indexOf(targeted_stone)
+      if (index > -1) {
+        loot_box.items = roll_loot(loot_table_stone)
+        loot_box.show()
+        stones.splice(index, 1)
+      }
     }
-  }
+  }, 3000)
 }
 keyboard_input.key_callbacks["f"].push(break_stone)
 
