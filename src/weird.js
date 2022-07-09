@@ -81,11 +81,11 @@ function update_cold_level() {
       if (current_cold_level + 5 > 100) {
         current_cold_level = 100
       } else {
-      current_cold_level += 5;
+        current_cold_level += 5;
       }
     }
   } else {
-  current_cold_level -= 1;
+    current_cold_level -= 1;
   }
 }
 
@@ -96,6 +96,7 @@ function update_boonfires_fuel() {
       fires.splice(index, 1);
     } else {
       fire.fuel -= 1;
+      fire.resource_bar.current -= 1;
     }
   }
 }
@@ -138,13 +139,10 @@ const make_fire = () => {
   let wood = character.inventory.find("wood")
   let flintstone = character.inventory.find("flintstone")
   if (dry_leaves && dry_leaves.quantity > 0 &&
-     wood && wood.quantity > 0 && 
-     flintstone && flintstone.quantity > 0) {
+    wood && wood.quantity > 0 &&
+    flintstone && flintstone.quantity > 0) {
     dry_leaves.quantity -= 1
     wood.quantity -= 1
-    //let row_index = Math.floor(character.x / 64)
-    //let column_index = Math.floor(character.y / 64)
-    //go.world.tiles[row_index][column_index] = new Tile("bonfire.png", 250, 300, 290, 250)
     let fire = new Doodad({ go })
     fire.image.src = "bonfire.png"
     fire.image_x_offset = 250
@@ -156,6 +154,10 @@ const make_fire = () => {
     fire.x = character.x;
     fire.y = character.y;
     fire.fuel = 20;
+    fire.resource_bar = new ResourceBar({ go, x: fire.x, y: fire.y + fire.height, width: fire.width, height: 5 })
+    fire.resource_bar.static = true
+    fire.resource_bar.full = 20;
+    fire.resource_bar.current = 20;
     fires.push(fire)
   } else {
     console.log("You dont have all required materials to make a fire.")
@@ -181,7 +183,7 @@ let loot_table_tree = [{
   item: { name: "Dry Leaves", image_src: "leaves.jpeg" },
   min: 1,
   max: 3,
-  chance: 60
+  chance: 100
 }]
 
 const cut_tree = () => {
@@ -213,21 +215,21 @@ Array.from(Array(300)).forEach((j, i) => {
 })
 
 let loot_table_stone = [{
-  item: { name: "Flintstone", image_src: "flintstone.png"},
+  item: { name: "Flintstone", image_src: "flintstone.png" },
   min: 1,
   max: 1,
-  chance: 30
+  chance: 100
 }]
 
 const roll_loot = (loot_table) => {
   let result = loot_table.map((loot_entry) => {
-      let roll = dice(100)
-      if (roll <= loot_entry.chance) {
-        const item_bundle = new Item(loot_entry.item.name)
-        item_bundle.image.src = loot_entry.item.image_src
-        item_bundle.quantity = random(loot_entry.min, loot_entry.max)
-        return new Loot(item_bundle, item_bundle.quantity)
-      }
+    let roll = dice(100)
+    if (roll <= loot_entry.chance) {
+      const item_bundle = new Item(loot_entry.item.name)
+      item_bundle.image.src = loot_entry.item.image_src
+      item_bundle.quantity = random(loot_entry.min, loot_entry.max)
+      return new Loot(item_bundle, item_bundle.quantity)
+    }
   }).filter((entry) => entry !== undefined)
   return result
 }

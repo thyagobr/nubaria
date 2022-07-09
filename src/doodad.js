@@ -11,9 +11,13 @@ function Doodad({ go }) {
   this.image_y_offset = 290
   this.width = 98
   this.height = 126
+  this.resource_bar = null
 
   this.draw = function() {
     this.go.ctx.drawImage(this.image, this.image_x_offset, this.image_y_offset, this.image_width, this.image_height, this.x - this.go.camera.x, this.y - this.go.camera.y, this.width, this.height)
+    if (this.resource_bar) {
+      this.resource_bar.draw()
+    }
   }
 }
 
