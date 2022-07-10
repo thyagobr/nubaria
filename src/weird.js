@@ -40,12 +40,12 @@ const casting_bar = new CastingBar({ go })
 const click_callbacks = setClickCallback(go)
 click_callbacks.push(clickable_clicked)
 function clickable_clicked(ev) {
-  go.clickables.forEach((clickable) => {
-    let click = { x: ev.clientX, y: ev.clientY, width: 1, height: 1 }
-    if (is_colliding(clickable, click)) {
-      clickable.activated = !clickable.activated
-    }
-  })
+  let click = { x: ev.clientX + go.camera.x, y: ev.clientY + go.camera.y, width: 1, height: 1 }
+  const clickable = go.clickables.find((clickable) => is_colliding(clickable, click))
+  if (clickable) {
+    clickable.activated = !clickable.activated
+  }
+  go.selected_clickable = clickable
 }
 
 let mouse_is_down = false
@@ -69,11 +69,11 @@ touchstart_callbacks.push((ev) => mouse_is_down = true)
 const touchend_callbacks = setTouchendCallback(go)
 touchend_callbacks.push((ev) => mouse_is_down = false)
 function controls_movement() {
-  go.clickables.forEach((clickable) => {
-    if (clickable.activated) {
-      clickable.click()
-    }
-  })
+  // go.clickables.forEach((clickable) => {
+  //   if (clickable.activated) {
+  //     clickable.click()
+  //   }
+  // })
 }
 
 let current_cold_level = 100
@@ -129,6 +129,7 @@ const draw = () => {
   loot_box.draw()
   cold.draw(100, current_cold_level)
   casting_bar.draw()
+  go.draw_selected_clickable()
   // controls.draw()a
 }
 
@@ -165,6 +166,7 @@ const make_fire = () => {
       fire.resource_bar.full = 20;
       fire.resource_bar.current = 20;
       fires.push(fire)
+      go.clickables.push(fire)
     } else {
       console.log("You dont have all required materials to make a fire.")
     }
@@ -178,6 +180,7 @@ Array.from(Array(300)).forEach((j, i) => {
   tree.x = Math.trunc(Math.random() * go.world.width) - tree.width;
   tree.y = Math.trunc(Math.random() * go.world.height) - tree.height;
   trees.push(tree)
+  go.clickables.push(tree)
 })
 
 let loot_table_tree = [{
@@ -193,21 +196,32 @@ let loot_table_tree = [{
   chance: 100
 }]
 
+function remove_clickable(doodad) {
+  const clickable_index = go.clickables.indexOf(doodad)
+  if (clickable_index > -1) {
+    go.clickables.splice(clickable_index, 1)
+  }
+  if (go.selected_clickable === doodad) {
+    go.selected_clickable = null
+  }
+}
+
 const cut_tree = () => {
   // Could give it the function to be ran at the end as a callback
-  casting_bar.start(3000)
+  const targeted_tree = trees.find((tree) => Vector2.distance(tree, character) < 100)
+  if (targeted_tree === go.selected_clickable) {
+    casting_bar.start(3000)
 
-  setTimeout(() => {
-    const targeted_tree = trees.find((tree) => Vector2.distance(tree, character) < 100)
-    if (targeted_tree) {
+    setTimeout(() => {
       const index = trees.indexOf(targeted_tree)
       if (index > -1) {
         loot_box.items = roll_loot(loot_table_tree)
         loot_box.show()
         trees.splice(index, 1)
       }
-    }
-  }, 3000);
+      remove_clickable(targeted_tree)
+    }, 3000);
+  }
 }
 keyboard_input.key_callbacks["f"] = [cut_tree]
 
@@ -247,19 +261,19 @@ const roll_loot = (loot_table) => {
 }
 
 const break_stone = () => {
-  casting_bar.start(3000)
+  const targeted_stone = stones.find((stone) => Vector2.distance(stone, character) < 100)
+  if (targeted_stone) {
+    casting_bar.start(3000)
 
-  setTimeout(() => {
-    const targeted_stone = stones.find((stone) => Vector2.distance(stone, character) < 100)
-    if (targeted_stone) {
+    setTimeout(() => {
       const index = stones.indexOf(targeted_stone)
       if (index > -1) {
         loot_box.items = roll_loot(loot_table_stone)
         loot_box.show()
         stones.splice(index, 1)
       }
-    }
-  }, 3000)
+    }, 3000)
+  }
 }
 keyboard_input.key_callbacks["f"].push(break_stone)
 

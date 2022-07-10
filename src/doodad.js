@@ -19,6 +19,8 @@ function Doodad({ go }) {
       this.resource_bar.draw()
     }
   }
+
+  this.click = function() {}
 }
 
 export default Doodad;
