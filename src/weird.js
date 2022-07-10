@@ -139,38 +139,46 @@ const dice = (sides, times = 1) => {
 
 const fires = []
 const make_fire = () => {
-  casting_bar.start(1500)
+  let dry_leaves = character.inventory.find("dry leaves")
+  let wood = character.inventory.find("wood")
+  let flintstone = character.inventory.find("flintstone")
+  if (dry_leaves && dry_leaves.quantity > 0 &&
+    wood && wood.quantity > 0 &&
+    flintstone && flintstone.quantity > 0) {
+    casting_bar.start(1500)
 
-  setTimeout(() => {
-    let dry_leaves = character.inventory.find("dry leaves")
-    let wood = character.inventory.find("wood")
-    let flintstone = character.inventory.find("flintstone")
-    if (dry_leaves && dry_leaves.quantity > 0 &&
-      wood && wood.quantity > 0 &&
-      flintstone && flintstone.quantity > 0) {
+    setTimeout(() => {
       dry_leaves.quantity -= 1
       wood.quantity -= 1
-      let fire = new Doodad({ go })
-      fire.image.src = "bonfire.png"
-      fire.image_x_offset = 250
-      fire.image_y_offset = 250
-      fire.image_height = 350
-      fire.image_width = 300
-      fire.width = 64
-      fire.height = 64
-      fire.x = character.x;
-      fire.y = character.y;
-      fire.fuel = 20;
-      fire.resource_bar = new ResourceBar({ go, x: fire.x, y: fire.y + fire.height, width: fire.width, height: 5 })
-      fire.resource_bar.static = true
-      fire.resource_bar.full = 20;
-      fire.resource_bar.current = 20;
-      fires.push(fire)
-      go.clickables.push(fire)
-    } else {
-      console.log("You dont have all required materials to make a fire.")
-    }
-  }, 1500)
+      if (go.selected_clickable &&
+        go.selected_clickable.type === "BONFIRE") {
+        let fire = fires.find((fire) => go.selected_clickable === fire);
+        fire.fuel += 20;
+        fire.resource_bar.current += 20;
+      } else {
+        let fire = new Doodad({ go })
+        fire.type = "BONFIRE"
+        fire.image.src = "bonfire.png"
+        fire.image_x_offset = 250
+        fire.image_y_offset = 250
+        fire.image_height = 350
+        fire.image_width = 300
+        fire.width = 64
+        fire.height = 64
+        fire.x = character.x;
+        fire.y = character.y;
+        fire.fuel = 20;
+        fire.resource_bar = new ResourceBar({ go, x: fire.x, y: fire.y + fire.height, width: fire.width, height: 5 })
+        fire.resource_bar.static = true
+        fire.resource_bar.full = 20;
+        fire.resource_bar.current = 20;
+        fires.push(fire)
+        go.clickables.push(fire)
+      }
+    }, 1500)
+  } else {
+    console.log("You dont have all required materials to make a fire.")
+  }
 }
 //= Doodads
 

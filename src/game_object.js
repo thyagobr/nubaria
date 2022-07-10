@@ -21,7 +21,7 @@ function GameObject() {
         this.selected_clickable.x - this.camera.x - 5,
         this.selected_clickable.y - this.camera.y - 5,
         this.selected_clickable.width + 10,
-        this.selected_clickable.height + 10);
+        this.selected_clickable.height + (this.selected_clickable.resource_bar ? 20 : 10));
       this.ctx.restore();
     }
   }

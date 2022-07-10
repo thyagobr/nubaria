@@ -22,7 +22,7 @@ function ResourceBar({ go, x, y, width = 100, height = 10, colour = "red" }) {
   }
 
   this.draw = (full = this.full, current = this.current) => {
-    let bar_width = ((current / full) * this.width)
+    let bar_width = (((Math.min(current, full)) / full) * this.width)
     this.go.ctx.strokeStyle = "black"
     this.go.ctx.lineWidth = 4
     this.go.ctx.strokeRect(this.x - this.x_offset(), this.y - this.y_offset(), this.width, this.height)
