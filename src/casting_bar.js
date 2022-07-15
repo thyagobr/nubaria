@@ -10,6 +10,7 @@ function CastingBar({ go }) {
     this.current = 0
     this.starting_time = null
     this.last_time = null
+    this.callback = null
     // Stays static in a position in the map
     // Meaning: doesn't move with the camera
     this.static = false
@@ -24,11 +25,12 @@ function CastingBar({ go }) {
             0;
     }
 
-    this.start = (duration) => {
+    this.start = (duration, callback) => {
         this.starting_time = Date.now()
         this.last_time = Date.now()
         this.current = 0
         this.duration = duration
+        this.callback = callback
     }
 
     this.draw = (full = this.full, current = this.current) => {
@@ -50,6 +52,7 @@ function CastingBar({ go }) {
             this.go.ctx.fillRect(this.x - this.x_offset(), this.y - this.y_offset(), bar_width, this.height)
         } else {
             this.duration = null;
+            if (this.callback !== null) this.callback();
         }
     }
 }

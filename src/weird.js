@@ -219,10 +219,8 @@ const cut_tree = () => {
   if ((!targeted_tree) || (Vector2.distance(targeted_tree, character) > 100)) {
     return;
   }
-  // Could give it the function to be ran at the end as a callback
-  casting_bar.start(3000)
-
-  setTimeout(() => {
+  
+  casting_bar.start(3000, () => {
     const index = trees.indexOf(targeted_tree)
     if (index > -1) {
       loot_box.items = roll_loot(loot_table_tree)
@@ -230,7 +228,7 @@ const cut_tree = () => {
       trees.splice(index, 1)
     }
     remove_clickable(targeted_tree)
-  }, 3000);
+  });
 }
 keyboard_input.key_callbacks["f"] = [cut_tree]
 
