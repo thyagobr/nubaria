@@ -11,6 +11,9 @@ function Screen(go) {
   }
 
   this.draw = () => {
+    this.go.canvas.width = this.go.canvas.clientWidth
+    this.go.canvas.height = this.go.canvas.clientHeight
+    this.go.canvas_rect = this.go.canvas.getBoundingClientRect()
     this.clear()
     this.go.world.draw()
   }
