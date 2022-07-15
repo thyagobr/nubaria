@@ -5,7 +5,7 @@ function KeyboardInput(go) {
     if (this.on_keydown_callbacks[ev.key] === undefined) {
       this.on_keydown_callbacks[ev.key] = []
     }
-    this.on_keydown_callbacks[ev.key].forEach((callback) => callback())
+    this.on_keydown_callbacks[ev.key].forEach((callback) => callback(ev))
   }
   window.addEventListener("keydown", on_keydown, false)
   const on_keyup = (ev) => {

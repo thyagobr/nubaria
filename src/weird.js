@@ -219,7 +219,7 @@ const cut_tree = () => {
   if ((!targeted_tree) || (Vector2.distance(targeted_tree, character) > 100)) {
     return;
   }
-  
+
   casting_bar.start(3000, () => {
     const index = trees.indexOf(targeted_tree)
     if (index > -1) {
@@ -231,6 +231,22 @@ const cut_tree = () => {
   });
 }
 keyboard_input.key_callbacks["f"] = [cut_tree]
+
+let ordered_clickables = [];
+const tab_cycling = (ev) => {
+  ev.preventDefault()
+  ordered_clickables = go.clickables.sort((a, b) => {
+    return Vector2.distance(a, character) - Vector2.distance(b, character);
+  })
+  if (Vector2.distance(ordered_clickables[0], character) > 500) return;
+
+  if (ordered_clickables[0] === go.selected_clickable) {
+    go.selected_clickable = ordered_clickables[1];
+  } else {
+    go.selected_clickable = ordered_clickables[0]
+  }
+}
+keyboard_input.on_keydown_callbacks["Tab"] = [tab_cycling]
 
 const stones = []
 Array.from(Array(300)).forEach((j, i) => {
@@ -245,6 +261,7 @@ Array.from(Array(300)).forEach((j, i) => {
   stone.width = 32
   stone.height = 32
   stones.push(stone)
+  go.clickables.push(stone)
 })
 
 let loot_table_stone = [{
@@ -268,19 +285,20 @@ const roll_loot = (loot_table) => {
 }
 
 const break_stone = () => {
-  const targeted_stone = stones.find((stone) => Vector2.distance(stone, character) < 100)
-  if (targeted_stone) {
-    casting_bar.start(3000)
-
-    setTimeout(() => {
-      const index = stones.indexOf(targeted_stone)
-      if (index > -1) {
-        loot_box.items = roll_loot(loot_table_stone)
-        loot_box.show()
-        stones.splice(index, 1)
-      }
-    }, 3000)
+  const targeted_stone = stones.find((stone) => stone === go.selected_clickable)
+  if ((!targeted_stone) || (Vector2.distance(targeted_stone, character) > 100)) {
+    return;
   }
+
+  casting_bar.start(3000, () => {
+    const index = stones.indexOf(targeted_stone)
+    if (index > -1) {
+      loot_box.items = roll_loot(loot_table_stone)
+      loot_box.show()
+      stones.splice(index, 1)
+      remove_clickable(targeted_stone)
+    }
+  })
 }
 keyboard_input.key_callbacks["f"].push(break_stone)
 
