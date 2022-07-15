@@ -124,12 +124,12 @@ const draw = () => {
   stones.forEach(stone => stone.draw())
   trees.forEach(tree => tree.draw())
   fires.forEach(fire => fire.draw())
+  go.draw_selected_clickable()
   character.draw()
   screen.draw_fog()
   loot_box.draw()
   cold.draw(100, current_cold_level)
   casting_bar.draw()
-  go.draw_selected_clickable()
   // controls.draw()a
 }
 
@@ -215,21 +215,22 @@ function remove_clickable(doodad) {
 }
 
 const cut_tree = () => {
-  // Could give it the function to be ran at the end as a callback
-  const targeted_tree = trees.find((tree) => Vector2.distance(tree, character) < 100)
-  if (targeted_tree === go.selected_clickable) {
-    casting_bar.start(3000)
-
-    setTimeout(() => {
-      const index = trees.indexOf(targeted_tree)
-      if (index > -1) {
-        loot_box.items = roll_loot(loot_table_tree)
-        loot_box.show()
-        trees.splice(index, 1)
-      }
-      remove_clickable(targeted_tree)
-    }, 3000);
+  const targeted_tree = trees.find((tree) => tree === go.selected_clickable)
+  if ((!targeted_tree) || (Vector2.distance(targeted_tree, character) > 100)) {
+    return;
   }
+  // Could give it the function to be ran at the end as a callback
+  casting_bar.start(3000)
+
+  setTimeout(() => {
+    const index = trees.indexOf(targeted_tree)
+    if (index > -1) {
+      loot_box.items = roll_loot(loot_table_tree)
+      loot_box.show()
+      trees.splice(index, 1)
+    }
+    remove_clickable(targeted_tree)
+  }, 3000);
 }
 keyboard_input.key_callbacks["f"] = [cut_tree]
 
