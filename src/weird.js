@@ -24,7 +24,7 @@ import Loot from "./loot.js"
 import ResourceBar from "./resource_bar.js"
 import CastingBar from "./casting_bar.js"
 import Creep from "./creep.js"
-import Particle from "./particle.js"
+import Projectile from "./projectile.js"
 
 const go = new GameObject()
 const screen = new Screen(go)
@@ -40,8 +40,6 @@ const cold = new ResourceBar({ go, x: 5, y: 5, width: 200, height: 20 })
 const casting_bar = new CastingBar({ go })
 const creep = new Creep(go);
 go.clickables.push(creep)
-
-const spell = new Particle(go);
 
 const click_callbacks = setClickCallback(go)
 click_callbacks.push(clickable_clicked)
@@ -112,16 +110,22 @@ function update_boonfires_fuel() {
 let FPS = 30
 let last_tick = Date.now()
 
-let spell_result = { x: undefined, y: undefined }
+const spell = new Projectile(go);
+const cast_spell = () => {
+  spell.start_position = { x: character.x + 50, y: character.y + 50 }
+  spell.current_position = { x: character.x + 50, y: character.y + 50 }
+  spell.end_position = { x: mouse_position.x, y: mouse_position.y }
+  console.log(spell.end_position)
+  spell.active = true
+}
+keyboard_input.on_keydown_callbacks["q"] = [cast_spell]
+
 const update = () => {
   if ((Date.now() - last_tick) > 1000) {
     update_fps()
     last_tick = Date.now()
   }
   controls_movement()
-  spell_result = calculateSpellPosition();
-  spell.x = spell_result.x
-  spell.y = spell_result.y
 }
 
 function update_fps() {
@@ -136,7 +140,7 @@ const draw = () => {
   fires.forEach(fire => fire.draw())
   go.draw_selected_clickable()
   character.draw()
-  spell.draw(spell.x, spell.y)
+  spell.draw()
   creep.draw()
   screen.draw_fog()
   loot_box.draw()
@@ -244,20 +248,6 @@ const cut_tree = () => {
   });
 }
 keyboard_input.key_callbacks["f"] = [cut_tree]
-
-function calculateSpellPosition() {
-  const center = {
-    x: character.x + character.width / 2,
-    y: character.y + character.height / 2
-  }
-
-  const angle = Math.atan2(mouse_position.y - center.y, mouse_position.x - center.x);
-
-  return {
-    x: center.x + 50 * Math.cos(angle),
-    y: center.y + 50 * Math.sin(angle)
-  }
-}
 
 let ordered_clickables = [];
 const tab_cycling = (ev) => {
