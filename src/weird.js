@@ -23,6 +23,8 @@ import LootBox from "./loot_box.js"
 import Loot from "./loot.js"
 import ResourceBar from "./resource_bar.js"
 import CastingBar from "./casting_bar.js"
+import Creep from "./creep.js"
+import Particle from "./particle.js"
 
 const go = new GameObject()
 const screen = new Screen(go)
@@ -36,6 +38,10 @@ const server = new Server(go)
 const loot_box = new LootBox(go)
 const cold = new ResourceBar({ go, x: 5, y: 5, width: 200, height: 20 })
 const casting_bar = new CastingBar({ go })
+const creep = new Creep(go);
+go.clickables.push(creep)
+
+const spell = new Particle(go);
 
 const click_callbacks = setClickCallback(go)
 click_callbacks.push(clickable_clicked)
@@ -106,19 +112,23 @@ function update_boonfires_fuel() {
 let FPS = 30
 let last_tick = Date.now()
 
+let spell_result = { x: undefined, y: undefined }
 const update = () => {
   if ((Date.now() - last_tick) > 1000) {
     update_fps()
     last_tick = Date.now()
   }
   controls_movement()
+  spell_result = calculateSpellPosition();
+  spell.x = spell_result.x
+  spell.y = spell_result.y
 }
 
 function update_fps() {
   update_cold_level()
   update_boonfires_fuel()
 }
-
+// Comment
 const draw = () => {
   screen.draw()
   stones.forEach(stone => stone.draw())
@@ -126,10 +136,13 @@ const draw = () => {
   fires.forEach(fire => fire.draw())
   go.draw_selected_clickable()
   character.draw()
+  spell.draw(spell.x, spell.y)
+  creep.draw()
   screen.draw_fog()
   loot_box.draw()
   cold.draw(100, current_cold_level)
   casting_bar.draw()
+  if (show_control_wheel) draw_control_wheel()
   // controls.draw()a
 }
 
@@ -232,6 +245,20 @@ const cut_tree = () => {
 }
 keyboard_input.key_callbacks["f"] = [cut_tree]
 
+function calculateSpellPosition() {
+  const center = {
+    x: character.x + character.width / 2,
+    y: character.y + character.height / 2
+  }
+
+  const angle = Math.atan2(mouse_position.y - center.y, mouse_position.x - center.x);
+
+  return {
+    x: center.x + 50 * Math.cos(angle),
+    y: center.y + 50 * Math.sin(angle)
+  }
+}
+
 let ordered_clickables = [];
 const tab_cycling = (ev) => {
   ev.preventDefault()
@@ -247,6 +274,20 @@ const tab_cycling = (ev) => {
   }
 }
 keyboard_input.on_keydown_callbacks["Tab"] = [tab_cycling]
+
+let show_control_wheel = false
+const draw_control_wheel = () => {
+  go.ctx.beginPath()
+  go.ctx.arc(
+    character.x + (character.width / 2) - go.camera.x,
+    character.y + (character.height / 2) - go.camera.y,
+    200, 2 * Math.PI, false);
+  go.ctx.lineWidth = 5
+  go.ctx.strokeStyle = "white"
+  go.ctx.stroke();
+}
+const toggle_control_wheel = () => { show_control_wheel = !show_control_wheel }
+keyboard_input.on_keydown_callbacks["c"] = [toggle_control_wheel]
 
 const stones = []
 Array.from(Array(300)).forEach((j, i) => {

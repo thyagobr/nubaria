@@ -2,23 +2,25 @@ import { distance, is_colliding } from "./tapete.js"
 import ResourceBar from "./resource_bar"
 
 function Creep(go) {
+  if (go.creeps === undefined) go.creeps = []
   this.id = go.creeps.length
   this.go = go
   this.go.creeps.push(this)
 
   this.image = new Image()
-  this.image_width = 32
-  this.image_height = 32
+  this.image.src = "zergling.png" // placeholder image
+  this.image_width = 150
+  this.image_height = 150
   this.x = 700
   this.y = 300
-  this.width = this.go.tile_size * 2
-  this.height = this.go.tile_size * 2
+  this.width = this.go.tile_size * 4
+  this.height = this.go.tile_size * 4
   this.moving = false
   this.direction = null
   this.speed = 2
   //this.movement_board = this.go.board.grid
   this.current_movement_target = null
-  this.health_bar = new ResourceBar(go, { character: this, offset: 20, colour: "red" })
+  this.health_bar = new ResourceBar({ go, character: this, offset: 20, colour: "red" })
   this.hp = 20
   this.current_hp = 20
 
