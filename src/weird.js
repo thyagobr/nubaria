@@ -38,8 +38,17 @@ const server = new Server(go)
 const loot_box = new LootBox(go)
 // const cold = new ResourceBar({ go, x: 5, y: 5, width: 200, height: 20 })
 const casting_bar = new CastingBar({ go })
-const creep = new Creep(go);
-go.clickables.push(creep)
+
+// Creep
+const creeps = [];
+for (let i = 0; i < 10; i++) {
+  let creep = new Creep(go);
+  creep.x = Math.random() * go.world.width
+  creep.y = Math.random() * go.world.height
+  go.clickables.push(creep);
+  creeps.push(creep);
+}
+// END - Creep
 
 const click_callbacks = setClickCallback(go)
 click_callbacks.push(clickable_clicked)
@@ -113,10 +122,14 @@ let last_tick = Date.now()
 const spell = new Projectile(go);
 const cast_spell = () => {
   if (spell.active) return;
+  if ((go.selected_clickable === null) || (go.selected_clickable === undefined)) return;
 
   spell.start_position = { x: character.x + 50, y: character.y + 50 }
   spell.current_position = { x: character.x + 50, y: character.y + 50 }
-  spell.end_position = { x: mouse_position.x, y: mouse_position.y }
+  spell.end_position = {
+    x: go.selected_clickable.x + go.selected_clickable.width / 2,
+    y: go.selected_clickable.y + go.selected_clickable.height / 2
+  }
   spell.active = true
 }
 keyboard_input.on_keydown_callbacks["q"] = [cast_spell]
@@ -131,8 +144,14 @@ const update = () => {
 }
 
 const check_collisions = () => {
-  if ((spell.active) && (is_colliding(spell.bounds(), creep))) {
-    console.log("colliding")
+  if ((spell.active) && (is_colliding(spell.bounds(), go.selected_clickable))) {
+    go.selected_clickable.current_hp -= 10;
+    if (go.selected_clickable.current_hp <= 0) {
+      remove_object_if_present(go.selected_clickable, creeps)
+      remove_object_if_present(go.selected_clickable, go.clickables)
+      go.selected_clickable = null;
+    }
+    spell.active = false;
   }
 }
 
@@ -149,7 +168,7 @@ const draw = () => {
   go.draw_selected_clickable()
   spell.draw()
   character.draw()
-  creep.draw()
+  creeps.forEach(creep => creep.draw())
   screen.draw_fog()
   loot_box.draw()
   // cold.draw(100, current_cold_level)
@@ -340,6 +359,15 @@ const break_stone = () => {
   })
 }
 keyboard_input.key_callbacks["f"].push(break_stone)
+
+function remove_object_if_present(object, list) {
+  const index = list.indexOf(object);
+  if (index > -1) {
+    return list.splice(index, 1)[0]
+  } else {
+    return false
+  }
+}
 
 const game_loop = new GameLoop()
 game_loop.draw = draw
