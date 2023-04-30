@@ -1,5 +1,6 @@
 import { distance, is_colliding } from "./tapete.js"
 import ResourceBar from "./resource_bar"
+import Aggro from "./behaviors/aggro.js"
 
 function Creep(go) {
   if (go.creeps === undefined) go.creeps = []
@@ -24,6 +25,10 @@ function Creep(go) {
   this.hp = 20
   this.current_hp = 20
 
+  // Behaviours
+  this.aggro = new Aggro({ go, entity: this, radius: 500 });
+  // END - Behaviours
+
   this.coords = function(coords) {
     this.x = coords.x
     this.y = coords.y
@@ -33,6 +38,7 @@ function Creep(go) {
   this.is_alive = function() { return this.current_hp > 0 }
 
   this.draw = function() {
+    this.aggro.act();
     this.go.ctx.drawImage(this.image, 0, 0, this.image_width, this.image_height, this.x - go.camera.x, this.y - go.camera.y, this.width, this.height)
     this.health_bar.draw(this.hp, this.current_hp)
   }

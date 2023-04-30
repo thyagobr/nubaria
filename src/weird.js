@@ -41,7 +41,7 @@ const casting_bar = new CastingBar({ go })
 
 // Creep
 const creeps = [];
-for (let i = 0; i < 10; i++) {
+for (let i = 0; i < 50; i++) {
   let creep = new Creep(go);
   creep.x = Math.random() * go.world.width
   creep.y = Math.random() * go.world.height
@@ -145,7 +145,7 @@ const update = () => {
 
 const check_collisions = () => {
   if ((spell.active) && (is_colliding(spell.bounds(), go.selected_clickable))) {
-    go.selected_clickable.current_hp -= 10;
+    go.selected_clickable.current_hp -= random(1, 5);
     if (go.selected_clickable.current_hp <= 0) {
       remove_object_if_present(go.selected_clickable, creeps)
       remove_object_if_present(go.selected_clickable, go.clickables)
