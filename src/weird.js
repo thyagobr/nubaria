@@ -36,7 +36,7 @@ const controls = new Controls(go)
 character.name = `Player ${String(Math.floor(Math.random() * 10)).slice(0, 2)}`
 const server = new Server(go)
 const loot_box = new LootBox(go)
-const cold = new ResourceBar({ go, x: 5, y: 5, width: 200, height: 20 })
+// const cold = new ResourceBar({ go, x: 5, y: 5, width: 200, height: 20 })
 const casting_bar = new CastingBar({ go })
 const creep = new Creep(go);
 go.clickables.push(creep)
@@ -112,10 +112,11 @@ let last_tick = Date.now()
 
 const spell = new Projectile(go);
 const cast_spell = () => {
+  if (spell.active) return;
+
   spell.start_position = { x: character.x + 50, y: character.y + 50 }
   spell.current_position = { x: character.x + 50, y: character.y + 50 }
   spell.end_position = { x: mouse_position.x, y: mouse_position.y }
-  console.log(spell.end_position)
   spell.active = true
 }
 keyboard_input.on_keydown_callbacks["q"] = [cast_spell]
@@ -126,6 +127,13 @@ const update = () => {
     last_tick = Date.now()
   }
   controls_movement()
+  check_collisions()
+}
+
+const check_collisions = () => {
+  if ((spell.active) && (is_colliding(spell.bounds(), creep))) {
+    console.log("colliding")
+  }
 }
 
 function update_fps() {
@@ -139,13 +147,13 @@ const draw = () => {
   trees.forEach(tree => tree.draw())
   fires.forEach(fire => fire.draw())
   go.draw_selected_clickable()
-  character.draw()
   spell.draw()
+  character.draw()
   creep.draw()
   screen.draw_fog()
   loot_box.draw()
-  cold.draw(100, current_cold_level)
-  casting_bar.draw()
+  // cold.draw(100, current_cold_level)
+  // casting_bar.draw()
   if (show_control_wheel) draw_control_wheel()
   // controls.draw()a
 }

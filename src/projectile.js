@@ -6,6 +6,9 @@ export default function Projectile(go) {
     this.start_position = { x: null, y: null };
     this.current_position = { x: null, y: null };
     this.end_position = { x: null, y: null };
+    this.bounds = () => {
+        return { ...this.current_position, width: 5, height: 5 }
+    }
     this.active = false;
     this.distance = () => {
         return Math.sqrt(Math.pow((this.end_position.x - this.current_position.x), 2) + Math.pow((this.end_position.y - this.current_position.y), 2));

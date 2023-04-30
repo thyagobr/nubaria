@@ -20,7 +20,7 @@ function Creep(go) {
   this.speed = 2
   //this.movement_board = this.go.board.grid
   this.current_movement_target = null
-  this.health_bar = new ResourceBar({ go, character: this, offset: 20, colour: "red" })
+  this.health_bar = new ResourceBar({ go, target: this, width: 100, height: 10, colour: "red" })
   this.hp = 20
   this.current_hp = 20
 
