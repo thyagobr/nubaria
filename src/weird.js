@@ -3,7 +3,7 @@ import Screen from "./screen.js"
 import Camera from "./camera.js"
 import Character from "./character.js"
 import KeyboardInput from "./keyboard_input.js"
-import { is_colliding, Vector2, random } from "./tapete.js"
+import { is_colliding, Vector2, random, remove_object_if_present } from "./tapete.js"
 import {
   setClickCallback,
   setMouseMoveCallback,
@@ -27,6 +27,7 @@ import Creep from "./creep.js"
 import Projectile from "./projectile.js"
 
 const go = new GameObject()
+go.spells = [];
 const screen = new Screen(go)
 const camera = new Camera(go)
 const character = new Character(go)
@@ -40,13 +41,11 @@ const loot_box = new LootBox(go)
 const casting_bar = new CastingBar({ go })
 
 // Creep
-const creeps = [];
 for (let i = 0; i < 50; i++) {
   let creep = new Creep(go);
   creep.x = Math.random() * go.world.width
   creep.y = Math.random() * go.world.height
   go.clickables.push(creep);
-  creeps.push(creep);
 }
 // END - Creep
 
@@ -119,20 +118,7 @@ function update_boonfires_fuel() {
 let FPS = 30
 let last_tick = Date.now()
 
-const spell = new Projectile(go);
-const cast_spell = () => {
-  if (spell.active) return;
-  if ((go.selected_clickable === null) || (go.selected_clickable === undefined)) return;
-
-  spell.start_position = { x: character.x + 50, y: character.y + 50 }
-  spell.current_position = { x: character.x + 50, y: character.y + 50 }
-  spell.end_position = {
-    x: go.selected_clickable.x + go.selected_clickable.width / 2,
-    y: go.selected_clickable.y + go.selected_clickable.height / 2
-  }
-  spell.active = true
-}
-keyboard_input.on_keydown_callbacks["q"] = [cast_spell]
+keyboard_input.on_keydown_callbacks["q"] = [character.spells["frostbolt"]]
 
 const update = () => {
   if ((Date.now() - last_tick) > 1000) {
@@ -140,19 +126,7 @@ const update = () => {
     last_tick = Date.now()
   }
   controls_movement()
-  check_collisions()
-}
-
-const check_collisions = () => {
-  if ((spell.active) && (is_colliding(spell.bounds(), go.selected_clickable))) {
-    go.selected_clickable.current_hp -= random(1, 5);
-    if (go.selected_clickable.current_hp <= 0) {
-      remove_object_if_present(go.selected_clickable, creeps)
-      remove_object_if_present(go.selected_clickable, go.clickables)
-      go.selected_clickable = null;
-    }
-    spell.active = false;
-  }
+  go.spells.forEach(spell => spell.update())
 }
 
 function update_fps() {
@@ -166,9 +140,9 @@ const draw = () => {
   trees.forEach(tree => tree.draw())
   fires.forEach(fire => fire.draw())
   go.draw_selected_clickable()
-  spell.draw()
+  go.spells.forEach(spell => spell.draw())
   character.draw()
-  creeps.forEach(creep => creep.draw())
+  go.creeps.forEach(creep => creep.draw())
   screen.draw_fog()
   loot_box.draw()
   // cold.draw(100, current_cold_level)
@@ -359,15 +333,6 @@ const break_stone = () => {
   })
 }
 keyboard_input.key_callbacks["f"].push(break_stone)
-
-function remove_object_if_present(object, list) {
-  const index = list.indexOf(object);
-  if (index > -1) {
-    return list.splice(index, 1)[0]
-  } else {
-    return false
-  }
-}
 
 const game_loop = new GameLoop()
 game_loop.draw = draw

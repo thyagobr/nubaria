@@ -33,4 +33,13 @@ const random = (start, end) => {
   return Math.trunc(Math.random() * end) + start  
 }
 
-export { distance, is_colliding, draw_square, Vector2, random }
+function remove_object_if_present(object, list) {
+  const index = list.indexOf(object);
+  if (index > -1) {
+    return list.splice(index, 1)[0]
+  } else {
+    return false
+  }
+}
+
+export { distance, is_colliding, draw_square, Vector2, random, remove_object_if_present }

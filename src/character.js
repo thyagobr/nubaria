@@ -1,6 +1,7 @@
 import { distance, is_colliding } from "./tapete.js"
 import ResourceBar from "./resource_bar"
 import Inventory from "./inventory"
+import Frostbolt from "./spells/frostbolt.js"
 
 function Character(go, id) {
   this.go = go
@@ -19,6 +20,10 @@ function Character(go, id) {
   this.direction = "down"
   this.walk_cycle_index = 0
   this.inventory = new Inventory();
+  
+  this.spells = {
+    frostbolt: new Frostbolt({ go }).act
+  }
 
   // Combat
   this.hp = 100.0
