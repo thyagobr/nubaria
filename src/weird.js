@@ -127,6 +127,7 @@ const update = () => {
   }
   controls_movement()
   go.spells.forEach(spell => spell.update())
+  go.managed_objects.forEach(mob => mob.update())
 }
 
 function update_fps() {
@@ -142,6 +143,7 @@ const draw = () => {
   go.draw_selected_clickable()
   go.spells.forEach(spell => spell.draw())
   character.draw()
+  go.managed_objects.forEach(mob => mob.draw())
   go.creeps.forEach(creep => creep.draw())
   screen.draw_fog()
   loot_box.draw()

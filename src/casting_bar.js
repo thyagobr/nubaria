@@ -1,7 +1,6 @@
-function CastingBar({ go }) {
+function CastingBar({ go, entity }) {
     this.go = go
-    this.x = null
-    this.y = null
+    this.entity = entity
     this.duration = null
     this.width = go.character.width
     this.height = 5
@@ -34,14 +33,16 @@ function CastingBar({ go }) {
     }
 
     this.draw = (full = this.full, current = this.current) => {
+        console.log("drawing casting bar")
+        
         if (this.duration === null) return;
 
         let elapsed_time = Date.now() - this.last_time;
         this.last_time = Date.now()
         this.current += elapsed_time;
         if (this.current <= this.duration) {
-            this.x = this.go.character.x - this.go.camera.x
-            this.y = this.go.character.y - this.go.camera.y
+            this.x = this.entity.x - this.go.camera.x
+            this.y = this.entity.y + this.entity.height + 10 - this.go.camera.y
             let bar_width = ((this.current / this.duration) * this.width)
             this.go.ctx.strokeStyle = "black"
             this.go.ctx.lineWidth = 4

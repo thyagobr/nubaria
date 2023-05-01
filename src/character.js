@@ -3,6 +3,8 @@ import ResourceBar from "./resource_bar"
 import Inventory from "./inventory"
 import Frostbolt from "./spells/frostbolt.js"
 import Stats from "./behaviors/stats.js"
+import CastingBar from "./casting_bar.js"
+import { remove_object_if_present } from "./tapete.js"
 
 function Character(go, id) {
   this.go = go
@@ -22,9 +24,33 @@ function Character(go, id) {
   this.walk_cycle_index = 0
   this.inventory = new Inventory();
   this.spells = {
-    frostbolt: new Frostbolt({ go }).act
+    frostbolt: new Spellcasting({ go, entity: this, spell: new Frostbolt({ go, entity: this }) }).cast
   }
   this.stats = new Stats({ go, entity: this });
+
+  function Spellcasting({ go, entity, spell }) {
+    this.go = go
+    this.entity = entity
+    this.spell = spell
+    this.casting_bar = new CastingBar({ go, entity: entity })
+
+    this.draw = () => {
+      this.casting_bar.draw()
+    }
+
+    this.update = () => { }
+    this.end = () => {
+      remove_object_if_present(this, this.go.managed_objects)
+      console.log("Sellcasting#end")
+      this.spell.act()
+    }
+
+    this.cast = () => {
+      console.log("Spellcasting#cast")
+      this.go.managed_objects.push(this)
+      this.casting_bar.start(1500, this.end)
+    }
+  }
 
   this.health_bar = new ResourceBar({ go, target: this, y_offset: 20, colour: "red" })
   this.mana_bar = new ResourceBar({ go, target: this, y_offset: 10, colour: "blue" })
@@ -37,20 +63,20 @@ function Character(go, id) {
     this.coords(node)
   }
 
-  this.coords = function(coords) {
+  this.coords = function (coords) {
     this.x = coords.x
     this.y = coords.y
   }
 
-  this.draw = function() {
+  this.draw = function () {
     if (this.moving && this.target_movement) this.draw_movement_target()
     this.go.ctx.drawImage(this.image, Math.floor(this.walk_cycle_index) * this.image_width, this.get_direction_sprite() * this.image_height, this.image_width, this.image_height, this.x - this.go.camera.x, this.y - this.go.camera.y, this.width, this.height)
     this.health_bar.draw(this.stats.hp, this.stats.current_hp)
     this.mana_bar.draw(this.stats.mana, this.stats.current_mana)
   }
 
-  this.get_direction_sprite = function() {
-    switch(this.direction) {
+  this.get_direction_sprite = function () {
+    switch (this.direction) {
       case "right":
         return 2
         break;
@@ -66,7 +92,7 @@ function Character(go, id) {
     }
   }
 
-  this.draw_movement_target = function(target_movement = this.target_movement) {
+  this.draw_movement_target = function (target_movement = this.target_movement) {
     this.go.ctx.beginPath()
     this.go.ctx.arc((target_movement.x - this.go.camera.x) + 10, (target_movement.y - this.go.camera.y) + 10, 20, 0, 2 * Math.PI, false)
     this.go.ctx.strokeStyle = "purple"
@@ -79,11 +105,11 @@ function Character(go, id) {
     if (this.movement_board.length === 0) { this.movement_board = [].concat(this.go.board.grid) }
     this.go.board.move(this, this.go.board.target_node)
   }
-  
+
   this.move = (direction) => {
     this.direction = direction
 
-    switch(direction) {
+    switch (direction) {
       case "right":
         if (this.x + this.speed < this.go.world.width) {
           this.x += this.speed
@@ -110,8 +136,8 @@ function Character(go, id) {
   }
 
 
-  Array.prototype.last = function() { return this[this.length - 1] }
-  Array.prototype.first = function() { return this[0] }
+  Array.prototype.last = function () { return this[this.length - 1] }
+  Array.prototype.first = function () { return this[0] }
 
   // Stores the temporary target of the movement being executed
   this.target_movement = null
@@ -173,7 +199,7 @@ function Character(go, id) {
           future_movement.x = last_step.x
           console.log("Cant move X")
         }
-        return 
+        return
       }
 
       this.current_path.push({ ...future_movement })
