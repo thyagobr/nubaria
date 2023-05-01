@@ -31,8 +31,12 @@ function Character(go, id) {
 
   this.update_fps = () => {
     if (this.stats.current_mana < this.stats.mana) this.stats.current_mana += random(1, 3)
-    if (this.stats.current_hp < this.stats.hp) this.stats.current_hp += random(1, 3)
+    if (near_bonfire()) {
+      if (this.stats.current_hp < this.stats.hp) this.stats.current_hp += random(1, 3)
+    }
   }
+
+  const near_bonfire = () => false;
 
   this.draw = function () {
     if (this.moving && this.target_movement) this.draw_movement_target()
