@@ -23,6 +23,7 @@ export default function Spellcasting({ go, entity, spell }) {
     }
 
     this.cast = () => {
+        if (!this.go.selected_clickable || !this.go.selected_clickable.stats) return;
         if (this.casting_bar.duration !== null) {
             console.log("Spellcasting#stop")
             this.casting_bar.start(1500, this.end)
