@@ -20,7 +20,7 @@ export default function Frostbolt({ go }) {
                 remove_object_if_present(this.go.selected_clickable, this.go.clickables) || console.log("Not on list of clickables")
                 this.go.selected_clickable = null;
             }
-            this.active = false;
+            this.end();
         }
     }
 
