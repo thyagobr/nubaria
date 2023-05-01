@@ -3,8 +3,7 @@ import ResourceBar from "./resource_bar"
 import Inventory from "./inventory"
 import Frostbolt from "./spells/frostbolt.js"
 import Stats from "./behaviors/stats.js"
-import CastingBar from "./casting_bar.js"
-import { remove_object_if_present } from "./tapete.js"
+import Spellcasting from "./behaviors/spellcasting.js"
 
 function Character(go, id) {
   this.go = go
@@ -27,30 +26,6 @@ function Character(go, id) {
     frostbolt: new Spellcasting({ go, entity: this, spell: new Frostbolt({ go, entity: this }) }).cast
   }
   this.stats = new Stats({ go, entity: this });
-
-  function Spellcasting({ go, entity, spell }) {
-    this.go = go
-    this.entity = entity
-    this.spell = spell
-    this.casting_bar = new CastingBar({ go, entity: entity })
-
-    this.draw = () => {
-      this.casting_bar.draw()
-    }
-
-    this.update = () => { }
-    this.end = () => {
-      remove_object_if_present(this, this.go.managed_objects)
-      console.log("Sellcasting#end")
-      this.spell.act()
-    }
-
-    this.cast = () => {
-      console.log("Spellcasting#cast")
-      this.go.managed_objects.push(this)
-      this.casting_bar.start(1500, this.end)
-    }
-  }
 
   this.health_bar = new ResourceBar({ go, target: this, y_offset: 20, colour: "red" })
   this.mana_bar = new ResourceBar({ go, target: this, y_offset: 10, colour: "blue" })
