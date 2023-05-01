@@ -1,4 +1,4 @@
-import { distance, is_colliding } from "./tapete.js"
+import { distance, is_colliding, random } from "./tapete.js"
 import ResourceBar from "./resource_bar"
 import Inventory from "./inventory"
 import Frostbolt from "./spells/frostbolt.js"
@@ -25,22 +25,13 @@ function Character(go, id) {
   this.spells = {
     frostbolt: new Spellcasting({ go, entity: this, spell: new Frostbolt({ go, entity: this }) }).cast
   }
-  this.stats = new Stats({ go, entity: this });
-
+  this.stats = new Stats({ go, entity: this, mana: 50 });
   this.health_bar = new ResourceBar({ go, target: this, y_offset: 20, colour: "red" })
   this.mana_bar = new ResourceBar({ go, target: this, y_offset: 10, colour: "blue" })
 
-  this.movement_board = []
-
-  this.move_to_waypoint = (wp_name) => {
-    let wp = this.go.editor.waypoints.find((wp) => wp.name === wp_name)
-    let node = this.go.board.grid[wp.id]
-    this.coords(node)
-  }
-
-  this.coords = function (coords) {
-    this.x = coords.x
-    this.y = coords.y
+  this.update_fps = () => {
+    if (this.stats.current_mana < this.stats.mana) this.stats.current_mana += random(1, 3)
+    if (this.stats.current_hp < this.stats.hp) this.stats.current_hp += random(1, 3)
   }
 
   this.draw = function () {
@@ -65,20 +56,6 @@ function Character(go, id) {
         return 0
         break;
     }
-  }
-
-  this.draw_movement_target = function (target_movement = this.target_movement) {
-    this.go.ctx.beginPath()
-    this.go.ctx.arc((target_movement.x - this.go.camera.x) + 10, (target_movement.y - this.go.camera.y) + 10, 20, 0, 2 * Math.PI, false)
-    this.go.ctx.strokeStyle = "purple"
-    this.go.ctx.lineWidth = 4;
-    this.go.ctx.stroke()
-  }
-
-  // AUTO-MOVE (pathfinder) -- rename it to move when using playground
-  this.auto_move = () => {
-    if (this.movement_board.length === 0) { this.movement_board = [].concat(this.go.board.grid) }
-    this.go.board.move(this, this.go.board.target_node)
   }
 
   this.move = (direction) => {
@@ -110,9 +87,24 @@ function Character(go, id) {
     this.go.camera.focus(this)
   }
 
+  // Experiments
 
   Array.prototype.last = function () { return this[this.length - 1] }
   Array.prototype.first = function () { return this[0] }
+
+  this.draw_movement_target = function (target_movement = this.target_movement) {
+    this.go.ctx.beginPath()
+    this.go.ctx.arc((target_movement.x - this.go.camera.x) + 10, (target_movement.y - this.go.camera.y) + 10, 20, 0, 2 * Math.PI, false)
+    this.go.ctx.strokeStyle = "purple"
+    this.go.ctx.lineWidth = 4;
+    this.go.ctx.stroke()
+  }
+
+  // AUTO-MOVE (pathfinder) -- rename it to move when using playground
+  this.auto_move = () => {
+    if (this.movement_board.length === 0) { this.movement_board = [].concat(this.go.board.grid) }
+    this.go.board.move(this, this.go.board.target_node)
+  }
 
   // Stores the temporary target of the movement being executed
   this.target_movement = null
@@ -194,6 +186,19 @@ function Character(go, id) {
         this.current_path = []
       }
     }
+  }
+
+  this.movement_board = []
+
+  this.move_to_waypoint = (wp_name) => {
+    let wp = this.go.editor.waypoints.find((wp) => wp.name === wp_name)
+    let node = this.go.board.grid[wp.id]
+    this.coords(node)
+  }
+
+  this.coords = function (coords) {
+    this.x = coords.x
+    this.y = coords.y
   }
 
   //this.move = function(target_movement) {

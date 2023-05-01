@@ -5,6 +5,7 @@ export default function Frostbolt({ go }) {
     this.go = go
     this.projectile = new Projectile({ go, subject: this })
     this.active = false
+    this.mana_cost = 15
 
     this.draw = () => {
         if (!this.active) return;

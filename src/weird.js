@@ -133,6 +133,7 @@ const update = () => {
 function update_fps() {
   update_cold_level()
   update_boonfires_fuel()
+  character.update_fps()
 }
 // Comment
 const draw = () => {
