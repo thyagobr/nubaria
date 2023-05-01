@@ -1,6 +1,7 @@
 import { distance, is_colliding } from "./tapete.js"
 import ResourceBar from "./resource_bar"
 import Aggro from "./behaviors/aggro.js"
+import Stats from "./behaviors/stats.js"
 
 function Creep(go) {
   if (go.creeps === undefined) go.creeps = []
@@ -22,9 +23,7 @@ function Creep(go) {
   //this.movement_board = this.go.board.grid
   this.current_movement_target = null
   this.health_bar = new ResourceBar({ go, target: this, width: 100, height: 10, colour: "red" })
-  this.hp = 20
-  this.current_hp = 20
-
+  this.stats = new Stats({ go, entity: this, hp: 20 });
   // Behaviours
   this.aggro = new Aggro({ go, entity: this, radius: 500 });
   // END - Behaviours
@@ -34,13 +33,10 @@ function Creep(go) {
     this.y = coords.y
   }
 
-  this.is_dead = function() { return this.current_hp <= 0 }
-  this.is_alive = function() { return this.current_hp > 0 }
-
   this.draw = function() {
     this.aggro.act();
     this.go.ctx.drawImage(this.image, 0, 0, this.image_width, this.image_height, this.x - go.camera.x, this.y - go.camera.y, this.width, this.height)
-    this.health_bar.draw(this.hp, this.current_hp)
+    this.health_bar.draw(this.stats.hp, this.stats.current_hp)
   }
 
   this.set_movement_target = (wp_name) => {

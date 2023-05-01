@@ -13,12 +13,10 @@ export default function Frostbolt({ go }) {
     }
 
     this.update = () => {
-        if ((this.active) && (is_colliding(this.projectile.bounds(), this.go.selected_clickable))) {
-            this.go.selected_clickable.current_hp -= random(5, 10);
-            if (this.go.selected_clickable.current_hp <= 0) {
-                remove_object_if_present(this.go.selected_clickable, this.go.creeps) || console.log("Not on list of creeps")
-                remove_object_if_present(this.go.selected_clickable, this.go.clickables) || console.log("Not on list of clickables")
-                this.go.selected_clickable = null;
+        if (this.active && (is_colliding(this.projectile.bounds(), this.go.selected_clickable))) {
+            if (damageable(this.go.selected_clickable)) {
+                const damage = random(5, 10);
+                this.go.selected_clickable.stats.take_damage({ damage });
             }
             this.end();
         }
@@ -44,5 +42,9 @@ export default function Frostbolt({ go }) {
         console.log("ending frostbolt")
         this.active = false;
         remove_object_if_present(this, this.go.spells);
+    }
+
+    function damageable(object) {
+        return object.stats !== undefined && object.stats.take_damage !== undefined
     }
 }

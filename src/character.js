@@ -2,6 +2,7 @@ import { distance, is_colliding } from "./tapete.js"
 import ResourceBar from "./resource_bar"
 import Inventory from "./inventory"
 import Frostbolt from "./spells/frostbolt.js"
+import Stats from "./behaviors/stats.js"
 
 function Character(go, id) {
   this.go = go
@@ -20,26 +21,15 @@ function Character(go, id) {
   this.direction = "down"
   this.walk_cycle_index = 0
   this.inventory = new Inventory();
-  
   this.spells = {
     frostbolt: new Frostbolt({ go }).act
   }
-
-  // Combat
-  this.hp = 100.0
-  this.current_hp = 100.0
-
-  this.mana = 10.0
-  this.current_mana = 10.0
-  // END Combat
+  this.stats = new Stats({ go, entity: this });
 
   this.health_bar = new ResourceBar({ go, target: this, y_offset: 20, colour: "red" })
   this.mana_bar = new ResourceBar({ go, target: this, y_offset: 10, colour: "blue" })
 
   this.movement_board = []
-
-  this.is_dead = () => this.current_hp <= 0
-  this.is_alive = () => !is_dead
 
   this.move_to_waypoint = (wp_name) => {
     let wp = this.go.editor.waypoints.find((wp) => wp.name === wp_name)
@@ -55,8 +45,8 @@ function Character(go, id) {
   this.draw = function() {
     if (this.moving && this.target_movement) this.draw_movement_target()
     this.go.ctx.drawImage(this.image, Math.floor(this.walk_cycle_index) * this.image_width, this.get_direction_sprite() * this.image_height, this.image_width, this.image_height, this.x - this.go.camera.x, this.y - this.go.camera.y, this.width, this.height)
-    this.health_bar.draw(this.hp, this.current_hp)
-    this.mana_bar.draw(this.mana, this.current_mana)
+    this.health_bar.draw(this.stats.hp, this.stats.current_hp)
+    this.mana_bar.draw(this.stats.mana, this.stats.current_mana)
   }
 
   this.get_direction_sprite = function() {

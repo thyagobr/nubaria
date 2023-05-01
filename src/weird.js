@@ -253,7 +253,7 @@ keyboard_input.key_callbacks["f"] = [cut_tree]
 let ordered_clickables = [];
 const tab_cycling = (ev) => {
   ev.preventDefault()
-  ordered_clickables = go.clickables.sort((a, b) => {
+  ordered_clickables = go.creeps.sort((a, b) => {
     return Vector2.distance(a, character) - Vector2.distance(b, character);
   })
   if (Vector2.distance(ordered_clickables[0], character) > 500) return;
