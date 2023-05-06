@@ -39,6 +39,8 @@ const loot_box = new LootBox(go)
 // const cold = new ResourceBar({ go, x: 5, y: 5, width: 200, height: 20 })
 const casting_bar = new CastingBar({ go })
 
+go.canvas.oncontextmenu = function(e) { e.preventDefault(); e.stopPropagation(); }
+
 // Creep
 for (let i = 0; i < 50; i++) {
   let creep = new Creep(go);
@@ -208,18 +210,6 @@ Array.from(Array(300)).forEach((j, i) => {
   go.clickables.push(tree)
 })
 
-function remove_clickable(doodad) {
-  const clickable_index = go.clickables.indexOf(doodad)
-  if (clickable_index > -1) {
-    go.clickables.splice(clickable_index, 1)
-  }
-  if (go.selected_clickable === doodad) {
-    go.selected_clickable = null
-  }
-}
-
-keyboard_input.on_keydown_callbacks["f"] = [go.character.skills.cut_tree]
-
 let ordered_clickables = [];
 const tab_cycling = (ev) => {
   ev.preventDefault()
@@ -266,29 +256,29 @@ Array.from(Array(300)).forEach((j, i) => {
   go.clickables.push(stone)
 })
 
-let loot_table_stone = [{
-  item: { name: "Flintstone", image_src: "flintstone.png" },
-  min: 1,
-  max: 1,
-  chance: 100
-}]
+// let loot_table_stone = [{
+//   item: { name: "Flintstone", image_src: "flintstone.png" },
+//   min: 1,
+//   max: 1,
+//   chance: 100
+// }]
 
-const break_stone = () => {
-  const targeted_stone = stones.find((stone) => stone === go.selected_clickable)
-  if ((!targeted_stone) || (Vector2.distance(targeted_stone, character) > 100)) {
-    return;
-  }
+// const break_stone = () => {
+//   const targeted_stone = stones.find((stone) => stone === go.selected_clickable)
+//   if ((!targeted_stone) || (Vector2.distance(targeted_stone, character) > 100)) {
+//     return;
+//   }
 
-  casting_bar.start(3000, () => {
-    const index = stones.indexOf(targeted_stone)
-    if (index > -1) {
-      loot_box.items = roll_loot(loot_table_stone)
-      loot_box.show()
-      stones.splice(index, 1)
-      remove_clickable(targeted_stone)
-    }
-  })
-}
+//   casting_bar.start(3000, () => {
+//     const index = stones.indexOf(targeted_stone)
+//     if (index > -1) {
+//       loot_box.items = roll_loot(loot_table_stone)
+//       loot_box.show()
+//       stones.splice(index, 1)
+//       remove_clickable(targeted_stone, go)
+//     }
+//   })
+// }
 //keyboard_input.key_callbacks["f"] = break_stone;
 
 const game_loop = new GameLoop()
