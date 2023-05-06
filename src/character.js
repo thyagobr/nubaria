@@ -1,9 +1,10 @@
 import { distance, is_colliding, random } from "./tapete.js"
 import ResourceBar from "./resource_bar"
 import Inventory from "./inventory"
-import Frostbolt from "./spells/frostbolt.js"
 import Stats from "./behaviors/stats.js"
 import Spellcasting from "./behaviors/spellcasting.js"
+import Frostbolt from "./spells/frostbolt.js"
+import CutTree from "./skills/cut_tree.js"
 
 function Character(go, id) {
   this.go = go
@@ -24,6 +25,18 @@ function Character(go, id) {
   this.inventory = new Inventory();
   this.spells = {
     frostbolt: new Spellcasting({ go, entity: this, spell: new Frostbolt({ go, entity: this }) }).cast
+  }
+  this.skills = {
+    cut_tree: new Skill({ go, entity: this, skill: new CutTree({ go, entity: this })}).act
+  }
+  function Skill({ go, entity, skill }) {
+    this.go = go
+    this.entity = entity
+    this.skill = skill
+
+    this.act = () => {
+      this.skill.act()
+    }
   }
   this.stats = new Stats({ go, entity: this, mana: 50 });
   this.health_bar = new ResourceBar({ go, target: this, y_offset: 20, colour: "red" })
@@ -114,7 +127,7 @@ function Character(go, id) {
   this.target_movement = null
   // Stores the path being calculated
   this.current_path = []
-  this.speed = 3
+  this.speed = 1.2
 
   this.find_path = (target_movement) => {
     this.current_path = []

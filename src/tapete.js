@@ -42,4 +42,18 @@ function remove_object_if_present(object, list) {
   }
 }
 
-export { distance, is_colliding, draw_square, Vector2, random, remove_object_if_present }
+function remove_clickable(doodad, go) {
+  const clickable_index = go.clickables.indexOf(doodad)
+  if (clickable_index > -1) {
+    go.clickables.splice(clickable_index, 1)
+  }
+  if (go.selected_clickable === doodad) {
+    go.selected_clickable = null
+  }
+}
+
+const dice = (sides, times = 1) => {
+  return Array.from(Array(times)).map((i) => Math.floor(Math.random() * sides) + 1);
+}
+
+export { distance, is_colliding, draw_square, Vector2, random, remove_object_if_present, dice, remove_clickable }

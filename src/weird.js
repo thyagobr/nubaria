@@ -3,7 +3,7 @@ import Screen from "./screen.js"
 import Camera from "./camera.js"
 import Character from "./character.js"
 import KeyboardInput from "./keyboard_input.js"
-import { is_colliding, Vector2, random, remove_object_if_present } from "./tapete.js"
+import { is_colliding, Vector2, random } from "./tapete.js"
 import {
   setClickCallback,
   setMouseMoveCallback,
@@ -18,16 +18,15 @@ import Doodad from "./doodad.js"
 import Controls from "./controls.js"
 import Item from "./item"
 import Server from "./server"
-import Tile from "./tile.js"
 import LootBox from "./loot_box.js"
 import Loot from "./loot.js"
 import ResourceBar from "./resource_bar.js"
 import CastingBar from "./casting_bar.js"
 import Creep from "./creep.js"
-import Projectile from "./projectile.js"
 
 const go = new GameObject()
 go.spells = [];
+go.skills = [];
 const screen = new Screen(go)
 const camera = new Camera(go)
 const character = new Character(go)
@@ -139,10 +138,11 @@ function update_fps() {
 const draw = () => {
   screen.draw()
   stones.forEach(stone => stone.draw())
-  trees.forEach(tree => tree.draw())
+  go.trees.forEach(tree => tree.draw())
   fires.forEach(fire => fire.draw())
   go.draw_selected_clickable()
   go.spells.forEach(spell => spell.draw())
+  go.skills.forEach(skill => skill.draw())
   character.draw()
   go.managed_objects.forEach(mob => mob.draw())
   go.creeps.forEach(creep => creep.draw())
@@ -152,10 +152,6 @@ const draw = () => {
   // casting_bar.draw()
   if (show_control_wheel) draw_control_wheel()
   // controls.draw()a
-}
-
-const dice = (sides, times = 1) => {
-  return Array.from(Array(times)).map((i) => Math.floor(Math.random() * sides) + 1);
 }
 
 const fires = []
@@ -203,27 +199,14 @@ const make_fire = () => {
 }
 //= Doodads
 
-const trees = []
+go.trees = []
 Array.from(Array(300)).forEach((j, i) => {
   let tree = new Doodad({ go })
   tree.x = Math.trunc(Math.random() * go.world.width) - tree.width;
   tree.y = Math.trunc(Math.random() * go.world.height) - tree.height;
-  trees.push(tree)
+  go.trees.push(tree)
   go.clickables.push(tree)
 })
-
-let loot_table_tree = [{
-  item: { name: "Wood", image_src: "branch.png" },
-  min: 1,
-  max: 3,
-  chance: 95
-},
-{
-  item: { name: "Dry Leaves", image_src: "leaves.jpeg" },
-  min: 1,
-  max: 3,
-  chance: 100
-}]
 
 function remove_clickable(doodad) {
   const clickable_index = go.clickables.indexOf(doodad)
@@ -235,23 +218,7 @@ function remove_clickable(doodad) {
   }
 }
 
-const cut_tree = () => {
-  const targeted_tree = trees.find((tree) => tree === go.selected_clickable)
-  if ((!targeted_tree) || (Vector2.distance(targeted_tree, character) > 100)) {
-    return;
-  }
-
-  casting_bar.start(3000, () => {
-    const index = trees.indexOf(targeted_tree)
-    if (index > -1) {
-      loot_box.items = roll_loot(loot_table_tree)
-      loot_box.show()
-      trees.splice(index, 1)
-    }
-    remove_clickable(targeted_tree)
-  });
-}
-keyboard_input.key_callbacks["f"] = [cut_tree]
+keyboard_input.on_keydown_callbacks["f"] = [go.character.skills.cut_tree]
 
 let ordered_clickables = [];
 const tab_cycling = (ev) => {
@@ -306,19 +273,6 @@ let loot_table_stone = [{
   chance: 100
 }]
 
-const roll_loot = (loot_table) => {
-  let result = loot_table.map((loot_entry) => {
-    let roll = dice(100)
-    if (roll <= loot_entry.chance) {
-      const item_bundle = new Item(loot_entry.item.name)
-      item_bundle.image.src = loot_entry.item.image_src
-      item_bundle.quantity = random(loot_entry.min, loot_entry.max)
-      return new Loot(item_bundle, item_bundle.quantity)
-    }
-  }).filter((entry) => entry !== undefined)
-  return result
-}
-
 const break_stone = () => {
   const targeted_stone = stones.find((stone) => stone === go.selected_clickable)
   if ((!targeted_stone) || (Vector2.distance(targeted_stone, character) > 100)) {
@@ -335,7 +289,7 @@ const break_stone = () => {
     }
   })
 }
-keyboard_input.key_callbacks["f"].push(break_stone)
+//keyboard_input.key_callbacks["f"] = break_stone;
 
 const game_loop = new GameLoop()
 game_loop.draw = draw

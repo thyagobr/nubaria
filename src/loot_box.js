@@ -1,9 +1,12 @@
-import { Vector2 } from "./tapete"
+import { Vector2, random, dice } from "./tapete"
+import Item from "./item"
+import Loot from "./loot"
 
 class LootBox {
     constructor(go) {
         this.visible = false
         this.go = go
+        go.loot_box = this
         this.items = []
         this.x = 0
         this.y = 0
@@ -47,9 +50,9 @@ class LootBox {
     }
 
     show() {
-      this.visible = true
-      this.x = this.go.character.x
-      this.y = this.go.character.y
+        this.visible = true
+        this.x = this.go.character.x
+        this.y = this.go.character.y
     }
 
     take_loot(loot_index) {
@@ -73,6 +76,20 @@ class LootBox {
             this.take_loot(index)
         }
     }
+
+    roll_loot(loot_table) {
+        let result = loot_table.map((loot_entry) => {
+            let roll = dice(100)
+            if (roll <= loot_entry.chance) {
+                const item_bundle = new Item(loot_entry.item.name)
+                item_bundle.image.src = loot_entry.item.image_src
+                item_bundle.quantity = random(loot_entry.min, loot_entry.max)
+                return new Loot(item_bundle, item_bundle.quantity)
+            }
+        }).filter((entry) => entry !== undefined)
+        return result
+    }
+
 }
 
 export default LootBox

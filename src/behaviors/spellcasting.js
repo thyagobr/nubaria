@@ -13,6 +13,9 @@ export default function Spellcasting({ go, entity, spell }) {
 
     this.update = () => { }
 
+    // This logic won't work for channeling spells.
+    // The effects and the casting bar happen at the same time.
+    // Same thing for some skills
     this.end = () => {
         remove_object_if_present(this, this.go.managed_objects)
         console.log("Sellcasting#end")
