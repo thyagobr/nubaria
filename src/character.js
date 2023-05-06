@@ -7,6 +7,7 @@ import Frostbolt from "./spells/frostbolt.js"
 import CutTree from "./skills/cut_tree.js"
 import Skill from "./skill.js"
 import BreakStone from "./skills/break_stone.js"
+import MakeFire from "./skills/make_fire.js"
 
 function Character(go, id) {
   this.go = go
@@ -31,7 +32,8 @@ function Character(go, id) {
   }
   this.skills = {
     cut_tree: new Skill({ go, entity: this, skill: new CutTree({ go, entity: this })}).act,
-    break_stone: new Skill({ go, entity: this, skill: new BreakStone({ go, entity: this })}).act
+    break_stone: new Skill({ go, entity: this, skill: new BreakStone({ go, entity: this })}).act,
+    make_fire: new Skill({ go, entity: this, skill: new MakeFire({ go, entity: this })}).act
   }
   this.stats = new Stats({ go, entity: this, mana: 50 });
   this.health_bar = new ResourceBar({ go, target: this, y_offset: 20, colour: "red" })

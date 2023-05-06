@@ -53,7 +53,7 @@ function CastingBar({ go, entity }) {
             this.go.ctx.fillRect(this.x - this.x_offset(), this.y - this.y_offset(), bar_width, this.height)
         } else {
             this.duration = null;
-            if (this.callback !== null) this.callback();
+            if ((this.callback !== null) && (this.callback !== undefined)) this.callback();
         }
     }
 }

@@ -3,7 +3,7 @@ import Screen from "./screen.js"
 import Camera from "./camera.js"
 import Character from "./character.js"
 import KeyboardInput from "./keyboard_input.js"
-import { is_colliding, Vector2, random } from "./tapete.js"
+import { is_colliding, Vector2, random, remove_object_if_present } from "./tapete.js"
 import {
   setClickCallback,
   setMouseMoveCallback,
@@ -109,10 +109,9 @@ function update_cold_level() {
 }
 
 function update_boonfires_fuel() {
-  for (let index = 0; index < fires.length; index++) {
-    let fire = fires[index]
-    if (fire.fuel <= 0) {
-      fires.splice(index, 1);
+  for (let index = 0; index < go.fires.length; index++) {
+    let fire = go.fires[index]
+    if (fire.fuel <= 0) { remove_object_if_present(fire, go.fires)
     } else {
       fire.fuel -= 1;
       fire.resource_bar.current -= 1;
@@ -123,7 +122,7 @@ function update_boonfires_fuel() {
 keyboard_input.on_keydown_callbacks.q = [character.spells.frostbolt]
 keyboard_input.on_keydown_callbacks.f = [character.skills.cut_tree]
 keyboard_input.on_keydown_callbacks[1] = [character.skills.break_stone]
-keyboard_input.on_keydown_callbacks[2] = [() => make_fire()]
+keyboard_input.on_keydown_callbacks[2] = [character.skills.make_fire]
 
 let FPS = 30
 let last_tick = Date.now()
@@ -144,6 +143,7 @@ function update_fps() {
   if (character.stats.is_alive()) {
     character.update_fps()
   }
+  update_boonfires_fuel()
 }
 // Comment
 const draw = () => {
