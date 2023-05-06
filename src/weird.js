@@ -119,7 +119,8 @@ function update_boonfires_fuel() {
 let FPS = 30
 let last_tick = Date.now()
 
-keyboard_input.on_keydown_callbacks["q"] = [character.spells["frostbolt"]]
+keyboard_input.on_keydown_callbacks.q = [character.spells.frostbolt]
+keyboard_input.on_keydown_callbacks.f = [character.skills.cut_tree]
 
 const update = () => {
   if ((Date.now() - last_tick) > 1000) {
