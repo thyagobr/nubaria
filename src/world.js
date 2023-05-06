@@ -37,11 +37,11 @@ function World(go) {
         if (tile !== this.tile_set.grass) {
           this.go.ctx.drawImage(this.tile_set.grass.image,
             this.tile_set.grass.x_offset, this.tile_set.grass.y_offset, this.tile_set.grass.width, this.tile_set.grass.height,
-            (row * this.tile_width) - this.go.camera.x, (column * this.tile_height) - this.go.camera.y, 64, 64)
+            (row * this.tile_width) - this.go.camera.x, (column * this.tile_height) - this.go.camera.y, 64, 63)
         }
         this.go.ctx.drawImage(tile.image,
           tile.x_offset, tile.y_offset, tile.width, tile.height,
-          (row * this.tile_width) - this.go.camera.x, (column * this.tile_height) - this.go.camera.y, 64, 64)
+          (row * this.tile_width) - this.go.camera.x, (column * this.tile_height) - this.go.camera.y, 65, 65)
       }
     }
   }
