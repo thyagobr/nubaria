@@ -23,6 +23,7 @@ import Loot from "./loot.js"
 import ResourceBar from "./resource_bar.js"
 import CastingBar from "./casting_bar.js"
 import Creep from "./creep.js"
+import ActionBar from "./action_bar.js"
 
 const go = new GameObject()
 go.spells = [];
@@ -38,7 +39,9 @@ const server = new Server(go)
 const loot_box = new LootBox(go)
 // const cold = new ResourceBar({ go, x: 5, y: 5, width: 200, height: 20 })
 const casting_bar = new CastingBar({ go })
+const action_bar = new ActionBar(go)
 
+// Disable right mouse click
 go.canvas.oncontextmenu = function(e) { e.preventDefault(); e.stopPropagation(); }
 
 // Creep
@@ -115,9 +118,6 @@ function update_boonfires_fuel() {
     }
   }
 }
-
-import ActionBar from "./action_bar.js"
-const action_bar = new ActionBar(go)
 
 let FPS = 30
 let last_tick = Date.now()
