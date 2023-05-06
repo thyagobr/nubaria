@@ -26,7 +26,7 @@ function Character(go, id) {
   this.direction = "down"
   this.walk_cycle_index = 0
   this.speed = 1.4
-  this.inventory = new Inventory();
+  this.inventory = new Inventory({ go });
   this.spells = {
     frostbolt: new Spellcasting({ go, entity: this, spell: new Frostbolt({ go, entity: this }) }).cast
   }

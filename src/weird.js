@@ -97,6 +97,7 @@ keyboard_input.on_keydown_callbacks.q = [character.spells.frostbolt]
 keyboard_input.on_keydown_callbacks.f = [character.skills.cut_tree]
 keyboard_input.on_keydown_callbacks[1] = [character.skills.break_stone]
 keyboard_input.on_keydown_callbacks[2] = [character.skills.make_fire]
+keyboard_input.on_keydown_callbacks.i = [character.inventory.toggle_display]
 
 let FPS = 30
 let last_tick = Date.now()
@@ -136,6 +137,7 @@ const draw = () => {
     go.creeps.forEach(creep => creep.draw())
     screen.draw_fog()
     loot_box.draw()
+    go.character.inventory.draw()
     action_bar.draw()
     // cold.draw(100, current_cold_level)
     if (show_control_wheel) draw_control_wheel()
