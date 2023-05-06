@@ -5,7 +5,7 @@
   "main": "game.js",
   "scripts": {
     "serve": "webpack serve",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "NODE_ENV=test webpack && node ./tests/runTests.js"
   },
   "author": "",
   "license": "ISC",
