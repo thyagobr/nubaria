@@ -1,4 +1,4 @@
-import { distance, is_colliding, random } from "./tapete.js"
+import { distance, is_colliding, random, Vector2 } from "./tapete.js"
 import ResourceBar from "./resource_bar"
 import Inventory from "./inventory"
 import Stats from "./behaviors/stats.js"
@@ -46,7 +46,7 @@ function Character(go, id) {
     }
   }
 
-  const near_bonfire = () => false;
+  const near_bonfire = () => this.go.fires.some(fire => Vector2.distance(this, fire) < 20);
 
   this.draw = function () {
     if (this.moving && this.target_movement) this.draw_movement_target()
