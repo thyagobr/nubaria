@@ -5,6 +5,7 @@ function Screen(go) {
   this.go.screen = this
   this.width  = this.go.canvas_rect.width;
   this.height = this.go.canvas_rect.height;
+  this.radius = 700
 
   this.clear = () => {
     this.go.ctx.clearRect(0, 0, this.go.canvas.width, this.go.canvas.height);
@@ -29,7 +30,7 @@ function Screen(go) {
   this.draw_fog = () => {
     var x = this.go.character.x + this.go.character.width / 2 - this.go.camera.x
     var y = this.go.character.y + this.go.character.height / 2 - this.go.camera.y
-    var gradient = this.go.ctx.createRadialGradient(x, y, 0, x, y, 700);
+    var gradient = this.go.ctx.createRadialGradient(x, y, 0, x, y, this.radius);
     gradient.addColorStop(0, 'rgba(0, 0, 0, 0)')
     gradient.addColorStop(1, 'rgba(0, 0, 0, 1)')
     this.go.ctx.fillStyle = gradient

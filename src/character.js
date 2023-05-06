@@ -5,6 +5,8 @@ import Stats from "./behaviors/stats.js"
 import Spellcasting from "./behaviors/spellcasting.js"
 import Frostbolt from "./spells/frostbolt.js"
 import CutTree from "./skills/cut_tree.js"
+import Skill from "./skill.js"
+import BreakStone from "./skills/break_stone.js"
 
 function Character(go, id) {
   this.go = go
@@ -22,21 +24,14 @@ function Character(go, id) {
   this.moving = false
   this.direction = "down"
   this.walk_cycle_index = 0
+  this.speed = 1.4
   this.inventory = new Inventory();
   this.spells = {
     frostbolt: new Spellcasting({ go, entity: this, spell: new Frostbolt({ go, entity: this }) }).cast
   }
   this.skills = {
-    cut_tree: new Skill({ go, entity: this, skill: new CutTree({ go, entity: this })}).act
-  }
-  function Skill({ go, entity, skill }) {
-    this.go = go
-    this.entity = entity
-    this.skill = skill
-
-    this.act = () => {
-      this.skill.act()
-    }
+    cut_tree: new Skill({ go, entity: this, skill: new CutTree({ go, entity: this })}).act,
+    break_stone: new Skill({ go, entity: this, skill: new BreakStone({ go, entity: this })}).act
   }
   this.stats = new Stats({ go, entity: this, mana: 50 });
   this.health_bar = new ResourceBar({ go, target: this, y_offset: 20, colour: "red" })
@@ -127,7 +122,6 @@ function Character(go, id) {
   this.target_movement = null
   // Stores the path being calculated
   this.current_path = []
-  this.speed = 1.2
 
   this.find_path = (target_movement) => {
     this.current_path = []

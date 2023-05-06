@@ -28,6 +28,9 @@ import ActionBar from "./action_bar.js"
 const go = new GameObject()
 go.spells = [];
 go.skills = [];
+go.trees = [];
+go.fires = [];
+go.stones = [];
 const screen = new Screen(go)
 const camera = new Camera(go)
 const character = new Character(go)
@@ -37,12 +40,10 @@ const controls = new Controls(go)
 character.name = `Player ${String(Math.floor(Math.random() * 10)).slice(0, 2)}`
 const server = new Server(go)
 const loot_box = new LootBox(go)
-// const cold = new ResourceBar({ go, x: 5, y: 5, width: 200, height: 20 })
-const casting_bar = new CastingBar({ go })
 const action_bar = new ActionBar(go)
 
 // Disable right mouse click
-go.canvas.oncontextmenu = function(e) { e.preventDefault(); e.stopPropagation(); }
+go.canvas.oncontextmenu = function (e) { e.preventDefault(); e.stopPropagation(); }
 
 // Creep
 for (let i = 0; i < 50; i++) {
@@ -119,93 +120,55 @@ function update_boonfires_fuel() {
   }
 }
 
-let FPS = 30
-let last_tick = Date.now()
-
 keyboard_input.on_keydown_callbacks.q = [character.spells.frostbolt]
 keyboard_input.on_keydown_callbacks.f = [character.skills.cut_tree]
+keyboard_input.on_keydown_callbacks[1] = [character.skills.break_stone]
+keyboard_input.on_keydown_callbacks[2] = [() => make_fire()]
 
+let FPS = 30
+let last_tick = Date.now()
 const update = () => {
   if ((Date.now() - last_tick) > 1000) {
     update_fps()
     last_tick = Date.now()
   }
-  controls_movement()
-  go.spells.forEach(spell => spell.update())
-  go.managed_objects.forEach(mob => mob.update())
+  if (!character.stats.is_alive()) {
+    controls_movement()
+  } else {
+    go.spells.forEach(spell => spell.update())
+    go.managed_objects.forEach(mob => mob.update())
+  }
 }
 
 function update_fps() {
-  update_cold_level()
-  update_boonfires_fuel()
-  character.update_fps()
+  if (character.stats.is_alive()) {
+    character.update_fps()
+  }
 }
 // Comment
 const draw = () => {
-  screen.draw()
-  stones.forEach(stone => stone.draw())
-  go.trees.forEach(tree => tree.draw())
-  fires.forEach(fire => fire.draw())
-  go.draw_selected_clickable()
-  go.spells.forEach(spell => spell.draw())
-  go.skills.forEach(skill => skill.draw())
-  character.draw()
-  go.managed_objects.forEach(mob => mob.draw())
-  go.creeps.forEach(creep => creep.draw())
-  screen.draw_fog()
-  loot_box.draw()
-  action_bar.draw()  
-  // cold.draw(100, current_cold_level)
-  if (show_control_wheel) draw_control_wheel()
-  // controls.draw()a
-}
-
-const fires = []
-const make_fire = () => {
-  let dry_leaves = character.inventory.find("dry leaves")
-  let wood = character.inventory.find("wood")
-  let flintstone = character.inventory.find("flintstone")
-  if (dry_leaves && dry_leaves.quantity > 0 &&
-    wood && wood.quantity > 0 &&
-    flintstone && flintstone.quantity > 0) {
-    casting_bar.start(1500)
-
-    setTimeout(() => {
-      dry_leaves.quantity -= 1
-      wood.quantity -= 1
-      if (go.selected_clickable &&
-        go.selected_clickable.type === "BONFIRE") {
-        let fire = fires.find((fire) => go.selected_clickable === fire);
-        fire.fuel += 20;
-        fire.resource_bar.current += 20;
-      } else {
-        let fire = new Doodad({ go })
-        fire.type = "BONFIRE"
-        fire.image.src = "bonfire.png"
-        fire.image_x_offset = 250
-        fire.image_y_offset = 250
-        fire.image_height = 350
-        fire.image_width = 300
-        fire.width = 64
-        fire.height = 64
-        fire.x = character.x;
-        fire.y = character.y;
-        fire.fuel = 20;
-        fire.resource_bar = new ResourceBar({ go, x: fire.x, y: fire.y + fire.height, width: fire.width, height: 5 })
-        fire.resource_bar.static = true
-        fire.resource_bar.full = 20;
-        fire.resource_bar.current = 20;
-        fires.push(fire)
-        go.clickables.push(fire)
-      }
-    }, 1500)
+  if (character.stats.is_dead()) {
+    screen.draw_game_over()
   } else {
-    console.log("You dont have all required materials to make a fire.")
+    screen.draw()
+    go.stones.forEach(stone => stone.draw())
+    go.trees.forEach(tree => tree.draw())
+    go.fires.forEach(fire => fire.draw())
+    go.draw_selected_clickable()
+    go.spells.forEach(spell => spell.draw())
+    go.skills.forEach(skill => skill.draw())
+    character.draw()
+    go.managed_objects.forEach(mob => mob.draw())
+    go.creeps.forEach(creep => creep.draw())
+    screen.draw_fog()
+    loot_box.draw()
+    action_bar.draw()
+    // cold.draw(100, current_cold_level)
+    if (show_control_wheel) draw_control_wheel()
+    // controls.draw()a
   }
 }
-//= Doodads
 
-go.trees = []
 Array.from(Array(300)).forEach((j, i) => {
   let tree = new Doodad({ go })
   tree.x = Math.trunc(Math.random() * go.world.width) - tree.width;
@@ -244,7 +207,6 @@ const draw_control_wheel = () => {
 const toggle_control_wheel = () => { show_control_wheel = !show_control_wheel }
 keyboard_input.on_keydown_callbacks["c"] = [toggle_control_wheel]
 
-const stones = []
 Array.from(Array(300)).forEach((j, i) => {
   let stone = new Doodad({ go })
   stone.image.src = "flintstone.png"
@@ -256,40 +218,16 @@ Array.from(Array(300)).forEach((j, i) => {
   stone.image_y_offset = 0
   stone.width = 32
   stone.height = 32
-  stones.push(stone)
+  go.stones.push(stone)
   go.clickables.push(stone)
 })
 
-// let loot_table_stone = [{
-//   item: { name: "Flintstone", image_src: "flintstone.png" },
-//   min: 1,
-//   max: 1,
-//   chance: 100
-// }]
-
-// const break_stone = () => {
-//   const targeted_stone = stones.find((stone) => stone === go.selected_clickable)
-//   if ((!targeted_stone) || (Vector2.distance(targeted_stone, character) > 100)) {
-//     return;
-//   }
-
-//   casting_bar.start(3000, () => {
-//     const index = stones.indexOf(targeted_stone)
-//     if (index > -1) {
-//       loot_box.items = roll_loot(loot_table_stone)
-//       loot_box.show()
-//       stones.splice(index, 1)
-//       remove_clickable(targeted_stone, go)
-//     }
-//   })
-// }
 //keyboard_input.key_callbacks["f"] = break_stone;
 
 const game_loop = new GameLoop()
 game_loop.draw = draw
 game_loop.process_keys_down = go.keyboard_input.process_keys_down
 game_loop.update = update
-keyboard_input.on_keydown_callbacks[1].push(() => make_fire())
 
 const start = () => {
   character.x = 100
