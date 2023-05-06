@@ -93,32 +93,6 @@ function controls_movement() {
   // })
 }
 
-let current_cold_level = 100
-function update_cold_level() {
-  if (fires.find((fire) => Vector2.distance(fire, character) <= 150)) {
-    if (current_cold_level < 100) {
-      if (current_cold_level + 5 > 100) {
-        current_cold_level = 100
-      } else {
-        current_cold_level += 5;
-      }
-    }
-  } else {
-    current_cold_level -= 1;
-  }
-}
-
-function update_boonfires_fuel() {
-  for (let index = 0; index < go.fires.length; index++) {
-    let fire = go.fires[index]
-    if (fire.fuel <= 0) { remove_object_if_present(fire, go.fires)
-    } else {
-      fire.fuel -= 1;
-      fire.resource_bar.current -= 1;
-    }
-  }
-}
-
 keyboard_input.on_keydown_callbacks.q = [character.spells.frostbolt]
 keyboard_input.on_keydown_callbacks.f = [character.skills.cut_tree]
 keyboard_input.on_keydown_callbacks[1] = [character.skills.break_stone]
@@ -143,7 +117,7 @@ function update_fps() {
   if (character.stats.is_alive()) {
     character.update_fps()
   }
-  update_boonfires_fuel()
+  go.fires.forEach(fire => fire.update_fps())
 }
 // Comment
 const draw = () => {

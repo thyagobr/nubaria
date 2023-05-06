@@ -21,6 +21,13 @@ function Doodad({ go }) {
   }
 
   this.click = function() {}
+  this.update_fps = function() {
+    if (this.fuel <= 0) { remove_object_if_present(this, go.fires)
+    } else {
+      this.fuel -= 1;
+      this.resource_bar.current -= 1;
+    }
+  }
 }
 
 export default Doodad;
