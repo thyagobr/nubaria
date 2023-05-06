@@ -116,6 +116,9 @@ function update_boonfires_fuel() {
   }
 }
 
+import ActionBar from "./action_bar.js"
+const action_bar = new ActionBar(go)
+
 let FPS = 30
 let last_tick = Date.now()
 
@@ -151,8 +154,8 @@ const draw = () => {
   go.creeps.forEach(creep => creep.draw())
   screen.draw_fog()
   loot_box.draw()
+  action_bar.draw()  
   // cold.draw(100, current_cold_level)
-  // casting_bar.draw()
   if (show_control_wheel) draw_control_wheel()
   // controls.draw()a
 }

@@ -1,14 +1,16 @@
 function ActionBar(game_object) {
   this.game_object = game_object
-  this.number_of_slots = 4
+  this.number_of_slots = 10
   this.slot_height = this.game_object.tile_size * 3;
   this.slot_width = this.game_object.tile_size * 3;
+  this.y_offset = 100
   this.action_bar_width = this.number_of_slots * this.slot_width
   this.action_bar_height = this.number_of_slots * this.slot_height
   this.action_bar_x = (this.game_object.canvas_rect.width / 2) - (this.action_bar_width / 2) 
-  this.action_bar_y = this.game_object.canvas_rect.height - this.game_object.tile_size * 4
+  this.action_bar_y = this.game_object.canvas_rect.height - this.game_object.tile_size * 4 - this.y_offset
+
   // character-specific
-  this.slots = ["mage_mm", "free", "free", "free"]
+  this.slots = ["mage_mm", "free", "free", "free", "free", "free", "free", "free", "free", "free"]
   this.img = new Image();
   this.img.src = "https://cdna.artstation.com/p/assets/images/images/009/031/190/large/richard-thomas-paints-11-v2.jpg"
   // END -- character-specific
