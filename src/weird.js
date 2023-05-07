@@ -16,14 +16,12 @@ import GameLoop from "./game_loop.js"
 import World from "./world.js"
 import Doodad from "./doodad.js"
 import Controls from "./controls.js"
-import Item from "./item"
 import Server from "./server"
 import LootBox from "./loot_box.js"
-import Loot from "./loot.js"
-import ResourceBar from "./resource_bar.js"
-import CastingBar from "./casting_bar.js"
-import Creep from "./creep.js"
+import Creep from "./beings/creep.js"
 import ActionBar from "./action_bar.js"
+import Stone from "./beings/stone.js"
+import Tree from "./beings/tree.js"
 
 const go = new GameObject()
 go.spells = [];
@@ -37,22 +35,12 @@ const character = new Character(go)
 const keyboard_input = new KeyboardInput(go)
 const world = new World(go)
 const controls = new Controls(go)
-character.name = `Player ${String(Math.floor(Math.random() * 10)).slice(0, 2)}`
 const server = new Server(go)
 const loot_box = new LootBox(go)
 const action_bar = new ActionBar(go)
 
 // Disable right mouse click
 go.canvas.oncontextmenu = function (e) { e.preventDefault(); e.stopPropagation(); }
-
-// Creep
-for (let i = 0; i < 50; i++) {
-  let creep = new Creep(go);
-  creep.x = Math.random() * go.world.width
-  creep.y = Math.random() * go.world.height
-  go.clickables.push(creep);
-}
-// END - Creep
 
 const click_callbacks = setClickCallback(go)
 click_callbacks.push(clickable_clicked)
@@ -143,15 +131,25 @@ const draw = () => {
     if (show_control_wheel) draw_control_wheel()
     // controls.draw()a
   }
-}
+} 
 
+// Trees
 Array.from(Array(300)).forEach((j, i) => {
-  let tree = new Doodad({ go })
-  tree.x = Math.trunc(Math.random() * go.world.width) - tree.width;
-  tree.y = Math.trunc(Math.random() * go.world.height) - tree.height;
+  let tree = new Tree({ go })
   go.trees.push(tree)
   go.clickables.push(tree)
 })
+// Stones
+Array.from(Array(300)).forEach((j, i) => {
+  const stone = new Stone({ go });
+  go.stones.push(stone)
+  go.clickables.push(stone)
+})
+// Creep
+for (let i = 0; i < 50; i++) {
+  let creep = new Creep({ go });
+  go.clickables.push(creep);
+}
 
 let ordered_clickables = [];
 const tab_cycling = (ev) => {
@@ -182,23 +180,6 @@ const draw_control_wheel = () => {
 }
 const toggle_control_wheel = () => { show_control_wheel = !show_control_wheel }
 keyboard_input.on_keydown_callbacks["c"] = [toggle_control_wheel]
-
-Array.from(Array(300)).forEach((j, i) => {
-  let stone = new Doodad({ go })
-  stone.image.src = "flintstone.png"
-  stone.x = Math.trunc(Math.random() * go.world.width);
-  stone.y = Math.trunc(Math.random() * go.world.height);
-  stone.image_width = 840
-  stone.image_height = 859
-  stone.image_x_offset = 0
-  stone.image_y_offset = 0
-  stone.width = 32
-  stone.height = 32
-  go.stones.push(stone)
-  go.clickables.push(stone)
-})
-
-//keyboard_input.key_callbacks["f"] = break_stone;
 
 const game_loop = new GameLoop()
 game_loop.draw = draw

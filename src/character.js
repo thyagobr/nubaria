@@ -12,6 +12,7 @@ import MakeFire from "./skills/make_fire.js"
 function Character(go, id) {
   this.go = go
   this.go.character = this
+  this.name = `Player ${String(Math.floor(Math.random() * 10)).slice(0, 2)}`
   this.editor = go.editor
   this.image = new Image();
   this.image.src = "crisiscorepeeps.png"

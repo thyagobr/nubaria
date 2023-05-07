@@ -1,9 +1,9 @@
-import { distance, is_colliding } from "./tapete.js"
-import ResourceBar from "./resource_bar"
-import Aggro from "./behaviors/aggro.js"
-import Stats from "./behaviors/stats.js"
+import { distance, is_colliding, random } from "../tapete.js"
+import ResourceBar from "../resource_bar.js"
+import Aggro from "../behaviors/aggro.js"
+import Stats from "../behaviors/stats.js"
 
-function Creep(go) {
+function Creep({ go }) {
   if (go.creeps === undefined) go.creeps = []
   this.id = go.creeps.length
   this.go = go
@@ -13,8 +13,8 @@ function Creep(go) {
   this.image.src = "zergling.png" // placeholder image
   this.image_width = 150
   this.image_height = 150
-  this.x = 700
-  this.y = 300
+  this.x = random(1, this.go.world.width)
+  this.y = random(1, this.go.world.height)
   this.width = this.go.tile_size * 4
   this.height = this.go.tile_size * 4
   this.moving = false
