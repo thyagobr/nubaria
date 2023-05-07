@@ -32,9 +32,9 @@ function Character(go, id) {
     frostbolt: new Spellcasting({ go, entity: this, spell: new Frostbolt({ go, entity: this }) }).cast
   }
   this.skills = {
-    cut_tree: new Skill({ go, entity: this, skill: new CutTree({ go, entity: this })}).act,
-    break_stone: new Skill({ go, entity: this, skill: new BreakStone({ go, entity: this })}).act,
-    make_fire: new Skill({ go, entity: this, skill: new MakeFire({ go, entity: this })}).act
+    cut_tree: new Skill({ go, entity: this, skill: new CutTree({ go, entity: this }) }).act,
+    break_stone: new Skill({ go, entity: this, skill: new BreakStone({ go, entity: this }) }).act,
+    make_fire: new Skill({ go, entity: this, skill: new MakeFire({ go, entity: this }) }).act
   }
   this.stats = new Stats({ go, entity: this, mana: 50 });
   this.health_bar = new ResourceBar({ go, target: this, y_offset: 20, colour: "red" })
@@ -75,31 +75,37 @@ function Character(go, id) {
 
   this.move = (direction) => {
     this.direction = direction
+    const future_position = { x: this.x, y: this.y, width: this.width, height: this.height }
 
     switch (direction) {
       case "right":
         if (this.x + this.speed < this.go.world.width) {
-          this.x += this.speed
+          future_position.x += this.speed
         }
         break;
       case "up":
         if (this.y - this.speed > 0) {
-          this.y -= this.speed
+          future_position.y -= this.speed
         }
         break;
       case "left":
         if (this.x - this.speed > 0) {
-          this.x -= this.speed
+          future_position.x -= this.speed
         }
         break;
       case "down":
         if (this.y + this.speed < this.go.world.height) {
-          this.y += this.speed
+          future_position.y += this.speed
         }
         break;
     }
-    this.walk_cycle_index = (this.walk_cycle_index + (0.03 * this.speed)) % 3
-    this.go.camera.focus(this)
+
+    if (!this.go.trees.some(tree => (is_colliding(future_position, tree)))) {
+      this.x = future_position.x
+      this.y = future_position.y
+      this.walk_cycle_index = (this.walk_cycle_index + (0.03 * this.speed)) % 3
+      this.go.camera.focus(this)
+    }
   }
 
   // Experiments
