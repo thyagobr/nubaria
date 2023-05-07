@@ -22,6 +22,7 @@ import Creep from "./beings/creep.js"
 import ActionBar from "./action_bar.js"
 import Stone from "./beings/stone.js"
 import Tree from "./beings/tree.js"
+import Board from "./board.js"
 
 const go = new GameObject()
 const screen = new Screen(go)
@@ -33,6 +34,7 @@ const controls = new Controls(go)
 const server = new Server(go)
 const loot_box = new LootBox(go)
 const action_bar = new ActionBar(go)
+const board = new Board(go)
 
 // Disable right mouse click
 go.canvas.oncontextmenu = function (e) { e.preventDefault(); e.stopPropagation(); }
@@ -81,6 +83,8 @@ keyboard_input.on_keydown_callbacks.f = [character.skills.cut_tree]
 keyboard_input.on_keydown_callbacks[1] = [character.skills.break_stone]
 keyboard_input.on_keydown_callbacks[2] = [character.skills.make_fire]
 keyboard_input.on_keydown_callbacks.i = [character.inventory.toggle_display]
+keyboard_input.on_keydown_callbacks.b = [board.toggle_grid]
+keyboard_input.on_keydown_callbacks.p = [board.way_to_player]
 
 let FPS = 30
 let last_tick = Date.now()
@@ -122,6 +126,7 @@ const draw = () => {
     loot_box.draw()
     go.character.inventory.draw()
     action_bar.draw()
+    board.draw()
     // cold.draw(100, current_cold_level)
     if (show_control_wheel) draw_control_wheel()
     // controls.draw()a

@@ -23,4 +23,23 @@ export default function Aggro({ go, entity, radius = 20 }) {
         }}
 
     }
+
+    this.draw_path = () => {
+
+    }
+
+    const neighbor_positions = () => {
+        const current_position = {
+            x: this.entity.x,
+            y: this.entity.y,
+            width: this.entity.width,
+            height: this.entity.height
+        }
+
+        const left = { ...current_position, x: this.entity.x -= this.entity.speed }
+        const right = { ...current_position, x: this.entity.x += this.entity.speed }
+        const up = { ...current_position, y: this.entity.y -= this.entity.speed }
+        const down = { ...current_position, y: this.entity.y += this.entity.speed }
+
+    }
 } 
