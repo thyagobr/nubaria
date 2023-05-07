@@ -11,6 +11,10 @@ function GameObject() {
   this.clickables = []
   this.selected_clickable = null
   this.spells = [] // Spell system, could be injected by it as well
+  this.skills = [];
+  this.trees = [];
+  this.fires = [];
+  this.stones = [];
   this.managed_objects = [] // Random objects to draw/update
   this.draw_selected_clickable = function () {
     if (this.selected_clickable) {

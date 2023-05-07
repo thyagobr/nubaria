@@ -24,11 +24,6 @@ import Stone from "./beings/stone.js"
 import Tree from "./beings/tree.js"
 
 const go = new GameObject()
-go.spells = [];
-go.skills = [];
-go.trees = [];
-go.fires = [];
-go.stones = [];
 const screen = new Screen(go)
 const camera = new Camera(go)
 const character = new Character(go)
