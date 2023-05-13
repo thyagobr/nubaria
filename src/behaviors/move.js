@@ -6,10 +6,26 @@ export class Move {
         this.entity = entity
         this.speed = speed
         this.target_position = target_position
+        this.bps = 0;
+        this.last_tick = Date.now();
+        this.path = null
+        this.next_path_index = null
     }
 
     act = () => {
-        const targeted_position = { ...this.target_position }
+        this.bps = Date.now() - this.last_tick
+        if ((this.bps) >= 800) {
+            this.path = this.entity.aggro.board.find_path(this.entity, this.target_position)
+            console.log(`Path length ${this.path.length}`)
+            this.next_path_index = 0
+            this.last_tick = Date.now()
+            return;
+        }
+
+        this.entity.aggro.board.draw()
+        if (this.path === undefined || this.path[this.next_path_index] === undefined) return
+        const targeted_position = this.path[this.next_path_index]
+        this.next_path_index += 1;
         const next_step = {
             x: this.entity.x + this.speed * Math.cos(Vector2.angle(this.entity, targeted_position)),
             y: this.entity.y + this.speed * Math.sin(Vector2.angle(this.entity, targeted_position)),
@@ -22,14 +38,5 @@ export class Move {
         } else {
             console.log("hmmm... where to?")
         }
-    }
-}
-
-function Node() {
-    this.x = x;
-    this.y = y;
-    this.parent = parent;
-    this.neighbors = () => {
-        
     }
 }

@@ -8,6 +8,7 @@ import CutTree from "./skills/cut_tree.js"
 import Skill from "./skill.js"
 import BreakStone from "./skills/break_stone.js"
 import MakeFire from "./skills/make_fire.js"
+import Board from "./board.js"
 
 function Character(go, id) {
   this.go = go
@@ -19,8 +20,8 @@ function Character(go, id) {
   this.image_width = 32
   this.image_height = 32
   this.id = id
-  this.x = this.go.canvas_rect.width / 2
-  this.y = this.go.canvas_rect.height / 2
+  this.x = 100
+  this.y = 100
   this.width = this.go.tile_size * 2
   this.height = this.go.tile_size * 2
   this.moving = false
@@ -39,6 +40,7 @@ function Character(go, id) {
   this.stats = new Stats({ go, entity: this, mana: 50 });
   this.health_bar = new ResourceBar({ go, target: this, y_offset: 20, colour: "red" })
   this.mana_bar = new ResourceBar({ go, target: this, y_offset: 10, colour: "blue" })
+  this.board = new Board({ go, entity: this, radius: 20 })
 
   this.update_fps = () => {
     if (this.stats.current_mana < this.stats.mana) this.stats.current_mana += random(1, 3)

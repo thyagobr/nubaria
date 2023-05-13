@@ -2,39 +2,53 @@ import Node from "./node.js"
 import { is_colliding, Vector2, random, remove_object_if_present } from "./tapete.js"
 
 // A grid of tiles for the manipulation
-function Board(game_object) {
-  this.game_object = game_object
-  this.game_object.board = this
-  this.tile_size = this.game_object.tile_size
-  this.width = Math.round(this.game_object.screen.width / this.tile_size)
-  this.height = Math.round(this.game_object.screen.height / this.tile_size)
+function Board({ go, entity, radius }) {
+  this.go = go
+  this.go.board = this
+  this.tile_size = this.go.tile_size
   this.grid = [[]]
-
-  let should_draw = false
+  this.radius = radius
+  this.width = this.radius * 2
+  this.height = this.radius * 2
+  this.entity = entity
+  this.should_draw = false
 
   this.toggle_grid = () => {
-    should_draw = !should_draw
-    if (should_draw) this.build_grid()
+    this.should_draw = !this.should_draw
+    if (this.should_draw) this.build_grid()
   }
 
+  this.bps = 0;
+  this.last_tick = Date.now();
+
   this.build_grid = () => {
+    console.log("building grid")
+    this.bps = Date.now() - this.last_tick
+    if ((this.bps) < 1000) {
+      return;
+    }
+    this.last_tick = Date.now()
     this.grid = new Array(this.width)
 
-    for (let x = 0; x <= this.width; x++) {
+    const x_position = Math.floor(this.entity.x + this.entity.width / 2)
+    const y_position = Math.floor(this.entity.y + this.entity.height / 2)
+
+    for (let x = 0; x < this.width; x++) {
       this.grid[x] = new Array(this.height)
-      for (let y = 0; y <= this.height; y++) {
+      for (let y = 0; y < this.height; y++) {
         const node = new Node({
-          x: x * this.tile_size,
-          y: y * this.tile_size,
+          x: (x_position - (this.radius * this.tile_size) + x * this.tile_size),
+          y: (y_position - (this.radius * this.tile_size) + y * this.tile_size),
           width: this.tile_size,
           height: this.tile_size,
           g: Infinity, // Cost so far
           f: Infinity, // Cost from here to target
           h: null, //
           parent: null,
-          visited: false
+          visited: false,
+          border_colour: "black"
         })
-        this.game_object.trees.forEach(tree => {
+        this.go.trees.forEach(tree => {
           if (is_colliding(node, tree)) {
             node.colour = 'red';
             node.blocked = true
@@ -46,8 +60,8 @@ function Board(game_object) {
   }
 
   this.way_to_player = () => {
-    if (this.game_object.selected_clickable) {
-      this.find_path(this.game_object.selected_clickable, this.game_object.character)
+    if (this.go.selected_clickable) {
+      this.find_path(this.go.selected_clickable, this.go.character)
     }
   }
 
@@ -62,8 +76,13 @@ function Board(game_object) {
   // Update for each: the travel cost (g) you managed to do and yourself as parent
   //// So that we can retrace how we got here
   this.find_path = (start_position, end_position) => {
+    this.build_grid()
     const start_node = this.get_node_for(start_position);
     const end_node = this.get_node_for(end_position);
+    if (!start_node || !end_node) {
+      console.log("nodes not matched")
+      debugger
+    }
 
     start_node.colour = 'orange'
     end_node.colour = 'orange'
@@ -84,7 +103,7 @@ function Board(game_object) {
       const current_node = open_set.sort((a, b) => (a.f < b.f ? -1 : 1))[0] // Get the node with lowest f value in the open set
       remove_object_if_present(current_node, open_set)
       closed_set.push(current_node)
-
+      
       if (current_node === end_node) {
         let current = current_node;
         let path = [];
@@ -95,7 +114,7 @@ function Board(game_object) {
         }
         return path.reverse();
       }
-
+      
       this.neighbours(current_node).forEach(neighbour_node => {
         if (!neighbour_node.blocked && !closed_set.includes(neighbour_node)) {
           let g_used = current_node.g + cost(current_node, neighbour_node)
@@ -119,34 +138,42 @@ function Board(game_object) {
   }
 
   this.neighbours = (node) => { // 5,5
-    let x = Math.floor(node.x / this.tile_size)
-    let y = Math.floor(node.y / this.tile_size)
+    const x_offset = (Math.floor(this.entity.x + this.entity.width / 2) - (this.radius * this.tile_size))
+    const y_offset = (Math.floor(this.entity.y + this.entity.height / 2) - (this.radius * this.tile_size))
+    const x = Math.floor((node.x - x_offset) / this.tile_size)
+    const y = Math.floor((node.y - y_offset) / this.tile_size)
+
+    function fetch_grid_cell(grid, lx, ly) {
+      return grid[lx] && grid[lx][ly]
+    }
 
     return [
-      this.grid[x][y - 1], // top
-      this.grid[x - 1][y - 1], // top left
-      this.grid[x + 1][y - 1], // top right
-      this.grid[x][y + 1], // bottom
-      this.grid[x - 1][y + 1], // bottom left
-      this.grid[x + 1][y + 1], // bottom right
-      this.grid[x - 1][y], // right
-      this.grid[x + 1][y] // left
+      fetch_grid_cell(this.grid, x, y - 1), // top
+      fetch_grid_cell(this.grid, x - 1, y - 1), // top left
+      fetch_grid_cell(this.grid, x + 1, y - 1), // top right
+      fetch_grid_cell(this.grid, x, y + 1), // bottom
+      fetch_grid_cell(this.grid, x - 1, y + 1), // bottom left
+      fetch_grid_cell(this.grid, x + 1, y + 1), // bottom right
+      fetch_grid_cell(this.grid, x - 1, y), // right
+      fetch_grid_cell(this.grid, x + 1, y) // left
     ].filter(node => node !== undefined)
   }
 
   this.draw = () => {
-    if (!should_draw) return
+    if (!this.should_draw) return
 
     for (let x = 0; x < this.width; x++) {
       for (let y = 0; y < this.height; y++) {
         let node = this.grid[x][y];
-        this.game_object.ctx.lineWidth = "1"
-        this.game_object.ctx.strokeStyle = node.border_colour
-        this.game_object.ctx.fillStyle = node.colour
-        this.game_object.ctx.fillRect(node.x - this.game_object.camera.x, node.y - this.game_object.camera.y, node.width, node.height)
-        this.game_object.ctx.strokeRect(node.x - this.game_object.camera.x, node.y - this.game_object.camera.y, node.width, node.height)
+        this.go.ctx.lineWidth = "1"
+        this.go.ctx.strokeStyle = node.border_colour
+        this.go.ctx.fillStyle = node.colour
+        this.go.ctx.fillRect(node.x - this.go.camera.x, node.y - this.go.camera.y, node.width, node.height)
+        this.go.ctx.strokeRect(node.x - this.go.camera.x, node.y - this.go.camera.y, node.width, node.height)
       }
     }
+
+    this.build_grid()
   }
 
   // Receives a rect and returns it's first colliding Node
@@ -155,7 +182,15 @@ function Board(game_object) {
     if (rect.height == undefined) rect.height = 1
     for (let x = 0; x < this.width; x++) {
       for (let y = 0; y < this.height; y++) {
-        if (is_colliding(rect, this.grid[x][y])) return this.grid[x][y];
+        if ((this.grid[x] === undefined) || (this.grid[x][y] === undefined)) {
+          // console.log(`${x},${y} coordinates is undefined`)
+          // console.log(`Width: ${this.width}; height: ${this.height} (radius: ${this.radius})`)
+        } else {
+          if (is_colliding(
+            {
+              ...rect,
+            }, this.grid[x][y])) return this.grid[x][y];
+        }
       }
     }
   }
@@ -194,7 +229,7 @@ function Board(game_object) {
   this.next_step = (character, closest_node, target_node) => {
     // Step: Select all neighbours
     let visited = []
-    let nodes_per_row = Math.trunc(4096 / game_object.tile_size)
+    let nodes_per_row = Math.trunc(4096 / go.tile_size)
     let origin_index = closest_node.id
 
     let neighbours = this.calculate_neighbours(character)
