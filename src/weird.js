@@ -86,11 +86,13 @@ keyboard_input.on_keydown_callbacks.i = [character.inventory.toggle_display]
 keyboard_input.on_keydown_callbacks.b = [board.toggle_grid]
 keyboard_input.on_keydown_callbacks.p = [board.way_to_player]
 
-let FPS = 30
+let FPS = 0
 let last_tick = Date.now()
 const update = () => {
-  if ((Date.now() - last_tick) > 1000) {
+  FPS = Date.now() - last_tick
+  if ((FPS) > 1000) {
     update_fps()
+    console.log(FPS)
     last_tick = Date.now()
   }
   if (!character.stats.is_alive()) {
