@@ -13,19 +13,19 @@ export class Move {
     }
 
     act = () => {
-        this.bps = Date.now() - this.last_tick
-        if ((this.bps) >= 800) {
-            this.path = this.entity.aggro.board.find_path(this.entity, this.target_position)
-            console.log(`Path length ${this.path.length}`)
-            this.next_path_index = 0
-            this.last_tick = Date.now()
-            return;
-        }
+        // this.bps = Date.now() - this.last_tick
+        // if ((this.bps) >= 800) {
+        //     this.path = this.entity.aggro.board.find_path(this.entity, this.target_position)
+        //     console.log(`Path length ${this.path.length}`)
+        //     this.next_path_index = 0
+        //     this.last_tick = Date.now()
+        //     return;
+        // }
 
-        this.entity.aggro.board.draw()
-        if (this.path === undefined || this.path[this.next_path_index] === undefined) return
-        const targeted_position = this.path[this.next_path_index]
-        this.next_path_index += 1;
+        // this.entity.aggro.board.draw()
+        //if (this.path === undefined || this.path[this.next_path_index] === undefined) return
+        //const targeted_position = this.path[this.next_path_index]
+        const targeted_position = { ...this.target_position }
         const next_step = {
             x: this.entity.x + this.speed * Math.cos(Vector2.angle(this.entity, targeted_position)),
             y: this.entity.y + this.speed * Math.sin(Vector2.angle(this.entity, targeted_position)),
@@ -37,6 +37,17 @@ export class Move {
             this.entity.y = next_step.y
         } else {
             console.log("hmmm... where to?")
+        }
+    }
+
+    predict_movement = () => {
+        this.bps = Date.now() - this.last_tick
+        if ((this.bps) >= 3000) {
+            this.path = this.entity.aggro.board.find_path(this.entity, this.target_position)
+            console.log(`Path length ${this.path.length}`)
+            this.next_path_index = 0
+            this.last_tick = Date.now()
+            return;
         }
     }
 }
