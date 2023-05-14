@@ -1,10 +1,13 @@
 import Tile from "./tile"
 
+// The World is responsible for drawing itself.
 function World(go) {
   this.go = go;
   this.go.world = this;
   this.width = 10000;
   this.height = 10000;
+  this.x_offset = 0;
+  this.y_offset = 0;
   this.tile_set = {
     grass: new Tile("grass.png", 0, 0, 64, 63),
     dirt: new Tile("dirt2.png", 0, 0, 64, 63),
@@ -37,11 +40,13 @@ function World(go) {
         if (tile !== this.tile_set.grass) {
           this.go.ctx.drawImage(this.tile_set.grass.image,
             this.tile_set.grass.x_offset, this.tile_set.grass.y_offset, this.tile_set.grass.width, this.tile_set.grass.height,
-            (row * this.tile_width) - this.go.camera.x, (column * this.tile_height) - this.go.camera.y, 64, 63)
+            this.x_offset + (row * this.tile_width) - this.go.camera.x,
+            this.y_offset + (column * this.tile_height) - this.go.camera.y, 64, 63)
         }
         this.go.ctx.drawImage(tile.image,
           tile.x_offset, tile.y_offset, tile.width, tile.height,
-          (row * this.tile_width) - this.go.camera.x, (column * this.tile_height) - this.go.camera.y, 65, 65)
+          this.x_offset + (row * this.tile_width) - this.go.camera.x,
+          this.y_offset + (column * this.tile_height) - this.go.camera.y, 65, 65)
       }
     }
   }

@@ -89,22 +89,22 @@ function Character(go, id) {
 
     switch (direction) {
       case "right":
-        if (this.x + this.speed < this.go.world.width) {
+        if (this.x + this.speed < this.go.world.width + this.go.world.x_offset) {
           future_position.x += this.speed
         }
         break;
       case "up":
-        if (this.y - this.speed > 0) {
+        if (this.y - this.speed > this.go.world.y_offset) {
           future_position.y -= this.speed
         }
         break;
       case "left":
-        if (this.x - this.speed > 0) {
+        if (this.x - this.speed > this.go.world.x_offset) {
           future_position.x -= this.speed
         }
         break;
       case "down":
-        if (this.y + this.speed < this.go.world.height) {
+        if (this.y + this.speed < this.go.world.height + this.go.world.y_offset) {
           future_position.y += this.speed
         }
         break;
