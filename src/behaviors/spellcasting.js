@@ -26,6 +26,7 @@ export default function Spellcasting({ go, entity, spell }) {
     }
 
     this.cast = () => {
+        this.go.action_bar.highlight_cast(this.spell);
         if (!this.spell.is_valid()) return;
 
         if (this.spell.casting_time_in_ms) {

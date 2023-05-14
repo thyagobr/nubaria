@@ -2,6 +2,7 @@ import Projectile from "../projectile"
 import { remove_object_if_present, is_colliding, random } from "../tapete"
 
 export default function Frostbolt({ go }) {
+    this.id = "spell_frostbolt"
     this.go = go
     this.icon = new Image()
     this.icon.src = "https://cdna.artstation.com/p/assets/images/images/009/031/190/large/richard-thomas-paints-11-v2.jpg"

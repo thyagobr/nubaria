@@ -1,6 +1,7 @@
 import { remove_object_if_present } from "../tapete";
 
 export default function Blink({ go, entity }) {
+    this.id = "spell_blink"
     this.icon = new Image();
     this.icon.src = "blink_spell.jpg"
     this.go = go

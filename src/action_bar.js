@@ -1,5 +1,8 @@
+import { remove_object_if_present } from "./tapete";
+
 function ActionBar(game_object) {
   this.game_object = game_object
+  this.game_object.action_bar = this
   this.number_of_slots = 10
   this.slot_height = this.game_object.tile_size * 3;
   this.slot_width = this.game_object.tile_size * 3;
@@ -16,10 +19,16 @@ function ActionBar(game_object) {
   this.slots[1] = this.game_object.character.spellbook.blink
   // END -- character-specific
 
+  this.highlights = []
+
   function Slot({ spell, x, y }) {
     this.spell = spell
     this.x = x;
     this.y = y;
+  }
+
+  this.highlight_cast = (spell) => {
+    this.highlights.push(spell)
   }
 
   this.draw = function () {
@@ -51,6 +60,16 @@ function ActionBar(game_object) {
           x, y,
           this.slot_width, this.slot_height
         )
+
+        // Highlight: the action bar "blinks" for a frame when the spell is cast
+        if (this.highlights.length > 0) {
+          console.log(`spell.id = ${this.highlights[0].id}; slot.id = ${slot.id}`)
+          if (this.highlights.find((spell) => spell.id === slot.id)) {
+            remove_object_if_present(slot, this.highlights)
+            this.game_object.ctx.fillStyle = 'rgba(255, 255, 255, 0.7)'
+            this.game_object.ctx.fillRect(x, y, this.slot_width, this.slot_height)
+          }
+        }
 
         // Cooldown indicator
         if (slot.on_cooldown()) {
