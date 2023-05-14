@@ -58,6 +58,14 @@ function Character(go, id) {
     this.mana_bar.draw(this.stats.mana, this.stats.current_mana)
   }
 
+  this.draw_character = ({ x, y, width, height }) => {
+    x = x === undefined ? this.x - this.go.camera.x : x
+    y = y === undefined ? this.y - this.go.camera.y : y
+    width = width === undefined ? this.width : width
+    height = height === undefined ? this.height : height
+    this.go.ctx.drawImage(this.image, Math.floor(this.walk_cycle_index) * this.image_width, this.get_direction_sprite() * this.image_height, this.image_width, this.image_height, x, y, width, height)
+  }
+
   this.get_direction_sprite = function () {
     switch (this.direction) {
       case "right":

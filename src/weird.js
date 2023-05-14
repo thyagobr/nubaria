@@ -22,6 +22,7 @@ import Creep from "./beings/creep.js"
 import ActionBar from "./action_bar.js"
 import Stone from "./beings/stone.js"
 import Tree from "./beings/tree.js"
+import Editor from "./editor/index.js"
 
 const go = new GameObject()
 const screen = new Screen(go)
@@ -33,6 +34,7 @@ const controls = new Controls(go)
 const server = new Server(go)
 const loot_box = new LootBox(go)
 const action_bar = new ActionBar(go)
+const editor = new Editor({ go })
 
 // Disable right mouse click
 go.canvas.oncontextmenu = function (e) { e.preventDefault(); e.stopPropagation(); }
@@ -127,9 +129,8 @@ const draw = () => {
     go.character.inventory.draw()
     action_bar.draw()
     character.board.draw()
-    // cold.draw(100, current_cold_level)
+    editor.draw()
     if (show_control_wheel) draw_control_wheel()
-    // controls.draw()a
   }
 } 
 

@@ -13,6 +13,8 @@ function Creep({ go }) {
   this.image.src = "zergling.png" // placeholder image
   this.image_width = 150
   this.image_height = 150
+  this.image_x_offset = 0
+  this.image_y_offset = 0
   this.x = random(1, this.go.world.width)
   this.y = random(1, this.go.world.height)
   this.width = this.go.tile_size * 4
@@ -33,9 +35,15 @@ function Creep({ go }) {
     this.y = coords.y
   }
 
-  this.draw = function() {
+  this.draw = function(target_position) {
+    let x = target_position && target_position.x ? target_position.x : this.x - this.go.camera.x
+    let y = target_position && target_position.y ? target_position.y : this.y - this.go.camera.y
+    let width = target_position && target_position.width ? target_position.width : this.width
+    let height = target_position && target_position.height ? target_position.height : this.height
+    this.go.ctx.drawImage(this.image, this.image_x_offset, this.image_y_offset, this.image_width, this.image_height, x, y, width, height)
+    if (target_position) return
+
     this.aggro.act();
-    this.go.ctx.drawImage(this.image, 0, 0, this.image_width, this.image_height, this.x - go.camera.x, this.y - go.camera.y, this.width, this.height)
     this.health_bar.draw(this.stats.hp, this.stats.current_hp)
   }
 
