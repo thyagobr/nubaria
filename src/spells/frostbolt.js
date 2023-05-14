@@ -13,12 +13,16 @@ export default function Frostbolt({ go }) {
     }
 
     this.update = () => {
-        if (this.active && (is_colliding(this.projectile.bounds(), this.go.selected_clickable))) {
+        if (!this.active) return
+
+        if ((is_colliding(this.projectile.bounds(), this.go.selected_clickable))) {
             if (damageable(this.go.selected_clickable)) {
                 const damage = random(5, 10);
                 this.go.selected_clickable.stats.take_damage({ damage });
             }
             this.end();
+        } else {
+            this.projectile.update()
         }
     }
 

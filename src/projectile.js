@@ -12,9 +12,8 @@ export default function Projectile({ go, subject }) {
     this.bounds = () => {
         return { ...this.current_position, width: 5, height: 5 }
     }
-    this.active = false;
-
     this.trace = [];
+    this.active = false;
 
     this.act = ({ start_position, end_position }) => {
         this.start_position = start_position
@@ -23,8 +22,7 @@ export default function Projectile({ go, subject }) {
         this.active = true
     }
 
-    this.draw = () => {
-        if (!this.active) return;
+    this.update = () => {
         if (Vector2.distance(this.end_position, this.current_position) < 5) {
             this.active = false;
             this.subject.end();
@@ -32,6 +30,11 @@ export default function Projectile({ go, subject }) {
         }
 
         this.calculate_position();
+    }
+
+    this.draw = () => {
+        if (!this.active) return;
+
         this.particle.draw(this.current_position);
     }
 
