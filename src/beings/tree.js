@@ -13,4 +13,5 @@ export default function Tree({ go }) {
     this.image_y_offset = 290
     this.width = 98
     this.height = 126
+    this.acted_by_skill = "cut_tree"
 }

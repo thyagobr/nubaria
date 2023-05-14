@@ -13,4 +13,5 @@ export default function Stone({ go }) {
     this.image_y_offset = 0
     this.width = 32
     this.height = 32
+    this.acted_by_skill = 'break_stone'
 }

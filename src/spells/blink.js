@@ -7,8 +7,14 @@ export default function Blink({ go, entity }) {
     this.entity = entity
     this.active = false
     this.mana_cost = 7
+    this.casting_time_in_ms = 0
+    this.last_cast_at = null
+    this.cooldown_time_in_ms = 7000
+    this.on_cooldown = () => {
+        return this.last_cast_at && Date.now() - this.last_cast_at < this.cooldown_time_in_ms
+    }
 
-    this.is_valid = () => true
+    this.is_valid = () => !this.on_cooldown()
     
     this.draw = () => {
         if (!this.active) return
@@ -23,7 +29,6 @@ export default function Blink({ go, entity }) {
     this.update = () => { }
 
     this.act = () => {
-        console.log("blink#act")
         if (this.active) {
             this.active = false
             remove_object_if_present(this, this.go.spells)
@@ -41,10 +46,10 @@ export default function Blink({ go, entity }) {
         this.entity.current_mana -= this.mana_cost
         remove_object_if_present(this, this.go.spells)
         remove_object_if_present(click_callback, this.go.mousedown_callbacks)
+        this.last_cast_at = Date.now()
     }
 
     const click_callback = () => {
-        console.log("blink#callback")
         this.entity.x = this.go.mouse_position.x;
         this.entity.y = this.go.mouse_position.y;
         this.end();

@@ -31,6 +31,7 @@ export default function Spellcasting({ go, entity, spell }) {
         if (this.spell.casting_time_in_ms) {
             if (this.casting_bar.duration !== null) {
                 this.casting = false
+                remove_object_if_present(this, this.go.managed_objects)
                 this.casting_bar.stop()
             } else if (this.entity.stats.current_mana > this.spell.mana_cost) {
                 this.casting = true

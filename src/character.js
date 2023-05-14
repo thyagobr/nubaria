@@ -30,9 +30,13 @@ function Character(go, id) {
   this.walk_cycle_index = 0
   this.speed = 1.4
   this.inventory = new Inventory({ go });
+  this.spellbook = {
+    frostbolt: new Frostbolt({ go, entity: this }),
+    blink: new Blink({ go, entity: this })
+  }
   this.spells = {
-    frostbolt: new Spellcasting({ go, entity: this, spell: new Frostbolt({ go, entity: this }) }).cast,
-    blink: new Spellcasting({ go, entity: this, spell: new Blink({ go, entity: this }) }).cast
+    frostbolt: new Spellcasting({ go, entity: this, spell: this.spellbook.frostbolt }).cast,
+    blink: new Spellcasting({ go, entity: this, spell: this.spellbook.blink }).cast
   }
   this.skills = {
     cut_tree: new Skill({ go, entity: this, skill: new CutTree({ go, entity: this }) }).act,
@@ -48,6 +52,13 @@ function Character(go, id) {
     if (this.stats.current_mana < this.stats.mana) this.stats.current_mana += random(1, 3)
     if (near_bonfire()) {
       if (this.stats.current_hp < this.stats.hp) this.stats.current_hp += random(4, 7)
+    }
+  }
+
+  this.skill_action = () => {
+    let entity = this.go.selected_clickable
+    if (entity && this.skills[entity.acted_by_skill]) {
+      this.skills[entity.acted_by_skill]()
     }
   }
 

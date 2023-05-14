@@ -12,7 +12,7 @@ export default function CutTree({ go, entity }) {
         if (this.active) return;
 
         const targeted_tree = this.go.trees.find((tree) => tree === this.go.selected_clickable)
-        if ((!targeted_tree) || (Vector2.distance(targeted_tree, this.go.character) > 100)) {
+        if ((!targeted_tree) || (Vector2.distance(targeted_tree, this.go.character) > 200)) {
             return;
         }
 

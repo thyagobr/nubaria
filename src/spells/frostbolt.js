@@ -3,14 +3,26 @@ import { remove_object_if_present, is_colliding, random } from "../tapete"
 
 export default function Frostbolt({ go }) {
     this.go = go
+    this.icon = new Image()
+    this.icon.src = "https://cdna.artstation.com/p/assets/images/images/009/031/190/large/richard-thomas-paints-11-v2.jpg"
     this.projectile = new Projectile({ go, subject: this })
     this.active = false
     this.mana_cost = 15
     this.casting_time_in_ms = 1500
+    this.last_cast_at = null
+    this.cooldown_time_in_ms = 2500
+    this.on_cooldown = () => {
+        return this.last_cast_at && Date.now() - this.last_cast_at < this.cooldown_time_in_ms
+    }
 
     this.draw = () => {
         if (!this.active) return;
         this.projectile.draw();
+    }
+
+    this.draw_slot = (slot) => {
+        this.go.ctx.drawImage(this.img, x, y, this.go.action_bar.slot_width, this.go.action_bar.slot_height)
+        
     }
 
     this.update = () => {
@@ -27,12 +39,12 @@ export default function Frostbolt({ go }) {
         }
     }
 
-    this.is_valid = () => this.go.selected_clickable && this.go.selected_clickable.stats;
+    this.is_valid = () => !this.on_cooldown() && this.go.selected_clickable && this.go.selected_clickable.stats;
 
     this.act = () => {
         if (this.active) return;
         if ((this.go.selected_clickable === null) || (this.go.selected_clickable === undefined)) return;
-        
+
         const start_position = { x: this.go.character.x + 50, y: this.go.character.y + 50 }
         const end_position = {
             x: this.go.selected_clickable.x + this.go.selected_clickable.width / 2,
@@ -47,6 +59,7 @@ export default function Frostbolt({ go }) {
     this.end = () => {
         this.active = false;
         remove_object_if_present(this, this.go.spells);
+        this.last_cast_at = Date.now()
     }
 
     function damageable(object) {
