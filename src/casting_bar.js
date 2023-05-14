@@ -32,6 +32,8 @@ function CastingBar({ go, entity }) {
         this.callback = callback
     }
 
+    this.stop = () => this.duration = null
+
     this.draw = (full = this.full, current = this.current) => {
         console.log("drawing casting bar")
         

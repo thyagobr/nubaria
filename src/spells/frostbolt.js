@@ -6,6 +6,7 @@ export default function Frostbolt({ go }) {
     this.projectile = new Projectile({ go, subject: this })
     this.active = false
     this.mana_cost = 15
+    this.casting_time_in_ms = 1500
 
     this.draw = () => {
         if (!this.active) return;
@@ -25,6 +26,8 @@ export default function Frostbolt({ go }) {
             this.projectile.update()
         }
     }
+
+    this.is_valid = () => this.go.selected_clickable && this.go.selected_clickable.stats;
 
     this.act = () => {
         if (this.active) return;

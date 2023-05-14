@@ -51,12 +51,12 @@ function clickable_clicked(ev) {
 }
 
 let mouse_is_down = false
-let mouse_position = {}
+go.mouse_position = {}
 const mousemove_callbacks = setMouseMoveCallback(go)
 mousemove_callbacks.push(track_mouse_position)
 function track_mouse_position(evt) {
   var rect = go.canvas.getBoundingClientRect()
-  mouse_position = {
+  go.mouse_position = {
     x: evt.clientX - rect.left + camera.x,
     y: evt.clientY - rect.top + camera.y
   }
@@ -78,10 +78,11 @@ function controls_movement() {
   // })
 }
 
-keyboard_input.on_keydown_callbacks.q = [character.spells.frostbolt]
-keyboard_input.on_keydown_callbacks.f = [character.skills.cut_tree]
-keyboard_input.on_keydown_callbacks[1] = [character.skills.break_stone]
-keyboard_input.on_keydown_callbacks[2] = [character.skills.make_fire]
+keyboard_input.on_keydown_callbacks.q = [character.skills.break_stone]
+keyboard_input.on_keydown_callbacks.g = [character.skills.cut_tree]
+keyboard_input.on_keydown_callbacks[1] = [character.spells.frostbolt]
+keyboard_input.on_keydown_callbacks[2] = [character.spells.blink]
+keyboard_input.on_keydown_callbacks.f = [character.skills.make_fire]
 keyboard_input.on_keydown_callbacks.i = [character.inventory.toggle_display]
 keyboard_input.on_keydown_callbacks.b = [character.board.toggle_grid]
 //keyboard_input.on_keydown_callbacks.p = [board.way_to_player]
@@ -115,10 +116,10 @@ const draw = () => {
     screen.draw_game_over()
   } else {
     screen.draw()
+    go.draw_selected_clickable()
     go.stones.forEach(stone => stone.draw())
     go.trees.forEach(tree => tree.draw())
     go.fires.forEach(fire => fire.draw())
-    go.draw_selected_clickable()
     go.spells.forEach(spell => spell.draw())
     go.skills.forEach(skill => skill.draw())
     character.draw()

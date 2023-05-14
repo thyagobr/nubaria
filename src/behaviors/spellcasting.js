@@ -6,9 +6,10 @@ export default function Spellcasting({ go, entity, spell }) {
     this.entity = entity
     this.spell = spell
     this.casting_bar = new CastingBar({ go, entity: entity })
+    this.casting = false
 
     this.draw = () => {
-        this.casting_bar.draw()
+        if (this.casting) this.casting_bar.draw()
     }
 
     this.update = () => { }
@@ -18,7 +19,6 @@ export default function Spellcasting({ go, entity, spell }) {
     // Same thing for some skills
     this.end = () => {
         remove_object_if_present(this, this.go.managed_objects)
-        console.log("Sellcasting#end")
         if (this.entity.stats.current_mana > this.spell.mana_cost) {
             this.entity.stats.current_mana -= this.spell.mana_cost
             this.spell.act()
@@ -26,14 +26,19 @@ export default function Spellcasting({ go, entity, spell }) {
     }
 
     this.cast = () => {
-        if (!this.go.selected_clickable || !this.go.selected_clickable.stats) return;
-        if (this.casting_bar.duration !== null) {
-            console.log("Spellcasting#stop")
-            this.casting_bar.start(1500, this.end)
-        } else if (this.entity.stats.current_mana > this.spell.mana_cost) {
-            console.log("Spellcasting#cast")
-            this.go.managed_objects.push(this)
-            this.casting_bar.start(1500, this.end)
+        if (!this.spell.is_valid()) return;
+
+        if (this.spell.casting_time_in_ms) {
+            if (this.casting_bar.duration !== null) {
+                this.casting = false
+                this.casting_bar.stop()
+            } else if (this.entity.stats.current_mana > this.spell.mana_cost) {
+                this.casting = true
+                this.go.managed_objects.push(this)
+                this.casting_bar.start(this.spell.casting_time_in_ms, this.end)
+            }
+        } else {
+            this.end()
         }
     }
 }

@@ -10,9 +10,11 @@ function ActionBar(game_object) {
   this.action_bar_y = this.game_object.canvas_rect.height - this.game_object.tile_size * 4 - this.y_offset
 
   // character-specific
-  this.slots = ["mage_mm", "free", "free", "free", "free", "free", "free", "free", "free", "free"]
+  this.slots = ["mage_mm", "mage_blink", "free", "free", "free", "free", "free", "free", "free", "free"]
   this.img = new Image();
   this.img.src = "https://cdna.artstation.com/p/assets/images/images/009/031/190/large/richard-thomas-paints-11-v2.jpg"
+  this.blink_spell_icon = new Image();
+  this.blink_spell_icon.src = "blink_spell.jpg"
   // END -- character-specific
 
   this.draw = function() {
@@ -26,6 +28,17 @@ function ActionBar(game_object) {
         // class specific :O
       case "mage_mm":
         this.game_object.ctx.drawImage(this.img, x, y, this.slot_width, this.slot_height)
+
+        this.game_object.ctx.strokeStyle = "blueviolet"
+        this.game_object.ctx.lineWidth = 2;
+        this.game_object.ctx.strokeRect(
+          x, y,
+          this.slot_width, this.slot_height
+        )
+        break;
+
+      case "mage_blink":
+        this.game_object.ctx.drawImage(this.blink_spell_icon, x, y, this.slot_width, this.slot_height)
 
         this.game_object.ctx.strokeStyle = "blueviolet"
         this.game_object.ctx.lineWidth = 2;

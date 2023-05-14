@@ -54,7 +54,9 @@ function setMouseMoveCallback(go) {
 }
 
 function setMousedownCallback(go) {
-  return setCallback(go, 'mousedown');
+  const callback_queue = setCallback(go, 'mousedown');
+  go.mousedown_callbacks = callback_queue
+  return callback_queue
 }
 
 function setMouseupCallback(go) {

@@ -4,6 +4,7 @@ import Inventory from "./inventory"
 import Stats from "./behaviors/stats.js"
 import Spellcasting from "./behaviors/spellcasting.js"
 import Frostbolt from "./spells/frostbolt.js"
+import Blink from "./spells/blink.js"
 import CutTree from "./skills/cut_tree.js"
 import Skill from "./skill.js"
 import BreakStone from "./skills/break_stone.js"
@@ -30,7 +31,8 @@ function Character(go, id) {
   this.speed = 1.4
   this.inventory = new Inventory({ go });
   this.spells = {
-    frostbolt: new Spellcasting({ go, entity: this, spell: new Frostbolt({ go, entity: this }) }).cast
+    frostbolt: new Spellcasting({ go, entity: this, spell: new Frostbolt({ go, entity: this }) }).cast,
+    blink: new Spellcasting({ go, entity: this, spell: new Blink({ go, entity: this }) }).cast
   }
   this.skills = {
     cut_tree: new Skill({ go, entity: this, skill: new CutTree({ go, entity: this }) }).act,
