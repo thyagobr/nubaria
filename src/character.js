@@ -55,6 +55,7 @@ function Character(go, id) {
     }
   }
 
+  // This function tries to see if the selected clickable has a default action set for interaction
   this.skill_action = () => {
     let entity = this.go.selected_clickable
     if (entity && this.skills[entity.acted_by_skill]) {
