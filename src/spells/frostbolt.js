@@ -9,7 +9,6 @@ export default function Frostbolt({ go }) {
 
     this.draw = () => {
         if (!this.active) return;
-        console.log("drawing Frostbolt")
         this.projectile.draw();
     }
 
@@ -24,23 +23,21 @@ export default function Frostbolt({ go }) {
     }
 
     this.act = () => {
-        console.log("casting Frostbolt")
         if (this.active) return;
         if ((this.go.selected_clickable === null) || (this.go.selected_clickable === undefined)) return;
-
-        this.projectile.start_position = { x: this.go.character.x + 50, y: this.go.character.y + 50 }
-        this.projectile.current_position = { x: this.go.character.x + 50, y: this.go.character.y + 50 }
-        this.projectile.end_position = {
+        
+        const start_position = { x: this.go.character.x + 50, y: this.go.character.y + 50 }
+        const end_position = {
             x: this.go.selected_clickable.x + this.go.selected_clickable.width / 2,
             y: this.go.selected_clickable.y + this.go.selected_clickable.height / 2
         }
-        this.projectile.active = true
+        this.projectile.act({ start_position, end_position })
+
         this.active = true
         this.go.spells.push(this)
     }
 
     this.end = () => {
-        console.log("ending frostbolt")
         this.active = false;
         remove_object_if_present(this, this.go.spells);
     }
