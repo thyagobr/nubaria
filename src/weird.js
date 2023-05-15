@@ -23,6 +23,7 @@ import ActionBar from "./action_bar.js"
 import Stone from "./beings/stone.js"
 import Tree from "./beings/tree.js"
 import Editor from "./editor/index.js"
+import ResourceBar from "./resource_bar.js"
 
 const go = new GameObject()
 const screen = new Screen(go)
@@ -35,6 +36,8 @@ const server = new Server(go)
 const loot_box = new LootBox(go)
 const action_bar = new ActionBar(go)
 const editor = new Editor({ go })
+const experience_bar = new ResourceBar({ go, target: { x: go.screen.width / 2 - 500, y: go.screen.height - 30, width: 1000, height: 5 }, colour: "purple" });
+experience_bar.height = 20
 
 // Disable right mouse click
 go.canvas.oncontextmenu = function (e) { e.preventDefault(); e.stopPropagation(); }
@@ -134,6 +137,7 @@ const draw = () => {
     action_bar.draw()
     character.board.draw()
     editor.draw()
+    experience_bar.draw(1000, go.character.experience_points)
     if (show_control_wheel) draw_control_wheel()
   }
 } 

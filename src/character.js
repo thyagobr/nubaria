@@ -47,11 +47,21 @@ function Character(go, id) {
   this.health_bar = new ResourceBar({ go, target: this, y_offset: 20, colour: "red" })
   this.mana_bar = new ResourceBar({ go, target: this, y_offset: 10, colour: "blue" })
   this.board = new Board({ go, entity: this, radius: 20 })
+  this.experience_points = 0
+  this.level = 1;
+  this.update_xp = (entity) => {
+    this.experience_points += 100;
+    if (this.experience_points >= 1000) {
+      this.level += 1;
+      this.experience_points = 0;
+    }
+  }
 
   this.update_fps = () => {
     if (this.stats.current_mana < this.stats.mana) this.stats.current_mana += random(1, 3)
     if (near_bonfire()) {
       if (this.stats.current_hp < this.stats.hp) this.stats.current_hp += random(4, 7)
+      if (this.stats.current_mana < this.stats.mana) this.stats.current_mana += random(1, 3)
     }
   }
 

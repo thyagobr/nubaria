@@ -19,5 +19,6 @@ export default function Stats({ go, entity, hp = 100, current_hp, mana, current_
         remove_object_if_present(this.entity, this.go.creeps) || console.log("Not on list of creeps")
         remove_object_if_present(this.entity, this.go.clickables) || console.log("Not on list of clickables")
         if (this.go.selected_clickable === this.entity) this.go.selected_clickable = null;
+        this.go.character.update_xp(this.entity)
     }
 }
