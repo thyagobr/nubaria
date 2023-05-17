@@ -20,5 +20,7 @@ export default function Stats({ go, entity, hp = 100, current_hp, mana, current_
         remove_object_if_present(this.entity, this.go.clickables) || console.log("Not on list of clickables")
         if (this.go.selected_clickable === this.entity) this.go.selected_clickable = null;
         this.go.character.update_xp(this.entity)
+        this.go.loot_box.items = this.go.loot_box.roll_loot(this.entity.loot_table)
+        this.go.loot_box.show()
     }
 }

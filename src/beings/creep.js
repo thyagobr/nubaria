@@ -58,6 +58,13 @@ function Creep({ go }) {
       this.go.board.move(this, this.current_movement_target)
     }
   }
+
+  this.loot_table = [{
+    item: { name: "Branch", image_src: "branch.png" },
+    min: 1,
+    max: 3,
+    chance: 75
+  }]
 }
 
 export default Creep
