@@ -36,8 +36,8 @@ const server = new Server(go)
 const loot_box = new LootBox(go)
 const action_bar = new ActionBar(go)
 const editor = new Editor({ go })
-const experience_bar = new ResourceBar({ go, target: { x: go.screen.width / 2 - 500, y: go.screen.height - 30, width: 1000, height: 5 }, colour: "purple" });
-experience_bar.height = 20
+const experience_bar = new ResourceBar({ go, target: { x: go.screen.width / 2 - 500, y: go.screen.height - 30, width: 1000, height: 5 }, colour: "purple", border: "white", fixed: true });
+experience_bar.height = 30
 
 // Disable right mouse click
 go.canvas.oncontextmenu = function (e) { e.preventDefault(); e.stopPropagation(); }
@@ -91,6 +91,7 @@ keyboard_input.on_keydown_callbacks[1] = [character.spells.frostbolt]
 keyboard_input.on_keydown_callbacks[2] = [character.spells.blink]
 keyboard_input.on_keydown_callbacks.i = [character.inventory.toggle_display]
 keyboard_input.on_keydown_callbacks.b = [character.board.toggle_grid]
+keyboard_input.on_keydown_callbacks.e = [() => editor.active = !editor.active]
 //keyboard_input.on_keydown_callbacks.p = [board.way_to_player]
 
 let FPS = 0

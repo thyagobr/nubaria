@@ -11,7 +11,7 @@ export default function Frostbolt({ go }) {
     this.mana_cost = 15
     this.casting_time_in_ms = 1500
     this.last_cast_at = null
-    this.cooldown_time_in_ms = 2500
+    this.cooldown_time_in_ms = 100
     this.on_cooldown = () => {
         return this.last_cast_at && Date.now() - this.last_cast_at < this.cooldown_time_in_ms
     }
