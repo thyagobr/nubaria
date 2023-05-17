@@ -29,6 +29,7 @@ export default function Inventory({ go }) {
       this.slots.push(item)
     }
   }
+
   this.find = (item_name) => {
     return this.slots.find((bundle) => {
       return bundle.name.toLowerCase() == item_name.toLowerCase()
@@ -49,6 +50,16 @@ export default function Inventory({ go }) {
       if ((this.slots[i] !== undefined) && (this.slots[i] !== null)) {
         const item = this.slots[i];
         this.go.ctx.drawImage(item.image, this.x() + (this.slot_width * x) + (x * this.slot_padding), this.initial_y + (this.slot_height * y) + (this.slot_padding * y), this.slot_width, this.slot_height)
+        if (item.quantity > 1) {
+          let text = item.quantity
+          var text_measurement = this.go.ctx.measureText(text)
+          this.go.ctx.fillStyle = "white"
+          this.go.ctx.font = "24px sans-serif"
+          this.go.ctx.fillText(text, this.x() + (this.slot_width * x) + (x * this.slot_padding) + (this.slot_width - 15), this.initial_y + (this.slot_height * y) + (this.slot_padding * y) + (this.slot_height - 5))
+          this.go.ctx.strokeStyle = "black"
+          this.go.ctx.lineWidth = 1
+          this.go.ctx.strokeText(text, this.x() + (this.slot_width * x) + (x * this.slot_padding) + (this.slot_width - 15), this.initial_y + (this.slot_height * y) + (this.slot_padding * y) + (this.slot_height - 5))
+        }
       } else {
         this.go.ctx.fillStyle = "rgb(0, 0, 0)"
         this.go.ctx.fillRect(this.x() + (this.slot_width * x) + (x * this.slot_padding), this.initial_y + (this.slot_height * y) + (this.slot_padding * y), this.slot_width, this.slot_height)
