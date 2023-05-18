@@ -91,14 +91,16 @@ keyboard_input.on_keydown_callbacks.b = [character.board.toggle_grid]
 keyboard_input.on_keydown_callbacks.e = [() => editor.active = !editor.active]
 //keyboard_input.on_keydown_callbacks.p = [board.way_to_player]
 
-let FPS = 0
+let elapsed_time = 0
 let last_tick = Date.now()
+let frames = 0;
 const update = () => {
-  FPS = Date.now() - last_tick
-  if ((FPS) > 1000) {
-    update_fps()
-    console.log(FPS)
+  frames += 1;
+  elapsed_time = Date.now() - last_tick
+  if ((elapsed_time) > 1000) {
+    frames = 0;
     last_tick = Date.now()
+    update_fps()
   }
   if (!character.stats.is_alive()) {
     controls_movement()

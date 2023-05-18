@@ -8,7 +8,7 @@ function Creep({ go }) {
   this.id = go.creeps.length
   this.go = go
   this.go.creeps.push(this)
-
+  this.name = `Creep ${this.id}`
   this.image = new Image()
   this.image.src = "zergling.png" // placeholder image
   this.image_width = 150
@@ -30,12 +30,12 @@ function Creep({ go }) {
   this.aggro = new Aggro({ go, entity: this, radius: 500 });
   // END - Behaviours
 
-  this.coords = function(coords) {
+  this.coords = function (coords) {
     this.x = coords.x
     this.y = coords.y
   }
 
-  this.draw = function(target_position) {
+  this.draw = function (target_position) {
     let x = target_position && target_position.x ? target_position.x : this.x - this.go.camera.x
     let y = target_position && target_position.y ? target_position.y : this.y - this.go.camera.y
     let width = target_position && target_position.width ? target_position.width : this.width

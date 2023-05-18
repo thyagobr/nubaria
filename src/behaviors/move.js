@@ -36,7 +36,7 @@ export class Move {
             this.entity.x = next_step.x
             this.entity.y = next_step.y
         } else {
-            console.log("hmmm... where to?")
+            // console.log("hmmm... where to?")
         }
     }
 

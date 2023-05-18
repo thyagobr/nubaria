@@ -1,4 +1,4 @@
-import { remove_object_if_present } from "../tapete"
+import { remove_object_if_present, random } from "../tapete"
 
 export default function Stats({ go, entity, hp = 100, current_hp, mana, current_mana }) {
     this.go = go
@@ -30,7 +30,7 @@ export default function Stats({ go, entity, hp = 100, current_hp, mana, current_
     this.attack = (target) => {
         if (this.last_attack_at === null || (this.last_attack_at + this.attack_speed) < Date.now()) {
             const damage = random(5, 12);
-            console.log(`*** [${this.entity.name} attacks: ${damage} damage`)
+            console.log(`*** ${this.entity.name} attacks ${target.name}: ${damage} damage`)
             target.stats.take_damage({ damage: damage })
             this.last_attack_at = Date.now();
         }

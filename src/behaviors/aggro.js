@@ -12,12 +12,12 @@ export default function Aggro({ go, entity, radius = 20 }) {
     this.act = () => {
         let distance = Vector2.distance(this.go.character, entity)
         if (distance < this.radius) {
-            this.move.act();
-            // this.board.draw();
-        if (distance < 5) {
-            this.entity.stats.attack(this.go.character)
-        }}
-
+            if (distance < (this.go.character.width / 2) + (this.entity.width / 2)) {
+                this.entity.stats.attack(this.go.character)
+            } else {
+                this.move.act();
+            }
+        }
     }
 
     this.draw_path = () => {

@@ -35,8 +35,6 @@ function CastingBar({ go, entity }) {
     this.stop = () => this.duration = null
 
     this.draw = (full = this.full, current = this.current) => {
-        console.log("drawing casting bar")
-        
         if (this.duration === null) return;
 
         let elapsed_time = Date.now() - this.last_time;
