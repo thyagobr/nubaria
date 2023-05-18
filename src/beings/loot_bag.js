@@ -13,10 +13,13 @@ export default function LootBag({ go, entity }) {
     this.image = new Image()
     this.image.src = 'backpack.png'
     this.go.clickables.push(this);
+    this.acted_by_skill = 'loot'
 
     this.draw = () => {
         this.go.ctx.drawImage(this.image, 0, 0, 1000, 1000, this.x - this.go.camera.x, this.y - this.go.camera.y, this.width, this.height)
     }
 
-    this.acted_by_skill = 'loot'
+    this.update = () => {}
+
+    this.update_fps = () => {}
 }

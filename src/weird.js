@@ -105,8 +105,7 @@ const update = () => {
   if (!character.stats.is_alive()) {
     controls_movement()
   } else {
-    go.spells.forEach(spell => spell.update())
-    go.managed_objects.forEach(mob => mob.update())
+    go.update_objects()
   }
 }
 
@@ -114,7 +113,7 @@ function update_fps() {
   if (character.stats.is_alive()) {
     character.update_fps()
   }
-  go.fires.forEach(fire => fire.update_fps())
+  go.update_fps_objects()
 }
 // Comment
 const draw = () => {

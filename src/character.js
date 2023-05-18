@@ -69,7 +69,7 @@ function Character(go, id) {
   // This function tries to see if the selected clickable has a default action set for interaction
   this.skill_action = () => {
     let object = this.go.selected_clickable
-    if (object.acted_by_skill = 'loot') {
+    if (object.acted_by_skill == 'loot') {
       new Loot({ go, entity: this, loot_bag: object }).act()
     }
     if (object && this.skills[object.acted_by_skill]) {

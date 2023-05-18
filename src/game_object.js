@@ -29,6 +29,16 @@ function GameObject() {
     this.managed_objects.forEach(mob => mob.draw())
   }
 
+  this.update_objects = () => {
+    this.spells.forEach(spell => spell.update())
+    this.loot_bags.forEach(loot_bag => loot_bag.update())
+    this.managed_objects.forEach(mob => mob.update())
+  }
+
+  this.update_fps_objects = () => {
+    this.fires.forEach(fire => fire.update_fps())
+  }
+
   this.draw_selected_clickable = function () {
     if (this.selected_clickable) {
       this.ctx.save()
