@@ -80,6 +80,7 @@ class LootBox {
     roll_loot(loot_table) {
         let result = loot_table.map((loot_entry) => {
             let roll = dice(100)
+            console.log(`*** Loot roll for ${loot_entry.item.name}: ${roll} (chance: ${loot_entry.chance})`)
             if (roll <= loot_entry.chance) {
                 const item_bundle = new Item(loot_entry.item.name)
                 item_bundle.image.src = loot_entry.item.image_src

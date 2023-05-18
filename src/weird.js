@@ -83,10 +83,7 @@ function controls_movement() {
 
 
 keyboard_input.on_keydown_callbacks.f = [character.skill_action]
-// keyboard_input.on_keydown_callbacks.q = [character.skills.break_stone]
-// keyboard_input.on_keydown_callbacks.g = [character.skills.cut_tree]
-// keyboard_input.on_keydown_callbacks.f = [character.skills.make_fire]
-
+keyboard_input.on_keydown_callbacks[0] = [character.skills.make_fire]
 keyboard_input.on_keydown_callbacks[1] = [character.spells.frostbolt]
 keyboard_input.on_keydown_callbacks[2] = [character.spells.blink]
 keyboard_input.on_keydown_callbacks.i = [character.inventory.toggle_display]

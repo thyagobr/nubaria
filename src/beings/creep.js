@@ -60,10 +60,10 @@ function Creep({ go }) {
   }
 
   this.loot_table = [{
-    item: { name: "Branch", image_src: "branch.png" },
+    item: { name: "Wood", image_src: "branch.png" },
     min: 1,
     max: 3,
-    chance: 75
+    chance: 95
   }]
 }
 
