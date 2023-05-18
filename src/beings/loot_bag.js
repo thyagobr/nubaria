@@ -25,6 +25,7 @@ export default function LootBag({ go, entity }) {
         if (this.items && this.items.length === 0) {
             remove_object_if_present(this, this.go.clickables)
             remove_object_if_present(this, this.go.loot_bags)
+            this.go.selected_clickable = null;
         }
     }
 
