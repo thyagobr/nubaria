@@ -1,3 +1,4 @@
+import LootBag from "../beings/loot_bag"
 import { remove_object_if_present, random } from "../tapete"
 
 export default function Stats({ go, entity, hp = 100, current_hp, mana, current_mana }) {
@@ -23,8 +24,9 @@ export default function Stats({ go, entity, hp = 100, current_hp, mana, current_
         if (this.go.selected_clickable === this.entity) this.go.selected_clickable = null;
         this.go.character.update_xp(this.entity)
         if (this.entity.loot_table !== undefined) {
-            this.go.loot_box.items = this.go.loot_box.roll_loot(this.entity.loot_table)
-            this.go.loot_box.show()
+            this.go.loot_bags.push(new LootBag({ go: this.go, entity: this.entity }))
+            // this.go.loot_box.items = this.go.loot_box.roll_loot(this.entity.loot_table)
+            // this.go.loot_box.show()
         }
     }
     this.attack = (target) => {

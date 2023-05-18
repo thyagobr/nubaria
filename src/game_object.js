@@ -15,7 +15,19 @@ function GameObject() {
   this.trees = [];
   this.fires = [];
   this.stones = [];
+  this.loot_bags = [];
   this.managed_objects = [] // Random objects to draw/update
+
+  this.draw_objects = () => {
+    this.stones.forEach(stone => stone.draw())
+    this.trees.forEach(tree => tree.draw())
+    this.fires.forEach(fire => fire.draw())
+    this.spells.forEach(spell => spell.draw())
+    this.skills.forEach(skill => skill.draw())
+    this.creeps.forEach(creep => creep.draw())
+    this.loot_bags.forEach(loot_bag => loot_bag.draw())
+    this.managed_objects.forEach(mob => mob.draw())
+  }
 
   this.draw_selected_clickable = function () {
     if (this.selected_clickable) {

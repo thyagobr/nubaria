@@ -10,6 +10,7 @@ import Skill from "./skill.js"
 import BreakStone from "./skills/break_stone.js"
 import MakeFire from "./skills/make_fire.js"
 import Board from "./board.js"
+import Loot from "./behaviors/loot.js"
 
 function Character(go, id) {
   this.go = go
@@ -67,9 +68,12 @@ function Character(go, id) {
 
   // This function tries to see if the selected clickable has a default action set for interaction
   this.skill_action = () => {
-    let entity = this.go.selected_clickable
-    if (entity && this.skills[entity.acted_by_skill]) {
-      this.skills[entity.acted_by_skill]()
+    let object = this.go.selected_clickable
+    if (object.acted_by_skill = 'loot') {
+      new Loot({ go, entity: this, loot_bag: object }).act()
+    }
+    if (object && this.skills[object.acted_by_skill]) {
+      this.skills[object.acted_by_skill]()
     }
   }
 
