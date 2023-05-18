@@ -57,6 +57,9 @@ class LootBox {
 
     take_loot(loot_index) {
         let loot = this.items.splice(loot_index, 1)[0]
+        if (this.loot_bag) {
+            this.loot_bag.items.splice(loot_index, 1)
+        }
         this.go.character.inventory.add(loot.item)
     }
 

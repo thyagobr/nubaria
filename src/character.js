@@ -70,7 +70,9 @@ function Character(go, id) {
   this.skill_action = () => {
     let object = this.go.selected_clickable
     if (object.acted_by_skill == 'loot') {
-      new Loot({ go, entity: this, loot_bag: object }).act()
+      if (Vector2.distance(object, this) < object.width + 20) {
+        new Loot({ go, entity: this, loot_bag: object }).act()
+      }
     }
     if (object && this.skills[object.acted_by_skill]) {
       this.skills[object.acted_by_skill]()
