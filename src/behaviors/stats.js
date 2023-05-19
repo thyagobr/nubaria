@@ -48,7 +48,7 @@ export default function Stats({ go, entity, hp = 100, current_hp, mana, current_
         this.display_time = 2000
         this.font_size = 21
         this.x = this.entity.x + (random(0, this.entity.width)) - this.go.camera.x
-        this.y = this.entity.y - this.go.camera.x
+        this.y = this.entity.y - this.go.camera.y
 
         this.spawn = () => {
             this.starting_time = Date.now();
@@ -60,7 +60,6 @@ export default function Stats({ go, entity, hp = 100, current_hp, mana, current_
             this.go.ctx.fillStyle = 'white'
             this.go.ctx.font = `${this.font_size}px sans-serif`
             let text = `${this.damage}`
-            var text_measurement = this.go.ctx.measureText(text)
             this.go.ctx.fillText(text, this.x, this.entity.y - this.go.camera.y)
         }
 
