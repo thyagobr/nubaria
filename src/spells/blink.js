@@ -48,6 +48,7 @@ export default function Blink({ go, entity }) {
         remove_object_if_present(this, this.go.spells)
         remove_object_if_present(click_callback, this.go.mousedown_callbacks)
         this.last_cast_at = Date.now()
+        this.go.camera.focus(this.entity)
     }
 
     const click_callback = () => {

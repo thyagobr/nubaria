@@ -1,3 +1,5 @@
+import { remove_object_if_present } from "./tapete";
+
 function Doodad({ go }) {
   this.go = go
 

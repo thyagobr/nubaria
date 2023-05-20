@@ -7,6 +7,8 @@ export default function StartMenu({ go }) {
     this.button_height = 50
 
     this.check_button_clicked = (ev) => {
+        if (!this.active) return;
+        
         let click = { x: ev.clientX, y: ev.clientY, width: 1, height: 1 }
         this.buttons.forEach((button) => {
             if (is_colliding(click, button)) {
