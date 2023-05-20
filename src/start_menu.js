@@ -2,13 +2,14 @@ import { is_colliding } from "./tapete"
 
 export default function StartMenu({ go }) {
     this.go = go
+    this.go.start_menu = this
     this.active = true
     this.button_width = 300
     this.button_height = 50
 
     this.check_button_clicked = (ev) => {
         if (!this.active) return;
-        
+
         let click = { x: ev.clientX, y: ev.clientY, width: 1, height: 1 }
         this.buttons.forEach((button) => {
             if (is_colliding(click, button)) {

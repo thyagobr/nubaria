@@ -57,6 +57,8 @@ function Character(go, id) {
       this.experience_points = 0;
     }
   }
+  this.is_busy = false
+  this.is_busy_with = null;
 
   this.update_fps = () => {
     if (this.stats.current_mana < this.stats.mana) this.stats.current_mana += random(1, 3)
@@ -76,6 +78,14 @@ function Character(go, id) {
     }
     if (object && this.skills[object.acted_by_skill]) {
       this.skills[object.acted_by_skill]()
+    }
+  }
+
+  this.escape_key = () => {
+    if (this.is_busy_with) {
+      this.is_busy_with.stop();
+    } else {
+      this.go.start_menu.active = !this.go.start_menu.active
     }
   }
 

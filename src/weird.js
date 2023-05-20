@@ -84,6 +84,7 @@ click_callbacks.push(clickable_clicked)
 
 mousemove_callbacks.push(track_mouse_position)
 
+keyboard_input.on_keydown_callbacks['Escape'] = [character.escape_key]
 keyboard_input.on_keydown_callbacks.f = [character.skill_action]
 keyboard_input.on_keydown_callbacks[0] = [character.skills.make_fire]
 keyboard_input.on_keydown_callbacks[1] = [character.spells.frostbolt]

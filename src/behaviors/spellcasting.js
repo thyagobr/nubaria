@@ -18,6 +18,7 @@ export default function Spellcasting({ go, entity, spell }) {
     // The effects and the casting bar happen at the same time.
     // Same thing for some skills
     this.end = () => {
+        this.entity.is_busy_with = null
         remove_object_if_present(this, this.go.managed_objects)
         if (this.entity.stats.current_mana > this.spell.mana_cost) {
             this.entity.stats.current_mana -= this.spell.mana_cost
@@ -29,6 +30,7 @@ export default function Spellcasting({ go, entity, spell }) {
         this.go.action_bar.highlight_cast(this.spell);
         if (!this.spell.is_valid()) return;
 
+        this.entity.is_busy_with = this.casting_bar
         if (this.spell.casting_time_in_ms) {
             if (this.casting_bar.duration !== null) {
                 this.casting = false
