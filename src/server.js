@@ -1,11 +1,13 @@
 export default function Server(go) {
   this.go = go
 
-  //this.conn = new WebSocket("ws://localhost:8999")
-  this.conn = new WebSocket("ws://nubaria.herokuapp.com:54082")
+  this.conn = new WebSocket("ws://127.0.0.1:7777")
+  //this.conn = new WebSocket("ws://nubaria.herokuapp.com:54082")
+  // this.conn = new EventSource("//localhost:7777", { withCredentials: true });
   this.conn.onopen = () => this.login(this.go.character)
   this.conn.onmessage = function(event) {
     let payload = JSON.parse(event.data)
+    console.log(payload)
     switch (payload.action) {
       case "login":
         let new_char = new Character(go)
