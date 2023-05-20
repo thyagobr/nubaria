@@ -24,9 +24,23 @@ import Stone from "./beings/stone.js"
 import Tree from "./beings/tree.js"
 import Editor from "./editor/index.js"
 import ResourceBar from "./resource_bar.js"
+import StartMenu from "./start_menu.js"
 
 const go = new GameObject()
+// ---
+// Disable right mouse click
+go.canvas.oncontextmenu = function (e) { e.preventDefault(); e.stopPropagation(); }
+
+const click_callbacks = setClickCallback(go)
+const mousemove_callbacks = setMouseMoveCallback(go)
+const mousedown_callbacks = setMousedownCallback(go)
+const mouseup_callbacks = setMouseupCallback(go)
+const touchstart_callbacks = setTouchstartCallback(go)
+const touchend_callbacks = setTouchendCallback(go)
+
+//-----
 const screen = new Screen(go)
+const start_menu = new StartMenu({ go })
 const camera = new Camera(go)
 const character = new Character(go)
 const keyboard_input = new KeyboardInput(go)
@@ -39,11 +53,25 @@ const editor = new Editor({ go })
 const experience_bar = new ResourceBar({ go, target: { x: go.screen.width / 2 - 500, y: go.screen.height - 30, width: 1000, height: 5 }, colour: "purple", border: "white", fixed: true });
 experience_bar.height = 30
 
-// Disable right mouse click
-go.canvas.oncontextmenu = function (e) { e.preventDefault(); e.stopPropagation(); }
+// Callbacks
+function track_mouse_position(evt) {
+  var rect = go.canvas.getBoundingClientRect()
+  go.mouse_position = {
+    x: evt.clientX - rect.left + camera.x,
+    y: evt.clientY - rect.top + camera.y,
+    width: 1,
+    height: 1
+  }
+}
 
-const click_callbacks = setClickCallback(go)
-click_callbacks.push(clickable_clicked)
+go.mouse_position = {}
+let mouse_is_down = false
+mousedown_callbacks.push((ev) => mouse_is_down = true)
+mouseup_callbacks.push((ev) => mouse_is_down = false)
+mouseup_callbacks.push(loot_box.check_item_clicked.bind(loot_box))
+touchstart_callbacks.push((ev) => mouse_is_down = true)
+touchend_callbacks.push((ev) => mouse_is_down = false)
+
 function clickable_clicked(ev) {
   let click = { x: ev.clientX + go.camera.x, y: ev.clientY + go.camera.y, width: 1, height: 1 }
   const clickable = go.clickables.find((clickable) => is_colliding(clickable, click))
@@ -52,35 +80,9 @@ function clickable_clicked(ev) {
   }
   go.selected_clickable = clickable
 }
+click_callbacks.push(clickable_clicked)
 
-let mouse_is_down = false
-go.mouse_position = {}
-const mousemove_callbacks = setMouseMoveCallback(go)
 mousemove_callbacks.push(track_mouse_position)
-function track_mouse_position(evt) {
-  var rect = go.canvas.getBoundingClientRect()
-  go.mouse_position = {
-    x: evt.clientX - rect.left + camera.x,
-    y: evt.clientY - rect.top + camera.y
-  }
-}
-const mousedown_callbacks = setMousedownCallback(go)
-mousedown_callbacks.push((ev) => mouse_is_down = true)
-const mouseup_callbacks = setMouseupCallback(go)
-mouseup_callbacks.push((ev) => mouse_is_down = false)
-mouseup_callbacks.push(loot_box.check_item_clicked.bind(loot_box))
-const touchstart_callbacks = setTouchstartCallback(go)
-touchstart_callbacks.push((ev) => mouse_is_down = true)
-const touchend_callbacks = setTouchendCallback(go)
-touchend_callbacks.push((ev) => mouse_is_down = false)
-function controls_movement() {
-  // go.clickables.forEach((clickable) => {
-  //   if (clickable.activated) {
-  //     clickable.click()
-  //   }
-  // })
-}
-
 
 keyboard_input.on_keydown_callbacks.f = [character.skill_action]
 keyboard_input.on_keydown_callbacks[0] = [character.skills.make_fire]
@@ -91,10 +93,16 @@ keyboard_input.on_keydown_callbacks.b = [character.board.toggle_grid]
 keyboard_input.on_keydown_callbacks.e = [() => editor.active = !editor.active]
 //keyboard_input.on_keydown_callbacks.p = [board.way_to_player]
 
+// END -- Callbacks
+
 let elapsed_time = 0
 let last_tick = Date.now()
 let frames = 0;
 const update = () => {
+  if (start_menu.active) {
+    start_menu.update()
+    return;
+  }
   frames += 1;
   elapsed_time = Date.now() - last_tick
   if ((elapsed_time) > 1000) {
@@ -110,6 +118,8 @@ const update = () => {
 }
 
 function update_fps() {
+  if (start_menu.active) return;
+
   if (character.stats.is_alive()) {
     character.update_fps()
   }
@@ -117,6 +127,10 @@ function update_fps() {
 }
 // Comment
 const draw = () => {
+  if (start_menu.active) {
+    start_menu.draw();
+    return
+  }
   if (character.stats.is_dead()) {
     screen.draw_game_over()
   } else {

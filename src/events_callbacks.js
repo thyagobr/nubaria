@@ -29,6 +29,7 @@ function setMousemoveCallback(go) {
 
 function setClickCallback(go) {
   const click_callbacks = []
+  go.click_callbacks = click_callbacks
   const on_click  = (ev) => {
     click_callbacks.forEach((callback) => {
       callback(ev)

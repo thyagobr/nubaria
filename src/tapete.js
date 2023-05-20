@@ -8,11 +8,13 @@ const Vector2 = {
 }
 
 const is_colliding = function(self, target) {
+  const self_position = { widht: 1, height: 1, ...self }
+  const target_position = { widht: 1, height: 1, ...target }
   if (
-    (self.x < target.x + target.width) &&
-    (self.x + self.width > target.x) &&
-    (self.y < target.y + target.height) &&
-    (self.y + self.height > target.y)
+    (self_position.x < target_position.x + target_position.width) &&
+    (self_position.x + self_position.width > target_position.x) &&
+    (self_position.y < target_position.y + target_position.height) &&
+    (self_position.y + self_position.height > target_position.y)
   ) {
     return true
   } else {
