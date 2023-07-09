@@ -8,8 +8,11 @@ function GameObject() {
   this.canvas.setAttribute('height', this.canvas_rect.height);
   this.ctx = ctx
   this.tile_size = 20
+  this.character = {}
   this.clickables = []
+  this.messages = []
   this.selected_clickable = null
+  this.players = []
   this.spells = [] // Spell system, could be injected by it as well
   this.skills = [];
   this.trees = [];

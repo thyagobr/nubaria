@@ -70,6 +70,7 @@ export default function StartMenu({ go }) {
             perform: function () {
                 console.log("new_game button clicked")
                 this.menu.active = false;
+                this.menu.go.server.connect()
             }
         },
         {

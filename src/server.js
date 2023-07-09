@@ -1,24 +1,24 @@
-export default function Server(go) {
+import Character from "./character";
+
+export default function Server(go, player) {
   this.go = go
+  this.player = player
+  this.go.character = player
+  go.server = this
 
-  this.conn = new WebSocket("ws://127.0.0.1:7777")
-  //this.conn = new WebSocket("ws://nubaria.herokuapp.com:54082")
-  // this.conn = new EventSource("//localhost:7777", { withCredentials: true });
-  this.conn.onopen = () => this.login(this.go.character)
-  this.conn.onmessage = function(event) {
-    let payload = JSON.parse(event.data)
-    console.log(payload)
-    switch (payload.action) {
-      case "login":
-        let new_char = new Character(go)
-        new_char.name = payload.data.character.name
-        new_char.x = payload.data.character.x
-        new_char.y = payload.data.character.y
-        console.log(`Adding new char`)
-        players.push(new_char)
-        break;
+  this.conn = undefined;
+  this.connect = () => {
+    this.conn = new WebSocket("ws://127.0.0.1:3010");
+    this.conn.onopen = () => this.login(this.go.character)
+    this.conn.onmessage = function (event) {
+      let payload = JSON.parse(event.data)
+      console.log(payload)
+      switch (payload.type) {
+        case "login", "firstLoad":
+          first_load(payload)
+          break;
 
-      case "ping":
+        case "ping":
         //go.ctx.fillRect(payload.data.character.x, payload.data.character.y, 50, 50)
         //go.ctx.stroke()
         //let player = players[0] //players.find(player => player.name === payload.data.character.name)
@@ -27,9 +27,18 @@ export default function Server(go) {
         //  player.y = payload.data.character.y
         //}
         //break;
+      }
     }
-  } //
-  this.login = function(character) {
+  }
+
+  function first_load(payload, player) {
+    go.character.name = payload.currentPlayer.name
+    go.character.x = payload.currentPlayer.position.x
+    go.character.y = payload.currentPlayer.position.y
+    go.camera.focus(go.character)
+  }
+
+  this.login = function (character) {
     let payload = {
       action: "login",
       data: {
@@ -43,12 +52,12 @@ export default function Server(go) {
     this.conn.send(JSON.stringify(payload))
   }
 
-  this.ping = function(character) {
+  this.ping = function (character) {
     let payload = {
       action: "ping",
       data: {
         character: {
-          name: character.name, 
+          name: character.name,
           x: character.x,
           y: character.y
         }

@@ -39,14 +39,14 @@ const touchstart_callbacks = setTouchstartCallback(go)
 const touchend_callbacks = setTouchendCallback(go)
 
 //-----
+const camera = new Camera(go)
 const screen = new Screen(go)
 const start_menu = new StartMenu({ go })
-const camera = new Camera(go)
 const character = new Character(go)
+const server = new Server(go, character)
 const keyboard_input = new KeyboardInput(go)
 const world = new World(go)
 const controls = new Controls(go)
-const server = new Server(go)
 const loot_box = new LootBox(go)
 const action_bar = new ActionBar(go)
 const editor = new Editor({ go })
@@ -207,7 +207,7 @@ game_loop.draw = draw
 game_loop.process_keys_down = go.keyboard_input.process_keys_down
 game_loop.update = update
 
-const start = () => {
+const start = async () => {
   character.x = 100
   character.y = 100
   go.world.generate_map()
