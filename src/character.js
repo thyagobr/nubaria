@@ -29,7 +29,7 @@ function Character(go, id) {
     this.y = messages[0].position.y
   } else {
     this.x = 100
-    this.y = 100  
+    this.y = 100
   }
   this.width = this.go.tile_size * 2
   this.height = this.go.tile_size * 2
@@ -162,6 +162,14 @@ function Character(go, id) {
       this.y = future_position.y
       this.walk_cycle_index = (this.walk_cycle_index + (0.03 * this.speed)) % 3
       this.go.camera.focus(this)
+      let payload = {
+        action: "move",
+        args: {
+          x: this.x,
+          y: this.y
+        }
+      }
+      this.go.server.conn.send(JSON.stringify(payload))
     }
   }
 

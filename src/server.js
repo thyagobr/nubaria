@@ -17,6 +17,8 @@ export default function Server(go, player) {
         case "login", "firstLoad":
           first_load(payload)
           break;
+        case "moveLoad":
+          console.log("moveLoad")
 
         case "ping":
         //go.ctx.fillRect(payload.data.character.x, payload.data.character.y, 50, 50)
