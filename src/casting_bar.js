@@ -2,7 +2,7 @@ function CastingBar({ go, entity }) {
     this.go = go
     this.entity = entity
     this.duration = null
-    this.width = go.character.width
+    this.width = entity.width
     this.height = 5
     this.colour = "purple"
     this.full = null
