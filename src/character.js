@@ -153,6 +153,7 @@ function Character(go, id) {
       this.y = future_position.y
       this.walk_cycle_index = (this.walk_cycle_index + (0.03 * this.speed)) % 3
       this.go.camera.focus(this)
+      // TODO: extract
       let payload = {
         action: "move",
         args: {
@@ -164,6 +165,7 @@ function Character(go, id) {
         }
       }
       this.go.server.conn.send(JSON.stringify(payload))
+      // END -- TODO: extract
     }
   }
 

@@ -17,6 +17,18 @@ export default function Stats({ go, entity, hp = 100, current_hp, mana, current_
     this.take_damage = ({ damage }) => {
         new ScrollDamageText({ go: this.go, entity: this.entity, damage }).spawn()
         this.current_hp -= damage;
+        // TODO: extract
+        let payload = {
+            action: "damage",
+            args: {
+                damaged_player: {
+                    id: this.entity.id,
+                },
+                damage: damage
+            }
+        }
+        this.go.server.conn.send(JSON.stringify(payload))
+        // END -- TODO: extract
         if (this.is_dead()) this.die()
     }
     this.die = () => {
@@ -63,7 +75,7 @@ export default function Stats({ go, entity, hp = 100, current_hp, mana, current_
             this.go.ctx.fillText(text, this.x, this.entity.y - this.go.camera.y)
         }
 
-        this.update = () => { 
+        this.update = () => {
             if (this.active && Date.now() > this.starting_time + this.display_time) {
                 this.active = false
                 remove_object_if_present(this, this.go.managed_objects)
