@@ -24,6 +24,7 @@ function GameObject() {
   this.draw_objects = () => {
     this.stones.forEach(stone => stone.draw())
     this.trees.forEach(tree => tree.draw())
+    this.players.forEach(player => player.draw())
     this.fires.forEach(fire => fire.draw())
     this.spells.forEach(spell => spell.draw())
     this.skills.forEach(skill => skill.draw())

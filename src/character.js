@@ -14,23 +14,14 @@ import Loot from "./behaviors/loot.js"
 
 function Character(go, id) {
   this.go = go
-  this.go.character = this
   this.name = `Player ${String(Math.floor(Math.random() * 10)).slice(0, 2)}`
-  this.editor = go.editor
   this.image = new Image();
   this.image.src = "crisiscorepeeps.png"
   this.image_width = 32
   this.image_height = 32
   this.id = id
-  let messages = go.messages.filter(msg => msg.event === "first_load")
-  if (messages.length > 0) {
-    console.log("setting the position")
-    this.x = messages[0].position.x
-    this.y = messages[0].position.y
-  } else {
-    this.x = 100
-    this.y = 100
-  }
+  this.x = 100
+  this.y = 100
   this.width = this.go.tile_size * 2
   this.height = this.go.tile_size * 2
   this.moving = false
@@ -165,6 +156,9 @@ function Character(go, id) {
       let payload = {
         action: "move",
         args: {
+          player: {
+            id: this.id,
+          },
           x: this.x,
           y: this.y
         }
