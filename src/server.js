@@ -37,6 +37,7 @@ export default function Server(go, player) {
           new_player.x = payload.player.position.x
           new_player.y = payload.player.position.y
           go.players.push(new_player)
+          go.clickables.push(new_player)
           break;
         case "ping":
         //go.ctx.fillRect(payload.data.character.x, payload.data.character.y, 50, 50)
@@ -62,6 +63,7 @@ export default function Server(go, player) {
       otherPlayer.x = otherPlayerPayload.position.x
       otherPlayer.y = otherPlayerPayload.position.y
       go.players.push(otherPlayer)
+      go.clickables.push(otherPlayer)
     })
     go.camera.focus(go.character)
   }
