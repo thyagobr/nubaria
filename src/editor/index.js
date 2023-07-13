@@ -25,6 +25,9 @@ export default function Editor({ go }) {
         let text = `x: ${this.go.character.x.toFixed(2)}, y: ${this.go.character.y.toFixed(2)}`
         var text_measurement = this.go.ctx.measureText(text)
         this.go.ctx.fillText(text, this.right_panel_coords.x + (this.right_panel_coords.width / 2) - (text_measurement.width / 2), this.right_panel_coords.y + 50 + 50 + 20)
+        let idText = `id: ${this.go.character.id.substr(0, 8)}`
+        var idText_measurement = this.go.ctx.measureText(idText)
+        this.go.ctx.fillText(idText, this.right_panel_coords.x + (this.right_panel_coords.width / 2) - (idText_measurement.width / 2), this.right_panel_coords.y + 100 + 50 + 20)
 
         if (this.go.selected_clickable) this.draw_selection();
     }
@@ -39,5 +42,9 @@ export default function Editor({ go }) {
         let text = `x: ${this.go.selected_clickable.x.toFixed(2)}, y: ${this.go.selected_clickable.y.toFixed(2)}`
         var text_measurement = this.go.ctx.measureText(text)
         this.go.ctx.fillText(text, this.right_panel_coords.x + (this.right_panel_coords.width / 2) - (text_measurement.width / 2), this.right_panel_coords.y + 200 + 100)
+
+        let idText = `id: ${this.go.selected_clickable.id.substr(0, 8)}`
+        var idText_measurement = this.go.ctx.measureText(idText)
+        this.go.ctx.fillText(idText, this.right_panel_coords.x + (this.right_panel_coords.width / 2) - (idText_measurement.width / 2), this.right_panel_coords.y + 200 + 150)
     }
 }

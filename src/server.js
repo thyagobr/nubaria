@@ -39,6 +39,17 @@ export default function Server(go, player) {
           go.players.push(new_player)
           go.clickables.push(new_player)
           break;
+        case "damageLoad":
+          let damaged_player = this.go.players.find(player => payload.player.id === player.id)
+          if (!damaged_player && (payload.player.id === this.go.character.id)) {
+            damaged_player = this.go.character
+          }
+          if (!damaged_player) {
+            console.log("Player not found")
+            return
+          }
+          damaged_player.stats.current_hp -= payload.damage
+          break
         case "ping":
         //go.ctx.fillRect(payload.data.character.x, payload.data.character.y, 50, 50)
         //go.ctx.stroke()
