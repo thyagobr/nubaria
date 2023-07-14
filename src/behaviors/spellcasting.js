@@ -27,11 +27,10 @@ export default function Spellcasting({ go, entity, spell, target }) {
         }
     }
 
-    this.cast = (should_broadcast = true) => {
-        this.go.action_bar.highlight_cast(this.spell);
+    // is_self_cast: if true, the spell is being cast by the player
+    this.cast = (is_self_cast = true) => {
         if (!this.spell.is_valid()) {
             console.log("spell is not valid")
-            console.log(this.spell.entity.current_target)
             return;
         }
 
@@ -46,7 +45,8 @@ export default function Spellcasting({ go, entity, spell, target }) {
                 this.go.managed_objects.push(this)
                 this.casting_bar.start(this.spell.casting_time_in_ms, this.end)
 
-                if (should_broadcast) {
+                if (is_self_cast) {
+                    this.go.action_bar.highlight_cast(this.spell);
                     // TODO: extract
                     let payload = {
                         action: "spellcastingStarted",
