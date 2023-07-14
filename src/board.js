@@ -81,7 +81,6 @@ function Board({ go, entity, radius }) {
     const end_node = this.get_node_for(end_position);
     if (!start_node || !end_node) {
       console.log("nodes not matched")
-      debugger
     }
 
     start_node.colour = 'orange'

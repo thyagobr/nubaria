@@ -63,7 +63,6 @@ function ActionBar(game_object) {
 
         // Highlight: the action bar "blinks" for a frame when the spell is cast
         if (this.highlights.length > 0) {
-          debugger
           if (this.highlights.find((spell) => spell.id === slot.id)) {
             remove_object_if_present(slot, this.highlights)
             this.game_object.ctx.fillStyle = 'rgba(255, 255, 255, 0.7)'

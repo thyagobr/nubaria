@@ -32,7 +32,7 @@ export default function Frostbolt({ go, entity }) {
 
         if ((is_colliding(this.projectile.bounds(), this.entity.spell_target()))) {
             if (damageable(this.entity.spell_target())) {
-                const damage = random(5, 10);
+                const damage = random(5, 10) * this.entity.level;
                 this.entity.spell_target().stats.take_damage({ damage });
             }
             this.end();
