@@ -60,7 +60,7 @@ export default function Server(go, player) {
           const all_players = [...this.go.players, this.go.character]
           const target_player = all_players.find(player => payload.target.id === player.id)
           casting_player.current_target = target_player
-          casting_player.spells["frostbolt"](false)
+          casting_player.spells[payload.spell.id.replace("spell_", "")](false)
           break
         case "ping":
         //go.ctx.fillRect(payload.data.character.x, payload.data.character.y, 50, 50)
