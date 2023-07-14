@@ -33,8 +33,12 @@ function Character(go, id) {
     frostbolt: new Frostbolt({ go, entity: this }),
     blink: new Blink({ go, entity: this })
   }
+  this.current_target = undefined
+  this.spell_target = () => {
+    return this.current_target || this.go.selected_clickable
+  }
   this.spells = {
-    frostbolt: new Spellcasting({ go, entity: this, spell: this.spellbook.frostbolt }).cast,
+    frostbolt: new Spellcasting({ go, entity: this, spell: this.spellbook.frostbolt, target: this.spell_target }).cast,
     blink: new Spellcasting({ go, entity: this, spell: this.spellbook.blink }).cast
   }
   this.skills = {

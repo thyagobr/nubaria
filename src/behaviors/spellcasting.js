@@ -1,8 +1,9 @@
 import CastingBar from "../casting_bar.js"
 import { remove_object_if_present } from "../tapete.js"
 
-export default function Spellcasting({ go, entity, spell }) {
+export default function Spellcasting({ go, entity, spell, target }) {
     this.go = go
+    this.target = target
     this.entity = entity
     this.spell = spell
     this.casting_bar = new CastingBar({ go, entity: entity })
@@ -26,9 +27,13 @@ export default function Spellcasting({ go, entity, spell }) {
         }
     }
 
-    this.cast = () => {
+    this.cast = (should_broadcast = true) => {
         this.go.action_bar.highlight_cast(this.spell);
-        if (!this.spell.is_valid()) return;
+        if (!this.spell.is_valid()) {
+            console.log("spell is not valid")
+            console.log(this.spell.entity.current_target)
+            return;
+        }
 
         this.entity.is_busy_with = this.casting_bar
         if (this.spell.casting_time_in_ms) {
@@ -40,6 +45,27 @@ export default function Spellcasting({ go, entity, spell }) {
                 this.casting = true
                 this.go.managed_objects.push(this)
                 this.casting_bar.start(this.spell.casting_time_in_ms, this.end)
+
+                if (should_broadcast) {
+                    // TODO: extract
+                    let payload = {
+                        action: "spellcastingStarted",
+                        args: {
+                            spell: {
+                                id: this.spell.id
+                            },
+                            target: {
+                                id: this.target().id
+                            },
+                            caster: {
+                                id: this.entity.id
+                            }
+                        }
+                    }
+                    this.go.server.conn.send(JSON.stringify(payload))
+                    // END -- TODO: extract
+                }
+
             }
         } else {
             this.end()

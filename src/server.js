@@ -8,7 +8,7 @@ export default function Server(go, player) {
 
   this.conn = undefined;
   this.connect = () => {
-    this.conn = new WebSocket("ws://0.tcp.eu.ngrok.io:17890");
+    this.conn = new WebSocket("ws://localhost:3010");
     this.conn.onopen = () => this.login(this.go.character)
     this.conn.onmessage = function (event) {
       let payload = JSON.parse(event.data)
@@ -49,6 +49,18 @@ export default function Server(go, player) {
             return
           }
           damaged_player.stats.current_hp -= payload.damage
+          break
+          case "spellcastingStartedLoad":
+          console.log("casting spell")
+          const casting_player = this.go.players.find(player => payload.caster.id === player.id)
+          if (!casting_player) {
+            console.log("Player not found or is myself")
+            return
+          }
+          const all_players = [...this.go.players, this.go.character]
+          const target_player = all_players.find(player => payload.target.id === player.id)
+          casting_player.current_target = target_player
+          casting_player.spells["frostbolt"](false)
           break
         case "ping":
         //go.ctx.fillRect(payload.data.character.x, payload.data.character.y, 50, 50)

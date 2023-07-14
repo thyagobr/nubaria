@@ -30,6 +30,7 @@ export default function Editor({ go }) {
         this.go.ctx.fillText(idText, this.right_panel_coords.x + (this.right_panel_coords.width / 2) - (idText_measurement.width / 2), this.right_panel_coords.y + 100 + 50 + 20)
 
         if (this.go.selected_clickable) this.draw_selection();
+        if (this.go.character.current_target) this.draw_current_target();
     }
 
     this.draw_selection = () => {
@@ -44,6 +45,22 @@ export default function Editor({ go }) {
         this.go.ctx.fillText(text, this.right_panel_coords.x + (this.right_panel_coords.width / 2) - (text_measurement.width / 2), this.right_panel_coords.y + 200 + 100)
 
         let idText = `id: ${this.go.selected_clickable.id.substr(0, 8)}`
+        var idText_measurement = this.go.ctx.measureText(idText)
+        this.go.ctx.fillText(idText, this.right_panel_coords.x + (this.right_panel_coords.width / 2) - (idText_measurement.width / 2), this.right_panel_coords.y + 200 + 150)
+    }
+
+    this.draw_current_target = () => {
+        this.go.entity.current_target.draw({
+            x: this.right_panel_coords.x + this.right_panel_coords.width / 2 - 35,
+            y: this.right_panel_coords.y + 300,
+            width: 70,
+            height: 70
+        })
+        let text = `x: ${this.go.entity.current_target.x.toFixed(2)}, y: ${this.go.entity.current_target.y.toFixed(2)}`
+        var text_measurement = this.go.ctx.measureText(text)
+        this.go.ctx.fillText(text, this.right_panel_coords.x + (this.right_panel_coords.width / 2) - (text_measurement.width / 2), this.right_panel_coords.y + 200 + 100)
+
+        let idText = `id: ${this.go.entity.current_target.id.substr(0, 8)}`
         var idText_measurement = this.go.ctx.measureText(idText)
         this.go.ctx.fillText(idText, this.right_panel_coords.x + (this.right_panel_coords.width / 2) - (idText_measurement.width / 2), this.right_panel_coords.y + 200 + 150)
     }

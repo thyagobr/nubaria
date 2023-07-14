@@ -1,8 +1,9 @@
 import Projectile from "../projectile"
 import { remove_object_if_present, is_colliding, random } from "../tapete"
 
-export default function Frostbolt({ go }) {
+export default function Frostbolt({ go, entity }) {
     this.id = "spell_frostbolt"
+    this.entity = entity
     this.go = go
     this.icon = new Image()
     this.icon.src = "https://cdna.artstation.com/p/assets/images/images/009/031/190/large/richard-thomas-paints-11-v2.jpg"
@@ -29,10 +30,10 @@ export default function Frostbolt({ go }) {
     this.update = () => {
         if (!this.active) return
 
-        if ((is_colliding(this.projectile.bounds(), this.go.selected_clickable))) {
-            if (damageable(this.go.selected_clickable)) {
+        if ((is_colliding(this.projectile.bounds(), this.entity.spell_target()))) {
+            if (damageable(this.entity.spell_target())) {
                 const damage = random(5, 10);
-                this.go.selected_clickable.stats.take_damage({ damage });
+                this.entity.spell_target().stats.take_damage({ damage });
             }
             this.end();
         } else {
@@ -40,16 +41,16 @@ export default function Frostbolt({ go }) {
         }
     }
 
-    this.is_valid = () => !this.on_cooldown() && this.go.selected_clickable && this.go.selected_clickable.stats;
+    this.is_valid = () => !this.on_cooldown() && (this.entity.spell_target() && this.entity.spell_target().stats)
 
     this.act = () => {
         if (this.active) return;
-        if ((this.go.selected_clickable === null) || (this.go.selected_clickable === undefined)) return;
+        if ((this.entity.spell_target() === null) || (this.entity.spell_target() === undefined)) return;
 
-        const start_position = { x: this.go.character.x + 50, y: this.go.character.y + 50 }
+        const start_position = { x: this.entity.x + 50, y: this.entity.y + 50 }
         const end_position = {
-            x: this.go.selected_clickable.x + this.go.selected_clickable.width / 2,
-            y: this.go.selected_clickable.y + this.go.selected_clickable.height / 2
+            x: this.entity.spell_target().x + this.entity.spell_target().width / 2,
+            y: this.entity.spell_target().y + this.entity.spell_target().height / 2
         }
         this.projectile.act({ start_position, end_position })
 
